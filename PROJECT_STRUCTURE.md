@@ -64,16 +64,17 @@ baseltww/
 
 ---
 
-## 🎯 Quy tắc phân chia công việc
+## Phân chia công việc
 
 ### Ai code ở đâu?
 
 | Thành viên | Thư mục được phép sửa | Mô tả |
 |---|---|---|
-| **Thành viên A** | `features/home/components/hero.tsx` | Code giao diện Hero section |
-| **Thành viên B** | `features/home/components/trending.tsx` | Code giao diện Trending section |
-| **Thành viên C** | `features/home/components/ai-picks.tsx` | Code giao diện AI Picks section |
-| **Thành viên D** | `features/home/components/membership.tsx` | Code giao diện Membership section |
+| Tuan Hai | `features/home/components/hero.tsx` | Code giao diện Hero section |
+| Huu Linh| `features/home/components/trending.tsx` | Code giao diện Trending section |
+| Nhat Long| `features/home/components/ai-picks.tsx` | Code giao diện AI Picks section |
+| Long + Linh | `features/home/components/membership.tsx` | Code giao diện Membership section |
+| Dang Hieu |  | Backend |
 | **Chung** | `features/shared/components/*` | Movie Card, Search Bar |
 | **Chung** | `components/layout/*` | Navbar, Footer |
 | **Chung** | `constants/index.ts` | Mock data |
@@ -157,7 +158,7 @@ NODE_TLS_REJECT_UNAUTHORIZED=0 npx shadcn@latest add dialog
 
 ---
 
-## 🚀 Lệnh khởi chạy
+## Lệnh khởi chạy
 
 ```bash
 # Cài đặt thư viện (chạy 1 lần sau khi clone/pull)
