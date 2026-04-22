@@ -1,4 +1,4 @@
-# 🏗️ LUXE CINEMA — Kiến Trúc Dự Án (Feature-Based Architecture)
+# 🏗️ LUXE CINEMA — Kiến Trúc Dự Án
 
 > **Tài liệu này mô tả cấu trúc thư mục chuẩn của dự án.**
 > Mọi thành viên trong nhóm **BẮT BUỘC** phải đọc và tuân thủ trước khi code.
@@ -10,13 +10,13 @@
 ```
 baseltww/
 │
-├── app/                        # 🔒 ROUTING — Chỉ Team Lead chỉnh sửa
+├── app/                        #    ROUTING — Chỉ Team Lead chỉnh sửa
 │   ├── layout.tsx              #    Khung layout bọc toàn app (Navbar + Footer)
 │   ├── page.tsx                #    Trang chủ — CHỈ import từ features/home
 │   ├── globals.css             #    CSS toàn cục + Shadcn theme variables
 │   └── favicon.ico             #    Icon tab trình duyệt
 │
-├── features/                   # ✅ NƠI CÁC THÀNH VIÊN CODE CHÍNH
+├── features/                   #    NƠI CÁC THÀNH VIÊN CODE
 │   ├── home/                   #    Nhóm tính năng cho TRANG CHỦ
 │   │   ├── components/         #    Các component giao diện
 │   │   │   ├── hero.tsx        #    ➜ Banner chính / Hero section
@@ -31,25 +31,25 @@ baseltww/
 │       │   └── search-bar.tsx   #    ➜ Thanh tìm kiếm
 │       └── index.ts            #    Barrel export
 │
-├── components/                 # 🧱 UI TĨNH — Dùng chung toàn hệ thống
+├── components/                 #    UI TĨNH — Dùng chung toàn hệ thống
 │   ├── layout/                 #    Các thành phần bố cục cố định
 │   │   ├── navbar.tsx          #    ➜ Thanh điều hướng trên cùng
 │   │   └── footer.tsx          #    ➜ Chân trang
-│   └── ui/                     #    ⚙️ Shadcn UI (KHÔNG SỬA THỦ CÔNG)
+│   └── ui/                     #    Shadcn UI (KHÔNG SỬA THỦ CÔNG)
 │       ├── button.tsx          #    ➜ Được tạo bởi: npx shadcn@latest add button
 │       ├── badge.tsx           #    ➜ Được tạo bởi: npx shadcn@latest add badge
 │       └── input.tsx           #    ➜ Được tạo bởi: npx shadcn@latest add input
 │
-├── constants/                  # 📦 HẰNG SỐ & MOCK DATA
+├── constants/                  #   HẰNG SỐ & MOCK DATA
 │   └── index.ts                #    Nơi lưu dữ liệu mẫu, hằng số dùng chung
 │
-├── types/                      # 📝 TYPESCRIPT INTERFACES
+├── types/                      # TYPESCRIPT INTERFACES
 │   └── index.ts                #    Nơi định nghĩa kiểu dữ liệu dùng chung
 │
-├── lib/                        # 🔧 UTILITIES
+├── lib/                        #  UTILITIES
 │   └── utils.ts                #    Hàm tiện ích (cn, ...) — dùng bởi Shadcn
 │
-├── public/                     # 🖼️ TÀI NGUYÊN TĨNH
+├── public/                     #  TÀI NGUYÊN TĨNH
 │   ├── images/                 #    Ảnh poster phim, banner, ...
 │   └── icons/                  #    Icon SVG tùy chỉnh
 │
@@ -79,13 +79,13 @@ baseltww/
 | **Chung** | `constants/index.ts` | Mock data |
 | **Chung** | `types/index.ts` | TypeScript interfaces |
 
-> ⚠️ **KHÔNG** tự ý sửa các file trong `app/`, `components/ui/`, `lib/` trừ khi được Team Lead cho phép.
+**KHÔNG** tự ý sửa các file trong `app/`, `components/ui/`, `lib/` trừ khi được Team Lead cho phép.
 
 ---
 
-## 📌 Hướng dẫn Import
+## Hướng dẫn Import
 
-### ✅ Cách import ĐÚNG
+### Cách import ĐÚNG
 
 ```tsx
 // Import feature components (dùng barrel export)
@@ -105,13 +105,13 @@ import { Input } from "@/components/ui/input";
 import { APP_NAME } from "@/constants";
 ```
 
-### ❌ Cách import SAI (tránh dùng)
+### Cách import SAI (tránh dùng)
 
 ```tsx
-// ❌ Đừng import trực tiếp vào file sâu bên trong features
+// Đừng import trực tiếp vào file sâu bên trong features
 import Hero from "@/features/home/components/hero";  // ← SAI
 
-// ✅ Dùng barrel export
+//  Dùng barrel export
 import { Hero } from "@/features/home";              // ← ĐÚNG
 ```
 
