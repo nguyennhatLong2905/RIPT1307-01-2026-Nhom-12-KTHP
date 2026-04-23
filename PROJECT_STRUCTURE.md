@@ -70,17 +70,15 @@ baseltww/
 
 | Thành viên | Thư mục được phép sửa | Mô tả |
 |---|---|---|
-| Tuan Hai | `features/home/components/hero.tsx` | Code giao diện Hero section |
-| Huu Linh| `features/home/components/trending.tsx` | Code giao diện Trending section |
-| Nhat Long| `features/home/components/ai-picks.tsx` | Code giao diện AI Picks section |
-| Long + Linh | `features/home/components/membership.tsx` | Code giao diện Membership section |
+| Tuan Hai |  | Code giao diện My list + Navbar + Footer |
+| Huu Linh |  | Code giao diện Homepage |
+| Nhat Long| | Code giao diện đặt vé + chọn rạp + chọn ghế + thanh toán |
 | Dang Hieu |  | Backend |
 | **Chung** | `features/shared/components/*` | Movie Card, Search Bar |
-| **Chung** | `components/layout/*` | Navbar, Footer |
 | **Chung** | `constants/index.ts` | Mock data |
 | **Chung** | `types/index.ts` | TypeScript interfaces |
 
-**KHÔNG** tự ý sửa các file trong `app/`, `components/ui/`, `lib/` trừ khi được Team Lead cho phép.
+**KHÔNG** tự ý sửa các file trong `app/`, `components/ui/`, `lib/` trừ khi được cho phép.
 
 ---
 
