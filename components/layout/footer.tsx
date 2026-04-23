@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export default function Footer() {
-  // Đưa danh sách link ra một mảng để code gọn gàng, dễ bảo trì hơn
+
   const footerLinks = [
     { label: "PRIVACY POLICY", href: "/privacy" },
     { label: "TERMS OF SERVICE", href: "/terms" },
@@ -11,9 +11,9 @@ export default function Footer() {
 
   return (
     <footer className="w-full px-8 py-4 bg-[#0a0a0a] border-t border-white/5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
 
-        {/* Cột 1: Logo (Canh trái) */}
+        {/* Cột 1: Logo (Bên trái) */}
         <div className="flex-shrink-0">
           <Link
             href="/"
@@ -24,7 +24,7 @@ export default function Footer() {
           </Link>
         </div>
 
-        {/* Cột 2: Các đường dẫn (Canh giữa) */}
+        {/* Cột 2: Các đường dẫn (Ở giữa) */}
         <ul className="hidden md:flex flex-wrap items-center justify-center gap-8">
           {footerLinks.map((link) => (
             <li key={link.label}>
@@ -38,10 +38,10 @@ export default function Footer() {
           ))}
         </ul>
 
-        {/* Cột 3: Copyright (Canh phải) */}
-        <div className="flex-shrink-0">
+        {/* Cột 3: Copyright (Bên phải) */}
+        <div className="flex-shrink-0 text-right">
           <span className="text-[11px] tracking-wider text-[#555555]">
-            © 2026 ALL RIGHTS RESERVED.
+            © 2026-THLTW-Nhom12.
           </span>
         </div>
 
