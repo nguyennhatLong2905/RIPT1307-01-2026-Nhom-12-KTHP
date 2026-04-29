@@ -1,9 +1,74 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { Search, Bell, Star, Play, Plus } from "lucide-react";
 
 export default function Hero() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    
+    let animationId: number;
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+
+    const playScroll = () => {
+      if (!isDown && el) {
+        el.scrollLeft += 1;
+        if (el.scrollLeft >= el.scrollWidth / 2) {
+          el.scrollLeft -= el.scrollWidth / 2;
+        }
+      }
+      animationId = requestAnimationFrame(playScroll);
+    };
+    
+    animationId = requestAnimationFrame(playScroll);
+    
+    const handlePointerDown = (e: PointerEvent) => { 
+      isDown = true; 
+      startX = e.pageX - el.offsetLeft;
+      scrollLeft = el.scrollLeft;
+      el.style.cursor = 'grabbing';
+    };
+    const handlePointerUp = () => { 
+      isDown = false; 
+      el.style.cursor = 'grab';
+    };
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - el.offsetLeft;
+      const walk = (x - startX) * 2;
+      el.scrollLeft = scrollLeft - walk;
+      
+      if (el.scrollLeft >= el.scrollWidth / 2) {
+         el.scrollLeft -= el.scrollWidth / 2;
+         startX = e.pageX - el.offsetLeft;
+         scrollLeft = el.scrollLeft;
+      } else if (el.scrollLeft <= 0) {
+         el.scrollLeft += el.scrollWidth / 2;
+         startX = e.pageX - el.offsetLeft;
+         scrollLeft = el.scrollLeft;
+      }
+    };
+    
+    el.addEventListener("pointerdown", handlePointerDown);
+    el.addEventListener("pointerup", handlePointerUp);
+    el.addEventListener("pointerleave", handlePointerUp);
+    el.addEventListener("pointermove", handlePointerMove);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      el.removeEventListener("pointerdown", handlePointerDown);
+      el.removeEventListener("pointerup", handlePointerUp);
+      el.removeEventListener("pointerleave", handlePointerUp);
+      el.removeEventListener("pointermove", handlePointerMove);
+    };
+  }, []);
+
   return (
     <div className="w-full flex flex-col bg-black">
       <div 
@@ -15,15 +80,15 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none" />
 
         {/* Hero Content */}
-        <div className="flex-1 flex flex-col justify-center px-6 md:px-12 w-full mt-12 mb-20 z-10">
-          <h1 className="text-white text-5xl md:text-7xl font-bold mb-4 drop-shadow-md">
+        <div className="flex-1 flex flex-col justify-end px-6 md:px-12 w-full pb-8 z-10">
+          <h1 className="text-white text-5xl md:text-5xl mb-4 drop-shadow-md">
             DUNE: PART TWO
           </h1>
-          <p className="text-[#FFD873] text-lg font-medium mb-6">
+          <p className="text-[#FFD873] text-lg font-medium mb-2">
             Denis Villeneuve
           </p>
           
-          <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-8">
+          <div className="flex flex-col items-start gap-0 mb-8">
             <p className="text-white text-base max-w-md leading-relaxed drop-shadow-sm">
               2024 - A - 2 Seasons<br/>
               Sci-Fi | Epic | Action &amp; Adventure | Drama
@@ -34,7 +99,7 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-5">
             <button className="flex items-center justify-center py-4 px-8 gap-3 rounded-[15px] hover:opacity-90 hover:scale-105 transition-all shadow-lg cursor-pointer" 
               style={{ background: "linear-gradient(180deg, #F40845, #F57C26)" }}
             >
@@ -49,14 +114,34 @@ export default function Hero() {
         </div>
       </div>
       
-      {/* 3 Images Below Hero */}
-      <div className="bg-black py-8 border-t border-[#4D46351A] px-6 md:px-12 w-full">
-        <div className="flex flex-col md:flex-row items-center gap-5 w-full">
-          <img alt="movie1" src="/images/titanic.avif" className="flex-1 w-full md:w-1/7 h-48 lg:h-64 object-cover rounded-lg cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all shadow-lg" />
-          <img alt="movie2" src="/images/canthislove.webp" className="flex-1 w-full md:w-1/7  h-48 lg:h-64 object-cover rounded-lg cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all shadow-lg" />
-          <img alt="movie3" src="/images/avatar3.jpg" className="flex-1 w-full md:w-1/7 h-48 lg:h-64 object-cover rounded-lg cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all shadow-lg" />
-          <img alt="movie4" src="/images/chuyentausinhtu.jpg" className="flex-1 w-full md:w-1/7 h-48 lg:h-64 object-cover rounded-lg cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all shadow-lg" />
-          <img alt="movie5" src="/images/greenbook.jpg" className="flex-1 w-full md:w-1/7 h-48 lg:h-64 object-cover rounded-lg cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all shadow-lg" />
+      {/* Movies Marquee Below Hero */}
+      <div className="bg-black py-8 border-t border-[#4D46351A] w-full overflow-hidden relative">
+        <div 
+          ref={scrollRef}
+          className="flex w-full overflow-x-hidden select-none cursor-grab active:cursor-grabbing"
+          style={{ touchAction: 'pan-y' }}
+        >
+          <div className="flex w-max">
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="flex gap-5 items-center pr-5">
+                {[
+                  { src: "/images/titanic.avif", alt: "titanic" },
+                  { src: "/images/canthislove.webp", alt: "can this love" },
+                  { src: "/images/avatar3.jpg", alt: "avatar 3" },
+                  { src: "/images/chuyentausinhtu.jpg", alt: "chuyen tau sinh tu" },
+                  { src: "/images/greenbook.jpg", alt: "greenbook" },
+                ].map((movie, idx) => (
+                  <img 
+                    key={idx} 
+                    alt={movie.alt} 
+                    src={movie.src} 
+                    draggable={false}
+                    className="w-[200px] md:w-[250px] lg:w-[300px] h-48 lg:h-64 object-cover rounded-lg hover:opacity-80 hover:scale-[1.02] transition-all shadow-lg shrink-0" 
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

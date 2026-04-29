@@ -19,7 +19,7 @@ export default function Trending() {
         <div className="flex flex-col gap-8 w-full">
         <div className="flex justify-between items-end">
           <div className="flex flex-col gap-1">
-            <h2 className="text-[#E5E2E1] text-3xl md:text-4xl font-bold">Trending</h2>
+            <h2 className="text-[#E5E2E1] text-3xl md:text-4xl">Trending</h2>
             <p className="text-[#E9C349] text-xs md:text-sm uppercase tracking-wider font-semibold">
               Curated by our masters of cinema
             </p>

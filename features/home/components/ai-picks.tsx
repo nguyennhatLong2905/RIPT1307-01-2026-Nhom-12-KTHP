@@ -9,7 +9,7 @@ export default function AiPicks() {
       <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12">
         <div className="flex flex-col gap-10 w-full">
         <div className="flex items-center gap-6">
-          <h2 className="text-[#E5E2E1] text-3xl md:text-4xl font-bold">AI Picks</h2>
+          <h2 className="text-[#E5E2E1] text-3xl md:text-4xl">AI Picks</h2>
           <div className="flex items-center bg-[#E9C3491A] py-1.5 px-3 gap-2 rounded-xl border border-[#E9C34933]">
             <Sparkles className="w-4 h-4 text-[#E9C349]" />
             <span className="text-[#E9C349] text-xs font-medium uppercase tracking-wider">

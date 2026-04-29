@@ -10,25 +10,25 @@ export default function Membership() {
         <div className="max-w-[1440px] mx-auto flex flex-col lg:flex-row gap-16 lg:gap-24 items-center lg:items-center w-full">
           
           <div className="flex-1 flex flex-col w-full">
-            <h2 className="text-[#E5E2E1] text-4xl md:text-5xl font-bold mb-6 md:mb-8 leading-tight">
+            <h2 className="text-[#E5E2E1] text-4xl md:text-5xl mb-6 md:mb-8 leading-tight">
               The Membership<br className="hidden md:block"/>Experience
             </h2>
             <p className="text-[#D0C5AF] text-base md:text-lg mb-10 md:mb-12 max-w-xl leading-relaxed">
               Join THE VELVET GALLERY and unlock unlimited access to premieres, priority lounge seating, and private screening rooms. A legacy of cinematic excellence awaits.
             </p>
             
-            <div className="flex flex-col gap-6 w-full">
+            <div className="flex flex-col gap-2 w-full">
               <div className="flex items-center gap-4">
                 <Check className="w-5 h-5 text-[#E9C349]" />
-                <span className="text-[#E5E2E1] text-base md:text-lg font-medium">Unlimited Premieres</span>
+                <span className="text-[#E5E2E1] text-sm md:text-base font-medium">Unlimited Premieres</span>
               </div>
               <div className="flex items-center gap-4">
                 <Check className="w-5 h-5 text-[#E9C349]" />
-                <span className="text-[#E5E2E1] text-base md:text-lg font-medium">Private Champagne Lounge</span>
+                <span className="text-[#E5E2E1] text-sm md:text-base font-medium">Private Champagne Lounge</span>
               </div>
               <div className="flex items-center gap-4">
                 <Check className="w-5 h-5 text-[#E9C349]" />
-                <span className="text-[#E5E2E1] text-base md:text-lg font-medium">24/7 Concierge Service</span>
+                <span className="text-[#E5E2E1] text-sm md:text-base font-medium">24/7 Concierge Service</span>
               </div>
             </div>
           </div>
