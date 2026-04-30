@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Search, Bell, Star, Play, Plus } from "lucide-react";
 
 export default function Hero() {
+  const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -100,7 +102,9 @@ export default function Hero() {
           </div>
 
           <div className="flex flex-wrap items-center gap-5">
-            <button className="flex items-center justify-center py-4 px-8 gap-3 rounded-[15px] hover:opacity-90 hover:scale-105 transition-all shadow-lg cursor-pointer" 
+            <button
+              onClick={() => router.push("/movies/m1")}
+              className="flex items-center justify-center py-4 px-8 gap-3 rounded-[15px] hover:opacity-90 hover:scale-105 transition-all shadow-lg cursor-pointer" 
               style={{ background: "linear-gradient(180deg, #F40845, #F57C26)" }}
             >
               <Play className="w-5 h-5 fill-white text-white" />
