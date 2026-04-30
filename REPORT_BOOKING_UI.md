@@ -1,45 +1,42 @@
-# BÁO CÁO HOÀN THIỆN: LUỒNG ĐẶT VÉ (BOOKING FLOW UI)
+# BÁO CÁO NHÁNH LONG: TÍCH HỢP LUỒNG ĐẶT VÉ (BOOKING FLOW UI)
 
-**Thành viên thực hiện:** Long
-**Trạng thái:** Hoàn thành (UI Slicing & Routing)
+**Nhánh:** `long`  
+**Trạng thái:** Hoàn thành (UI Slicing & Routing - Sẵn sàng Merge)
 
 ---
 
-## 1. Tóm tắt công việc
-Đã hoàn thiện 100% giao diện cho 4 màn hình chính của luồng Đặt Vé theo đúng bản thiết kế mẫu (Premium Dark Theme, Vàng Gold `#DAB254`). Các màn hình đã được liên kết với nhau bằng luồng click cơ bản. Toàn bộ code tuân thủ nghiêm ngặt việc chia nhỏ Component và **không chứa comment rác**.
+## 1. Tóm tắt chức năng
+Nhánh `long` chứa luồng Đặt Vé (Booking Flow), bao gồm các màn hình chính được thiết kế theo Premium Dark Theme (với màu chủ đạo `#DAB254`). Các màn hình đã được liên kết với nhau bằng luồng click cơ bản thông suốt từ đầu đến cuối, không chứa comment rác.
 
-## 2. Các thư viện / Component cài đặt mới
-Các thành viên khác sau khi `git pull` code mới về vui lòng lưu ý dự án có cài thêm các component của thư viện `shadcn/ui`. Nếu chạy dự án báo lỗi thiếu UI, vui lòng chạy lệnh sau ở terminal:
+## 2. Các thư viện / Component cần thiết
+Dự án có sử dụng thêm các component của thư viện `shadcn/ui`. Khi merge code, nếu gặp lỗi thiếu UI Component, vui lòng chạy lệnh sau để bổ sung:
 ```bash
 npx shadcn@latest add card separator tabs radio-group label scroll-area
 ```
-*(Lưu ý: Dùng `shadcn` bản mới nhất, gói `shadcn-ui` cũ đã bị deprecated).*
 
-## 3. Cấu trúc File & Các thay đổi quan trọng
+## 3. Cấu trúc File & Các thay đổi cần lưu ý khi Merge
 
-### 3.1. Dữ liệu dùng chung (Đã cập nhật an toàn)
-Để tránh conflict (xung đột) với file của các thành viên khác, các đoạn code dưới đây chỉ được nối thêm (append) vào cuối file:
-- **`types/index.ts`**: Thêm Interface `Seat`, `BookingState`. (Giữ nguyên các export cũ của Leader).
-- **`constants/index.ts`**: Thêm `MOCK_MOVIE`, `MOCK_THEATERS`, và tạo sơ đồ ghế `MOCK_SEATS` (12 cột ghế/hàng, tự động căn chỉnh lối đi). (Giữ nguyên biến `APP_NAME`).
+### 3.1. Dữ liệu dùng chung (Không ghi đè, chỉ nối thêm)
+Để tránh conflict, các đoạn code mới đã được **nối thêm (append)** vào cuối các file dùng chung:
+- **`types/index.ts`**: Thêm Interface `Seat`, `BookingState` (Giữ nguyên các export cũ).
+- **`constants/index.ts`**: Thêm `MOCK_MOVIE`, `MOCK_THEATERS`, và `MOCK_SEATS` (12 cột ghế/hàng, tự động căn chỉnh lối đi).
 
-### 3.2. Cấu trúc Page Routing (Thư mục `app/movies/[id]`)
-Luồng chuyển trang đã được dựng sẵn bằng Next.js App Router:
+### 3.2. Cấu trúc Page Routing
+Luồng chuyển trang được đặt tại thư mục `app/movies/[id]`:
 - `[id]/page.tsx` : Màn 1 - Chọn Rạp & Suất chiếu
 - `[id]/seats/page.tsx` : Màn 2 - Bản đồ Chọn Ghế Ngồi
 - `[id]/checkout/page.tsx` : Màn 3 - Nhập thông tin Thanh toán
 - `[id]/ticket/page.tsx` : Màn 4 - Trả kết quả Vé Điện Tử
 
-### 3.3. Tổ chức UI Components (Thư mục `features/booking`)
-Thay vì nhét chung vào thư mục `components` gốc, toàn bộ tính năng đặt vé được module hóa tại `features/booking/components` để team dễ quản lý:
-- `movie-details.tsx`: Ảnh nền Poster và tóm tắt phim.
-- `showtime-selector.tsx`: Tabs chọn ngày & list giờ chiếu.
-- `seat-selector.tsx`: Sơ đồ ghế chuẩn màn hình chiếu.
-- `order-summary.tsx`: Khung giỏ hàng nổi (Floating card).
-- `checkout-form.tsx`: Form thanh toán tương tác thẻ tín dụng/Momo/Apple Pay.
-- `ticket-card.tsx`: Card vé cắt góc cao cấp kèm mã QR.
+### 3.3. Tổ chức UI Components
+Toàn bộ tính năng đặt vé được module hóa tại `features/booking/components` để dễ quản lý và tái sử dụng:
+- `movie-details.tsx` & `showtime-selector.tsx`
+- `seat-selector.tsx` & `order-summary.tsx`
+- `checkout-form.tsx` & `ticket-card.tsx`
 
-## 4. Ghi chú Kỹ thuật & Đề xuất (Next Steps)
-- **Luồng dữ liệu (State):** Hiện tại toàn bộ 4 màn hình đang hiển thị đẹp mắt nhưng hoạt động hoàn toàn bằng **Mock Data** cục bộ. 
-- **Đề xuất cho Phase tiếp theo:** Trưởng nhóm hãy xem xét và thống nhất công cụ quản lý State (khuyến nghị dùng **Zustand** cho nhẹ hoặc React Context) để team có thể tái cấu trúc, đưa luồng dữ liệu lưu thông thật từ Màn 1 đến Màn 4 (bấm ghế nào thì qua màn thanh toán hiện giá tiền tương ứng).
+## 4. Ghi chú Kỹ thuật (Technical Notes)
+- **Điều hướng mượt mà (SPA Navigation):** Đã áp dụng `useRouter` của Next.js cho toàn bộ quá trình chuyển trang. Điều này giúp tối ưu hiệu năng và giữ nguyên trạng thái (state) khi người dùng dùng nút Back của trình duyệt, ngăn chặn lỗi 404 và mất state.
+- **Client Components:** Đã cấu hình chuẩn `"use client"` cho các Component có sử dụng hook (`useState`, `useRouter`) để đảm bảo biên dịch an toàn trên Next.js App Router.
+- **Quản lý State:** Hiện tại luồng UI sử dụng **Mock Data** nội bộ. Để dữ liệu xuyên suốt từ Màn 1 đến Màn 4 (chọn ghế -> tính tiền), đề xuất tích hợp **Zustand** hoặc React Context ở các bước tiếp theo.
 
-*Code đã được check kỹ, sẵn sàng cho bước Code Review và Merge!*
+*Code đã được test kỹ luồng chuyển trang, sẵn sàng cho bước Code Review và Merge vào nhánh chính!*

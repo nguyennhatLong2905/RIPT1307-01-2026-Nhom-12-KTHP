@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { SeatSelector, OrderSummary } from "@/features/booking";
 import { MOCK_MOVIE, MOCK_THEATERS, MOCK_SEATS } from "@/constants";
 import { Seat } from "@/types";
 
 export default function SeatsPage() {
+  const router = useRouter();
   const [selectedSeats, setSelectedSeats] = useState<Seat[]>([]);
 
   const theater = MOCK_THEATERS[0];
@@ -23,7 +25,7 @@ export default function SeatsPage() {
   };
 
   const handleProceed = () => {
-    window.location.href = "/movies/m1/checkout";
+    router.push("/movies/1/checkout");
   };
 
   return (
