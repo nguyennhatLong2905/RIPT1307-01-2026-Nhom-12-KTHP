@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Theater, Showtime } from "@/types";
 import { ChevronDown, ChevronUp, MapPin } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,6 +14,7 @@ const DATES = [
 ];
 
 export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
+  const router = useRouter();
   const [selectedDate, setSelectedDate] = useState("24");
   const [expandedTheater, setExpandedTheater] = useState<string>("t1");
   const [selectedShowtime, setSelectedShowtime] = useState<Showtime | null>(null);
@@ -116,7 +118,7 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
           </div>
           <button 
             disabled={!selectedShowtime}
-            onClick={() => window.location.href = "/movies/m1/seats"}
+            onClick={() => router.push("/movies/1/seats")}
             className={`px-8 py-3 rounded text-[11px] font-bold tracking-[0.15em] transition-all ${
               selectedShowtime 
                 ? "bg-gradient-to-r from-[#DAB254] to-[#FF8C6B] text-black hover:opacity-90 shadow-[0_0_20px_rgba(218,178,84,0.3)]" 

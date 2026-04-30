@@ -1,5 +1,8 @@
+"use client";
+
 import { Seat, Theater, Showtime } from "@/types";
 import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface SeatSelectorProps {
   seats: Seat[];
@@ -10,12 +13,13 @@ interface SeatSelectorProps {
 }
 
 export function SeatSelector({ seats, selectedSeats, onToggleSeat, theater, showtime }: SeatSelectorProps) {
+  const router = useRouter();
   const rows = Array.from(new Set(seats.map(s => s.row)));
 
   return (
     <div className="flex flex-col p-10 bg-[#0f0f11] min-h-screen text-white">
       <div className="flex items-center gap-4 mb-16">
-        <button className="hover:text-[#DAB254] transition-colors" onClick={() => window.history.back()}>
+        <button className="hover:text-[#DAB254] transition-colors" onClick={() => router.back()}>
           <ChevronLeft className="w-6 h-6" />
         </button>
         <div>

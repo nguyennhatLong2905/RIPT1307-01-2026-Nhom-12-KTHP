@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { ChevronLeft, CreditCard, Wallet } from "lucide-react";
 
 export function CheckoutForm() {
+  const router = useRouter();
   const [paymentMethod, setPaymentMethod] = useState("card");
 
   return (
@@ -11,7 +13,7 @@ export function CheckoutForm() {
       <div className="w-full max-w-xl">
         <div className="mb-12">
           <button 
-            onClick={() => window.history.back()} 
+            onClick={() => router.back()} 
             className="flex items-center text-[10px] font-bold tracking-[0.15em] text-gray-400 hover:text-[#DAB254] transition-colors mb-10 uppercase"
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
@@ -128,7 +130,7 @@ export function CheckoutForm() {
         </div>
 
         <button 
-          onClick={() => window.location.href = "/movies/m1/ticket"}
+          onClick={() => router.push("/movies/1/ticket")}
           className="w-full py-4 rounded-lg bg-gradient-to-r from-[#FF8C6B] to-[#DAB254] text-black hover:opacity-90 transition-all shadow-[0_0_30px_rgba(255,140,107,0.3)] flex flex-col items-center justify-center gap-1 mt-12"
         >
           <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Pay</span>
