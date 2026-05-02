@@ -104,7 +104,7 @@ function HoverPopup({ movie, anchorRect, liked, onLike, onMouseEnter, onMouseLea
 
         <div className="flex gap-2.5">
           <Button
-            onClick={() => router.push(`/movies/${movie.id}/seats`)}
+            onClick={() => router.push(`/movies/m1`)}
             className="flex-1 gap-1.5 font-bold text-sm text-black rounded-xl py-2.5 h-auto [background:linear-gradient(90deg,#E9C349,#f0d060)] hover:brightness-105 border-none"
           >
             <Ticket size={15} />
