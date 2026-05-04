@@ -2,6 +2,8 @@
 
 import { CheckCircle } from "lucide-react";
 
+import Link from "next/link";
+
 export function TicketCard() {
   return (
     <div className="min-h-screen bg-[#0f0f11] text-white flex flex-col items-center py-20 px-4">
@@ -71,6 +73,12 @@ export function TicketCard() {
         <button className="w-full py-4 rounded border border-gray-600 text-[#DAB254] hover:bg-[#1a1a1c] transition-all text-[10px] font-bold tracking-[0.2em] uppercase">
           Add to Apple Wallet
         </button>
+        <Link 
+          href="/"
+          className="w-full py-4 rounded border-none text-gray-500 hover:text-white transition-all text-[10px] font-bold tracking-[0.2em] uppercase mt-2 text-center"
+        >
+          Return to Home
+        </Link>
       </div>
 
       <p className="text-center text-[8px] text-gray-600 mt-10 tracking-[0.1em] leading-relaxed">

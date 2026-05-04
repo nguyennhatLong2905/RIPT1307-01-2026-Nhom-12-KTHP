@@ -25,6 +25,15 @@ baseltww/
 │   │   │   └── membership.tsx  #    ➜ Gói hội viên
 │   │   └── index.ts            #    Barrel export — xuất tất cả component
 │   │
+│   ├── booking/                #    Nhóm tính năng ĐẶT VÉ
+│   │   ├── components/         #    Các component cho luồng đặt vé
+│   │   │   ├── movie-details.tsx      #    ➜ Cột thông tin phim (Màn 1)
+│   │   │   ├── showtime-selector.tsx  #    ➜ Chọn ngày, rạp, suất chiếu (Màn 1)
+│   │   │   ├── seat-selector.tsx      #    ➜ Chọn ghế (Màn 2)
+│   │   │   ├── checkout-form.tsx      #    ➜ Điền thẻ & thanh toán (Màn 3)
+│   │   │   └── ticket-card.tsx        #    ➜ Hiển thị vé điện tử (Màn 4)
+│   │   └── index.ts            #    Barrel export
+│   │
 │   └── shared/                 #    Component dùng chung giữa nhiều features
 │       ├── components/
 │       │   ├── movie-card.tsx   #    ➜ Card hiển thị thông tin phim
@@ -70,10 +79,10 @@ baseltww/
 
 | Thành viên | Thư mục được phép sửa | Mô tả |
 |---|---|---|
-| Tuan Hai |  | Code giao diện My list + Navbar + Footer |
-| Huu Linh |  | Code giao diện Homepage |
-| Nhat Long| | Code giao diện đặt vé + chọn rạp + chọn ghế + thanh toán |
-| Dang Hieu |  | Backend |
+| Tuan Hai | `components/layout/*`, `app/(my-list)/*` | Code giao diện My list + Navbar + Footer |
+| Huu Linh | `features/home/*`, `app/page.tsx` | Code giao diện Homepage |
+| Nhat Long| `features/booking/*`, `app/movies/[id]/*` | Code giao diện đặt vé + chọn rạp + chọn ghế + thanh toán |
+| Dang Hieu | `app/api/*`, `lib/db/*` | Backend |
 | **Chung** | `features/shared/components/*` | Movie Card, Search Bar |
 | **Chung** | `constants/index.ts` | Mock data |
 | **Chung** | `types/index.ts` | TypeScript interfaces |
