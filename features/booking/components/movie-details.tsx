@@ -1,9 +1,20 @@
 import { Movie } from "@/types";
-import { Star } from "lucide-react";
+import { Star, ChevronLeft } from "lucide-react";
+import Link from "next/link";
 
 export function MovieDetails({ movie }: { movie: Movie }) {
   return (
     <div className="relative h-full w-full bg-black text-white p-10 flex flex-col justify-end">
+      {/* Back Button */}
+      <div className="absolute top-10 left-10 z-30">
+        <Link 
+          href="/" 
+          className="flex items-center gap-2 text-white hover:text-[#DAB254] transition-colors bg-black/40 px-4 py-2 rounded-full backdrop-blur-md border border-white/10"
+        >
+          <ChevronLeft className="w-4 h-4" />
+          <span className="text-xs font-bold uppercase tracking-[0.1em]">Back to Movies</span>
+        </Link>
+      </div>
       {/* Background Poster */}
       <div 
         className="absolute inset-0 z-0 opacity-50 bg-cover bg-center"
