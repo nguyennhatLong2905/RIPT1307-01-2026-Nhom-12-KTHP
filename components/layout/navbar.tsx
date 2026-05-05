@@ -3,6 +3,19 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Search, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const navLinks = [
   { label: "MOVIES", href: "/movies" },
@@ -14,7 +27,7 @@ export default function Navbar() {
   const [activeLink, setActiveLink] = useState("MOVIES");
 
   return (
-    <nav className="sticky top-0 z-50 relative w-full">
+    <nav className="sticky top-0 z-50 w-full">
       {/* Đường gradient vàng trên cùng */}
       <div
         className="absolute top-0 left-0 w-full h-[2px]"
@@ -27,12 +40,9 @@ export default function Navbar() {
       {/* Thanh navbar chính */}
       <div
         className="flex items-center justify-between px-8 py-4"
-        style={{
-          background:
-            "linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%)",
-        }}
+        style={{ background: "linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%)" }}
       >
-        {/* Logo */}
+        {/* Tên */}
         <Link href="/" className="text-xl font-bold tracking-[0.15em]" style={{ color: "#c9a84c" }}>
           LUXE CINEMA
         </Link>
@@ -82,13 +92,66 @@ export default function Navbar() {
             />
           </div>
 
-          {/* Icon user */}
-          <button
-            className="flex items-center justify-center rounded-full transition-colors duration-200 cursor-pointer"
-            style={{ color: "#c9a84c" }}
-          >
-            <User size={22} />
-          </button>
+          {/* Icon user + Sheet (Slide bar) */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <button
+                className="flex items-center justify-center rounded-full transition-colors duration-200 cursor-pointer hover:bg-white/10 p-2 -m-2"
+                style={{ color: "#c9a84c" }}
+              >
+                <User size={22} />
+              </button>
+            </SheetTrigger>
+            <SheetContent
+              className="border-l border-[#c9a84c]/20"
+              style={{ backgroundColor: "#111111" }}
+            >
+              <SheetHeader className="mt-4">
+                <SheetTitle style={{ color: "#c9a84c", letterSpacing: "0.1em" }}>EDIT PROFILE</SheetTitle>
+                <SheetDescription style={{ color: "#999999" }}>
+                  Make changes to your profile here. Click save when you&apos;re done.
+                </SheetDescription>
+              </SheetHeader>
+              <div className="grid flex-1 auto-rows-min gap-6 px-4 py-8">
+                <div className="grid gap-3">
+                  <Label htmlFor="name" style={{ color: "#c9a84c", fontSize: "0.8rem", letterSpacing: "0.05em" }}>NAME</Label>
+                  <Input
+                    id="name"
+                    defaultValue="Nguyễn Văn A"
+                    className="border-[#c9a84c]/20 focus-visible:ring-[#c9a84c]/50"
+                    style={{ backgroundColor: "rgba(255,255,255,0.05)", color: "#e0e0e0" }}
+                  />
+                </div>
+                <div className="grid gap-3">
+                  <Label htmlFor="username" style={{ color: "#c9a84c", fontSize: "0.8rem", letterSpacing: "0.05em" }}>USERNAME</Label>
+                  <Input
+                    id="username"
+                    defaultValue="@nguyenvana"
+                    className="border-[#c9a84c]/20 focus-visible:ring-[#c9a84c]/50"
+                    style={{ backgroundColor: "rgba(255,255,255,0.05)", color: "#e0e0e0" }}
+                  />
+                </div>
+              </div>
+              <SheetFooter className="mt-auto">
+                <Button
+                  type="submit"
+                  className="hover:bg-[#d4b455] transition-colors"
+                  style={{ backgroundColor: "#c9a84c", color: "#000", fontWeight: "bold", letterSpacing: "0.05em" }}
+                >
+                  SAVE CHANGES
+                </Button>
+                <SheetClose asChild>
+                  <Button
+                    variant="outline"
+                    className="hover:bg-[#c9a84c]/10 transition-colors"
+                    style={{ borderColor: "rgba(201,168,76,0.3)", color: "#c9a84c", backgroundColor: "transparent" }}
+                  >
+                    CLOSE
+                  </Button>
+                </SheetClose>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </nav>
