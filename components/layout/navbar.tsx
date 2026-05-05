@@ -14,7 +14,7 @@ export default function Navbar() {
   const [activeLink, setActiveLink] = useState("MOVIES");
 
   return (
-    <nav className="relative w-full">
+    <nav className="sticky top-0 z-50 relative w-full">
       {/* Đường gradient vàng trên cùng */}
       <div
         className="absolute top-0 left-0 w-full h-[2px]"
