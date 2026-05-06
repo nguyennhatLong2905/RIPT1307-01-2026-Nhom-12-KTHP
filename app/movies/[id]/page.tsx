@@ -3,12 +3,12 @@ import { MovieDetails, ShowtimeSelector } from "@/features/booking";
 
 export default function MovieBookingPage() {
   return (
-    <div className="flex min-h-screen bg-[#0a0a0a] overflow-hidden">
-      <div className="w-1/2 fixed top-0 bottom-0 left-0">
+    <div className="flex h-[calc(100vh-60px)] bg-[#0a0a0a] overflow-hidden">
+      <div className="w-1/2 h-full">
         <MovieDetails movie={MOCK_MOVIE} />
       </div>
 
-      <div className="w-1/2 ml-[50%] h-screen">
+      <div className="w-1/2 h-full relative">
         <ShowtimeSelector theaters={MOCK_THEATERS} />
       </div>
     </div>
