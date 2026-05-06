@@ -1,12 +1,20 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Bell, Star, Play, Plus } from "lucide-react";
+import { Star, Play, Plus } from "lucide-react";
 
 export default function Hero() {
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  // Trigger entrance animations on every mount
+  useEffect(() => {
+    setMounted(false);
+    const raf = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -72,17 +80,38 @@ export default function Hero() {
   }, []);
 
   return (
-    <div className="w-full flex flex-col bg-black">
+    <div id="hero" className="w-full flex flex-col bg-black overflow-hidden">
       <div 
-        className="w-full bg-cover bg-center min-h-[80vh] flex flex-col relative"
-        style={{
-          backgroundImage: 'url("/images/dune222.webp")',
-        }}
+        className="w-full min-h-[80vh] flex flex-col relative overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none" />
+        {/* Animated Background Video */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            transform: mounted ? 'translateX(0)' : 'translateX(80px)',
+            opacity: mounted ? 1 : 0,
+            transition: 'transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.9s ease',
+          }}
+        >
+          <source src="/images/Dune - video.mp4" type="video/mp4" />
+        </video>
+
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none z-10" />
 
         {/* Hero Content */}
-        <div className="flex-1 flex flex-col justify-end px-6 md:px-12 w-full pb-8 z-10">
+        <div
+          className="flex-1 flex flex-col justify-end px-6 md:px-12 w-full pb-8 z-20"
+          style={{
+            transform: mounted ? 'translateX(0)' : 'translateX(-80px)',
+            opacity: mounted ? 1 : 0,
+            transition: 'transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.9s ease',
+          }}
+        >
           <h1 className="text-white text-5xl md:text-5xl mb-4 drop-shadow-md">
             DUNE: PART TWO
           </h1>
@@ -95,7 +124,7 @@ export default function Hero() {
               2024 - A - 2 Seasons<br/>
               Sci-Fi | Epic | Action &amp; Adventure | Drama
             </p>
-            <div className="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-lg backdrop-blur-sm border border-white/10 cursor-default">
+            <div className="flex items-center gap-2 bg-black/40 px-2 py-1 rounded-lg backdrop-blur-sm border border-white/10 cursor-default">
               <Star className="w-5 h-5 fill-[#E9C349] text-[#E9C349]" />
               <span className="text-white text-lg font-semibold">8.4<span className="text-white/60 text-sm">/10</span></span>
             </div>
@@ -104,13 +133,13 @@ export default function Hero() {
           <div className="flex flex-wrap items-center gap-5">
             <button
               onClick={() => router.push("/movies/m1")}
-              className="flex items-center justify-center py-4 px-8 gap-3 rounded-[15px] hover:opacity-90 hover:scale-105 transition-all shadow-lg cursor-pointer" 
+              className="flex items-center justify-center py-2 px-4 gap-3 rounded-[15px] hover:opacity-90 hover:scale-105 transition-all shadow-lg cursor-pointer" 
               style={{ background: "linear-gradient(180deg, #F40845, #F57C26)" }}
             >
               <Play className="w-5 h-5 fill-white text-white" />
               <span className="text-white text-lg font-medium">Book now</span>
             </button>
-            <button className="flex items-center justify-center bg-white/10 py-4 px-8 gap-3 rounded-[15px] border border-white/20 hover:bg-white/20 hover:scale-105 transition-all backdrop-blur-sm cursor-pointer shadow-lg">
+            <button className="flex items-center justify-center bg-white/10 py-2 px-4 gap-3 rounded-[15px] border border-white/20 hover:bg-white/20 hover:scale-105 transition-all backdrop-blur-sm cursor-pointer shadow-lg">
               <Plus className="w-5 h-5 text-white" />
               <span className="text-white text-lg font-medium">My list</span>
             </button>
@@ -126,7 +155,7 @@ export default function Hero() {
           style={{ touchAction: 'pan-y' }}
         >
           <div className="flex w-max">
-            {[...Array(2)].map((_, i) => (
+            {[...Array(5)].map((_, i) => (
               <div key={i} className="flex gap-5 items-center pr-5">
                 {[
                   { src: "/images/titanic.avif", alt: "titanic" },
@@ -140,7 +169,7 @@ export default function Hero() {
                     alt={movie.alt} 
                     src={movie.src} 
                     draggable={false}
-                    className="w-[200px] md:w-[250px] lg:w-[300px] h-48 lg:h-64 object-cover rounded-lg hover:opacity-80 hover:scale-[1.02] transition-all shadow-lg shrink-0" 
+                    className="w-[200px] md:w-[200px] lg:w-[300px] h-48 lg:h-40 object-cover rounded-lg hover:opacity-80 hover:scale-[1.02] transition-all shadow-lg shrink-0" 
                   />
                 ))}
               </div>

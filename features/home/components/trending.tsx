@@ -183,7 +183,7 @@ export default function Trending() {
   const scrollRight = () => scrollContainerRef.current?.scrollBy({ left: 300, behavior: "smooth" });
 
   return (
-    <div className="w-full bg-black py-24">
+    <div id="trending" className="w-full bg-black py-24">
       <style dangerouslySetInnerHTML={{
         __html: `
           @keyframes trendingPopIn {

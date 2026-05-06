@@ -18,13 +18,27 @@ import {
 } from "@/components/ui/sheet";
 
 const navLinks = [
-  { label: "MOVIES", href: "/movies" },
+  { label: "MOVIES", href: "/movies", scrollTo: "trending" },
   { label: "MY LIST", href: "/my-list" },
-  { label: "AI PICKS", href: "/ai-picks" },
+  { label: "AI PICKS", href: "/ai-picks", scrollTo: "ai-picks" },
 ];
 
 export default function Navbar() {
   const [activeLink, setActiveLink] = useState("MOVIES");
+
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    link: (typeof navLinks)[number]
+  ) => {
+    setActiveLink(link.label);
+    if (link.scrollTo) {
+      e.preventDefault();
+      const target = document.getElementById(link.scrollTo);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full">
@@ -43,7 +57,17 @@ export default function Navbar() {
         style={{ background: "linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%)" }}
       >
         {/* Tên */}
-        <Link href="/" className="text-xl font-bold tracking-[0.15em]" style={{ color: "#c9a84c" }}>
+        <Link href="/"  className="text-xl font-bold tracking-[0.15em]" style={{ color: "#c9a84c" }}
+        onClick = {(e) => {
+          if(window.location.pathname === "/") {
+            e.preventDefault();
+            const target = document.getElementById("hero");
+            if (target) {
+              target.scrollIntoView({ behavior: "smooth", block: "start" });
+            } 
+          }
+        }}
+        >
           LUXE CINEMA
         </Link>
 
@@ -53,7 +77,7 @@ export default function Navbar() {
             <li key={link.label}>
               <Link
                 href={link.href}
-                onClick={() => setActiveLink(link.label)}
+                onClick={(e) => handleNavClick(e, link)}
                 className="relative text-sm tracking-[0.1em] transition-colors duration-200"
                 style={{
                   color: activeLink === link.label ? "#e0e0e0" : "#999999",
