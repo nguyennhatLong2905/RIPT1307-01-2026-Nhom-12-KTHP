@@ -5,7 +5,7 @@ import Link from "next/link";
 export function MovieDetails({ movie }: { movie: Movie }) {
   return (
     <div className="relative h-full w-full bg-black text-white p-10 flex flex-col justify-end">
-      <div className="absolute top-10 left-10 z-30">
+      <div className="absolute top-28 left-10 z-30">
         <Link 
           href="/" 
           className="flex items-center gap-2 text-white hover:text-[#DAB254] transition-colors bg-black/40 px-4 py-2 rounded-full backdrop-blur-md border border-white/10"
