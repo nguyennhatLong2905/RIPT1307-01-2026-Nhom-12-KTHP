@@ -8,7 +8,7 @@ export const APP_NAME = "LUXE CINEMA";
 export const MOCK_MOVIE: Movie = {
   id: "m1",
   title: "DUNE: PART TWO",
-  poster: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&q=80",
+  poster: "/images/dune222.webp",
   rating: 9.1,
   director: "Denis Villeneuve",
   cast: "Timothée Chalamet, Zendaya, Rebecca Ferguson",

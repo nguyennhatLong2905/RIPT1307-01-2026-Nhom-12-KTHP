@@ -6,10 +6,9 @@
 ---
 
 ## 1. Tóm tắt chức năng
-Nhánh `long` chứa luồng Đặt Vé (Booking Flow), bao gồm các màn hình chính được thiết kế theo Premium Dark Theme (với màu chủ đạo `#DAB254`). Các màn hình đã được liên kết với nhau bằng luồng click cơ bản thông suốt từ đầu đến cuối, không chứa comment rác.
+Nhánh `long` chứa toàn bộ UI cho luồng Đặt Vé (Booking Flow), bao gồm 4 màn hình chính được thiết kế theo Premium Dark Theme (với màu chủ đạo `#DAB254`). Các màn hình đã được liên kết với nhau bằng luồng click cơ bản thông suốt từ đầu đến cuối, không chứa comment rác (đã được đồng bộ thanh điều hướng và hình ảnh phim với nhánh của nhóm trưởng).
 
-## 2. Các thư viện / Component cần thiết
-Dự án có sử dụng thêm các component của thư viện `shadcn/ui`. Khi merge code, nếu gặp lỗi thiếu UI Component, vui lòng chạy lệnh sau để bổ sung:
+Ngoài ra, dự án có sử dụng thêm các component của thư viện `shadcn/ui`. Khi merge code, nếu gặp lỗi thiếu UI Component, vui lòng chạy lệnh sau để bổ sung:
 ```bash
 npx shadcn@latest add card separator tabs radio-group label scroll-area
 ```
