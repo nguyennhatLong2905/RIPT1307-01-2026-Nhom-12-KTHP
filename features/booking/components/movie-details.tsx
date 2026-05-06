@@ -8,10 +8,10 @@ export function MovieDetails({ movie }: { movie: Movie }) {
       <div className="absolute top-28 left-10 z-30">
         <Link 
           href="/" 
-          className="flex items-center gap-2 text-white hover:text-[#DAB254] transition-colors bg-black/40 px-4 py-2 rounded-full backdrop-blur-md border border-white/10"
+          className="flex items-center gap-1.5 text-white/90 hover:text-[#DAB254] transition-colors bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10"
         >
-          <ChevronLeft className="w-4 h-4" />
-          <span className="text-xs font-bold uppercase tracking-[0.1em]">Back to Movies</span>
+          <ChevronLeft className="w-3.5 h-3.5" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.05em]">Back to Movies</span>
         </Link>
       </div>
       <div 
