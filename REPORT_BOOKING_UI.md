@@ -6,14 +6,13 @@
 ---
 
 ## 1. Tóm tắt chức năng
-Nhánh `merge01` chứa toàn bộ UI cho luồng Đặt Vé (Booking Flow), bao gồm 4 màn hình chính được thiết kế theo Premium Dark Theme (với màu chủ đạo `#DAB254`). Các màn hình đã được liên kết với nhau bằng luồng click cơ bản thông suốt từ đầu đến cuối, không chứa comment rác.
+Nhánh `merge01` chứa toàn bộ UI cho luồng Đặt Vé (Booking Flow), bao gồm 4 màn hình chính được thiết kế theo Premium Dark Theme (với màu chủ đạo `#DAB254`). Các màn hình đã được liên kết với nhau bằng luồng click cơ bản thông suốt từ đầu đến cuối, không chứa comment rác (đã được đồng bộ thanh điều hướng và hình ảnh phim với nhánh của nhóm trưởng).
 
 ## 2. Các package / Component cần thiết
 **Lưu ý quan trọng:** Nhánh này có cài đặt thêm một số thư viện mới (như `embla-carousel-react`, `tw-animate-css`...). Do đó, ngay sau khi merge code, Team Leader cần chạy lệnh:
 ```bash
 npm install
 ```
-
 Ngoài ra, dự án có sử dụng thêm các component của thư viện `shadcn/ui`. Khi merge code, nếu gặp lỗi thiếu UI Component, vui lòng chạy lệnh sau để bổ sung:
 ```bash
 npx shadcn@latest add card separator tabs radio-group label scroll-area

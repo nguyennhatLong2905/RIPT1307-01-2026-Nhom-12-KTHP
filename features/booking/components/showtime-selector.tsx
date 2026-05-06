@@ -24,7 +24,6 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
   return (
     <div className="flex flex-col h-full bg-[#0a0a0a] text-white">
       <ScrollArea className="flex-1 p-10 pb-32">
-        {/* Date Selector */}
         <div className="mb-10">
           <h2 className="text-[#DAB254] text-[10px] font-bold tracking-[0.2em] mb-6">SELECT DATE</h2>
           <div className="flex gap-4">
@@ -46,7 +45,6 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
           </div>
         </div>
 
-        {/* Theaters List */}
         <div>
           <h2 className="text-[#DAB254] text-[10px] font-bold tracking-[0.2em] mb-6">THEATERS & SHOWTIMES</h2>
           <div className="space-y-4">
@@ -55,7 +53,6 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
                 key={theater.id} 
                 className="bg-[#141414] rounded-lg overflow-hidden border border-gray-800/50"
               >
-                {/* Theater Header */}
                 <button 
                   className="w-full flex items-center justify-between p-6 hover:bg-[#1a1a1a] transition-colors"
                   onClick={() => setExpandedTheater(expandedTheater === theater.id ? "" : theater.id)}
@@ -74,7 +71,6 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
                   )}
                 </button>
 
-                {/* Showtimes Grid */}
                 {expandedTheater === theater.id && (
                   <div className="p-6 pt-0 border-t border-gray-800/50 mt-2">
                     <div className="grid grid-cols-3 gap-4 pt-6">
@@ -103,7 +99,6 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
         </div>
       </ScrollArea>
 
-      {/* Sticky Bottom Bar */}
       <div className="fixed bottom-0 right-0 w-1/2 p-6 bg-gradient-to-t from-black via-[#0a0a0a] to-transparent pointer-events-none">
         <div className="bg-[#141414] border border-gray-800 rounded-lg p-5 flex items-center justify-between pointer-events-auto shadow-2xl">
           <div>
