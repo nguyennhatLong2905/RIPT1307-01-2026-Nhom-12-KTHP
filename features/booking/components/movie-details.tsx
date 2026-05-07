@@ -6,15 +6,8 @@ export function MovieDetails({ movie }: { movie: Movie }) {
   return (
     <div className="relative h-full w-full bg-black text-white p-10 flex flex-col justify-end">
       <div className="absolute top-16 left-10 z-30">
-        <Link 
-          href="/" 
-          className="flex items-center gap-1.5 text-white/90 hover:text-[#DAB254] transition-colors bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-md border border-white/10"
-        >
-          <ChevronLeft className="w-3.5 h-3.5" />
-          <span className="text-[10px] font-bold uppercase tracking-[0.05em]">Back to Movies</span>
-        </Link>
       </div>
-      <div 
+      <div
         className="absolute inset-0 z-0 opacity-50 bg-cover bg-center"
         style={{ backgroundImage: `url('${movie.poster}')` }}
       />
@@ -22,7 +15,7 @@ export function MovieDetails({ movie }: { movie: Movie }) {
 
       <div className="relative z-20 space-y-6 max-w-lg">
         <h1 className="text-6xl font-bold uppercase leading-tight tracking-wider">{movie.title}</h1>
-        
+
         <div className="flex items-center gap-4 text-[#DAB254]">
           <div className="flex">
             {[1, 2, 3, 4, 5].map((star) => (

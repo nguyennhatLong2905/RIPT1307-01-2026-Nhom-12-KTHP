@@ -114,12 +114,12 @@ function HoverPopup({ movie, anchorRect, liked, onLike, onMouseEnter, onMouseLea
             variant="outline"
             onClick={(e) => { e.stopPropagation(); onLike(); }}
             className={`gap-1.5 rounded-xl py-2.5 h-auto font-semibold text-sm transition-colors ${liked
-                ? "border-[#E9C349] bg-[#E9C349]/15 text-[#E9C349] hover:bg-[#E9C349]/20"
-                : "border-white/20 bg-white/[0.08] text-white hover:bg-white/15"
+              ? "border-[#E9C349] bg-[#E9C349]/15 text-[#E9C349] hover:bg-[#E9C349]/20"
+              : "border-white/20 bg-white/[0.08] text-white hover:bg-white/15"
               }`}
           >
             <Heart size={14} fill={liked ? "#E9C349" : "none"} />
-            Thích
+            MY LIST
           </Button>
         </div>
       </div>

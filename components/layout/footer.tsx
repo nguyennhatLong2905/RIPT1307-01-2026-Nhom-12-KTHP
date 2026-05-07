@@ -13,7 +13,7 @@ export default function Footer() {
     <footer className="w-full px-8 py-4 bg-[#0a0a0a] border-t border-white/5">
       <div className="flex items-center justify-between gap-4">
 
-        {/* Cột 1: Logo (Bên trái) */}
+        {/* Cột 1: Tên bên trái */}
         <div className="flex-shrink-0">
           <Link
             href="/"

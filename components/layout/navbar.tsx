@@ -57,16 +57,16 @@ export default function Navbar() {
         style={{ background: "linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%)" }}
       >
         {/* Tên */}
-        <Link href="/"  className="text-xl font-bold tracking-[0.15em]" style={{ color: "#c9a84c" }}
-        onClick = {(e) => {
-          if(window.location.pathname === "/") {
-            e.preventDefault();
-            const target = document.getElementById("hero");
-            if (target) {
-              target.scrollIntoView({ behavior: "smooth", block: "start" });
-            } 
-          }
-        }}
+        <Link href="/" className="text-xl font-bold tracking-[0.15em]" style={{ color: "#c9a84c" }}
+          onClick={(e) => {
+            if (window.location.pathname === "/") {
+              e.preventDefault();
+              const target = document.getElementById("hero");
+              if (target) {
+                target.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            }
+          }}
         >
           LUXE CINEMA
         </Link>
@@ -131,26 +131,25 @@ export default function Navbar() {
               style={{ backgroundColor: "#111111" }}
             >
               <SheetHeader className="mt-4">
-                <SheetTitle style={{ color: "#c9a84c", letterSpacing: "0.1em" }}>EDIT PROFILE</SheetTitle>
-                <SheetDescription style={{ color: "#999999" }}>
-                  Make changes to your profile here. Click save when you&apos;re done.
-                </SheetDescription>
+                <SheetTitle style={{
+                  color: "#c9a84c", letterSpacing: "0.1em", fontWeight: "bold", fontSize: "2em", textAlign: "center"
+                }}>LOGIN</SheetTitle>
               </SheetHeader>
               <div className="grid flex-1 auto-rows-min gap-6 px-4 py-8">
                 <div className="grid gap-3">
-                  <Label htmlFor="name" style={{ color: "#c9a84c", fontSize: "0.8rem", letterSpacing: "0.05em" }}>NAME</Label>
+                  <Label htmlFor="username" style={{ color: "#c9a84c", fontSize: "0.8rem", letterSpacing: "0.05em" }}>USERNAME</Label>
                   <Input
-                    id="name"
-                    defaultValue="Nguyễn Văn A"
+                    id="username"
+                    placeholder="Enter your username"
                     className="border-[#c9a84c]/20 focus-visible:ring-[#c9a84c]/50"
                     style={{ backgroundColor: "rgba(255,255,255,0.05)", color: "#e0e0e0" }}
                   />
                 </div>
                 <div className="grid gap-3">
-                  <Label htmlFor="username" style={{ color: "#c9a84c", fontSize: "0.8rem", letterSpacing: "0.05em" }}>USERNAME</Label>
+                  <Label htmlFor="password" style={{ color: "#c9a84c", fontSize: "0.8rem", letterSpacing: "0.05em" }}>PASSWORD</Label>
                   <Input
-                    id="username"
-                    defaultValue="@nguyenvana"
+                    id="password"
+                    placeholder="Enter your password"
                     className="border-[#c9a84c]/20 focus-visible:ring-[#c9a84c]/50"
                     style={{ backgroundColor: "rgba(255,255,255,0.05)", color: "#e0e0e0" }}
                   />
@@ -162,7 +161,7 @@ export default function Navbar() {
                   className="hover:bg-[#d4b455] transition-colors"
                   style={{ backgroundColor: "#c9a84c", color: "#000", fontWeight: "bold", letterSpacing: "0.05em" }}
                 >
-                  SAVE CHANGES
+                  LOGIN
                 </Button>
                 <SheetClose asChild>
                   <Button
@@ -178,6 +177,6 @@ export default function Navbar() {
           </Sheet>
         </div>
       </div>
-    </nav>
+    </nav >
   );
 }
