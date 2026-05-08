@@ -5,7 +5,7 @@ import { Sparkles } from "lucide-react";
 
 export default function AiPicks() {
   return (
-    <div id="ai-picks" className="w-full bg-black py-24">
+    <div id="ai-picks" className="w-full bg-black py-18">
       <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12">
         <div className="flex flex-col gap-10 w-full">
           <div className="flex items-center gap-6">
