@@ -24,7 +24,16 @@ const myMovies: Movie[] = [
 const POPUP_WIDTH = 440;
 const POPUP_HEIGHT = 500;
 
-function HoverPopup({ movie, anchorRect, liked, onLike, onMouseEnter, onMouseLeave }: any) {
+interface PopupProps {
+  movie: Movie;
+  anchorRect: DOMRect;
+  liked: boolean;
+  onLike: () => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+}
+
+function HoverPopup({ movie, anchorRect, liked, onLike, onMouseEnter, onMouseLeave }: PopupProps) {
   const router = useRouter();
 
   const cardCenterX = anchorRect.left + anchorRect.width / 2;
@@ -68,7 +77,7 @@ function HoverPopup({ movie, anchorRect, liked, onLike, onMouseEnter, onMouseLea
             variant="outline"
             className="border-[#E9C349] text-[#E9C349] font-bold text-[11px] px-2 py-0.5 rounded-md"
           >
-            IMDb {movie.imdb.toFixed(1)}
+            IMDb {movie.imdb?.toFixed(1) || 'N/A'}
           </Badge>
           <span className="text-white/50 text-xs">{movie.year}</span>
           <span className="flex items-center gap-1 text-white/50 text-xs">
@@ -214,7 +223,7 @@ export default function MyListContent() {
               <Heart className="w-16 h-16 text-white/20 mb-4" />
               <h3 className="text-xl font-semibold text-white mb-2">Your list is empty</h3>
               <p className="text-white/50 max-w-sm mb-6">
-                Looks like you haven't added any movies or TV shows to your list yet.
+                Looks like you haven&apos;t added any movies or TV shows to your list yet.
               </p>
               <Button
                 onClick={() => window.location.href = '/'}

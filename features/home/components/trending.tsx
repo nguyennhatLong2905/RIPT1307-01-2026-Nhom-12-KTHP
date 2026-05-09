@@ -93,7 +93,7 @@ function HoverPopup({ movie, anchorRect, liked, onLike, onMouseEnter, onMouseLea
             variant="outline"
             className="border-[#E9C349] text-[#E9C349] font-bold text-[11px] px-2 py-0.5 rounded-md"
           >
-            IMDb {movie.imdb.toFixed(1)}
+            IMDb {movie.imdb?.toFixed(1) || 'N/A'}
           </Badge>
           <span className="text-white/50 text-xs">{movie.year}</span>
           <span className="flex items-center gap-1 text-white/50 text-xs">
