@@ -1,13 +1,18 @@
 // TypeScript interfaces và types dùng chung cho toàn dự án
 // Các thành viên thêm interfaces vào đây
 export interface Movie {
-    id: string;
+    id: string | number;
     title: string;
-    poster: string;
-    rating: number;
-    director: string;
-    cast: string;
-    synopsis: string;
+    poster?: string;
+    image?: string;
+    rating: number | string;
+    director?: string;
+    cast?: string;
+    synopsis?: string;
+    originalTitle?: string;
+    imdb?: number;
+    year?: number;
+    duration?: string;
 }
 
 export interface Showtime {
