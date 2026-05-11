@@ -73,6 +73,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()           
                 .requestMatchers("/api/movies/my-ai-pick").authenticated() // Gợi ý cá nhân hóa phải login
                 .requestMatchers("/api/movies/**").permitAll()         
+                .requestMatchers("/api/showtimes/**").permitAll()      // Xem lịch chiếu phim là công khai
                 .requestMatchers("/api/files/**").permitAll()          
                 .requestMatchers("/error").permitAll()                  // Cho phép xem trang lỗi
                 

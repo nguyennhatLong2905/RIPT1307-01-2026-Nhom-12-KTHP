@@ -32,7 +32,7 @@ export default function ProfileForm() {
       const data = await authService.getProfile();
       setProfile(data);
     } catch (error) {
-      console.error("Lỗi tải hồ sơ:", error);
+      console.error("Error loading profile:", error);
     } finally {
       setIsLoading(false);
     }
@@ -43,9 +43,9 @@ export default function ProfileForm() {
     setIsSaving(true);
     try {
       await authService.updateProfile(profile);
-      alert("Cập nhật thông tin thành công!");
+      alert("Profile updated successfully!");
     } catch (error) {
-      alert("Cập nhật thất bại.");
+      alert("Update failed.");
     } finally {
       setIsSaving(false);
     }
@@ -54,22 +54,22 @@ export default function ProfileForm() {
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("Mật khẩu mới không khớp!");
+      alert("New passwords do not match!");
       return;
     }
     setIsSaving(true);
     try {
       await authService.changePassword(passwordData.oldPassword, passwordData.newPassword);
-      alert("Đổi mật khẩu thành công!");
+      alert("Password changed successfully!");
       setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
     } catch (error) {
-      alert("Mật khẩu cũ không chính xác hoặc có lỗi xảy ra.");
+      alert("Incorrect old password or an error occurred.");
     } finally {
       setIsSaving(false);
     }
   };
 
-  if (isLoading) return <div className="text-center py-20 text-[#c9a84c] animate-pulse">ĐANG TẢI HỒ SƠ...</div>;
+  if (isLoading) return <div className="text-center py-20 text-[#c9a84c] animate-pulse">LOADING PROFILE...</div>;
 
   return (
     <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -90,16 +90,16 @@ export default function ProfileForm() {
           </div>
 
           <h3 className="text-xl font-bold text-white">{profile.fullName}</h3>
-          <p className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold mt-1">HỘI VIÊN LUXE</p>
+          <p className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold mt-1">LUXE MEMBER</p>
           
           <div className="mt-6 pt-6 border-t border-white/5 space-y-3">
              <div className="flex items-center justify-between text-xs">
-                <span className="text-white/40">Vai trò</span>
+                <span className="text-white/40">Role</span>
                 <span className="text-white font-bold">{profile.role}</span>
              </div>
              <div className="flex items-center justify-between text-xs">
-                <span className="text-white/40">Trạng thái</span>
-                <span className="text-emerald-400 font-bold">Đang hoạt động</span>
+                <p className="text-white/40 text-sm mt-2 font-medium">Manage your profile and account security</p>
+                <span className="text-emerald-400 font-bold">Active</span>
              </div>
           </div>
         </div>
@@ -109,8 +109,8 @@ export default function ProfileForm() {
             <Shield size={20} />
           </div>
           <div>
-            <div className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">Tài khoản bảo mật</div>
-            <div className="text-xs text-white/40">Thông tin của bạn được mã hóa an toàn.</div>
+            <div className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">Secure Account</div>
+            <div className="text-xs text-white/40">Your information is securely encrypted.</div>
           </div>
         </div>
       </div>
@@ -121,13 +121,13 @@ export default function ProfileForm() {
         <div className="bg-[#0d0d0d] border border-[#c9a84c]/20 p-8 rounded-3xl shadow-2xl">
           <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
             <User size={20} className="text-[#c9a84c]" />
-            THÔNG TIN CÁ NHÂN
+            PERSONAL INFORMATION
           </h2>
           
           <form onSubmit={handleUpdateProfile} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Họ và tên</Label>
+                <Label className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Full Name</Label>
                 <Input 
                   value={profile.fullName} 
                   onChange={(e) => setProfile({...profile, fullName: e.target.value})}
@@ -144,7 +144,7 @@ export default function ProfileForm() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Số điện thoại</Label>
+                <Label className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Phone Number</Label>
                 <Input 
                   value={profile.phone} 
                   onChange={(e) => setProfile({...profile, phone: e.target.value})}
@@ -152,7 +152,7 @@ export default function ProfileForm() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Tên đăng nhập</Label>
+                <Label className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Username</Label>
                 <Input 
                   value={profile.username} 
                   disabled
@@ -167,7 +167,7 @@ export default function ProfileForm() {
               className="bg-[#c9a84c] hover:bg-[#b09340] text-black font-bold rounded-xl px-8 h-12 flex items-center gap-2"
             >
               <Save size={18} />
-              {isSaving ? "ĐANG LƯU..." : "LƯU THAY ĐỔI"}
+              {isSaving ? "SAVING..." : "SAVE CHANGES"}
             </Button>
           </form>
         </div>
@@ -176,12 +176,12 @@ export default function ProfileForm() {
         <div className="bg-[#0d0d0d] border border-[#c9a84c]/20 p-8 rounded-3xl shadow-2xl">
           <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
             <Lock size={20} className="text-[#c9a84c]" />
-            ĐỔI MẬT KHẨU
+            CHANGE PASSWORD
           </h2>
           
           <form onSubmit={handleChangePassword} className="space-y-6">
             <div className="space-y-2">
-              <Label className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Mật khẩu cũ</Label>
+              <Label className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Old Password</Label>
               <Input 
                 type="password"
                 value={passwordData.oldPassword}
@@ -193,7 +193,7 @@ export default function ProfileForm() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Mật khẩu mới</Label>
+                <Label className="text-white/40 text-[10px] uppercase tracking-widest font-bold">New Password</Label>
                 <Input 
                   type="password"
                   value={passwordData.newPassword}
@@ -203,7 +203,7 @@ export default function ProfileForm() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Xác nhận mật khẩu</Label>
+                <Label className="text-white/40 text-[10px] uppercase tracking-widest font-bold">Confirm Password</Label>
                 <Input 
                   type="password"
                   value={passwordData.confirmPassword}
@@ -220,7 +220,7 @@ export default function ProfileForm() {
               variant="outline"
               className="border-[#c9a84c] text-[#c9a84c] hover:bg-[#c9a84c] hover:text-black font-bold rounded-xl px-8 h-12 transition-all"
             >
-              {isSaving ? "ĐANG XỬ LÝ..." : "CẬP NHẬT MẬT KHẨU"}
+              {isSaving ? "PROCESSING..." : "UPDATE PASSWORD"}
             </Button>
           </form>
         </div>

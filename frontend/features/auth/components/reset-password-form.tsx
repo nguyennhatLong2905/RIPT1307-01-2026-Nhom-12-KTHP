@@ -20,18 +20,18 @@ export default function ResetPasswordForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.newPassword !== formData.confirmPassword) {
-      alert("Mật khẩu xác nhận không khớp!");
+      alert("Confirmation password does not match!");
       return;
     }
 
     setIsLoading(true);
     try {
       await authService.resetPassword(formData.token, formData.newPassword);
-      alert("Đổi mật khẩu thành công! Vui lòng đăng nhập lại.");
+      alert("Password reset successful! Please log in again.");
       router.push("/");
     } catch (error) {
-      console.error("Lỗi đặt lại mật khẩu:", error);
-      alert("Đặt lại mật khẩu thất bại. Vui lòng kiểm tra lại mã OTP.");
+      console.error("Password reset error:", error);
+      alert("Password reset failed. Please check your OTP code.");
     } finally {
       setIsLoading(false);
     }
@@ -43,12 +43,12 @@ export default function ResetPasswordForm() {
         <h2 className="text-3xl font-bold italic tracking-tighter" style={{ color: "#c9a84c" }}>
           LUXE<span className="text-white">RESET</span>
         </h2>
-        <p className="text-white/40 text-xs uppercase tracking-widest mt-2">Thiết lập mật khẩu mới</p>
+        <p className="text-white/40 text-xs uppercase tracking-widest mt-2">Set new password</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid gap-2">
-          <Label className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold">Mã OTP (6 chữ số)</Label>
+          <Label className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold">OTP Code (6 digits)</Label>
           <div className="relative">
             <Key className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c9a84c]/40" size={18} />
             <Input
@@ -63,7 +63,7 @@ export default function ResetPasswordForm() {
         </div>
 
         <div className="grid gap-2">
-          <Label className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold">Mật khẩu mới</Label>
+          <Label className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold">New Password</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c9a84c]/40" size={18} />
             <Input
@@ -78,7 +78,7 @@ export default function ResetPasswordForm() {
         </div>
 
         <div className="grid gap-2">
-          <Label className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold">Xác nhận mật khẩu</Label>
+          <Label className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold">Confirm Password</Label>
           <div className="relative">
             <CheckCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c9a84c]/40" size={18} />
             <Input
@@ -97,9 +97,9 @@ export default function ResetPasswordForm() {
           disabled={isLoading}
           className="w-full h-12 bg-[#c9a84c] hover:bg-[#b09340] text-black font-bold rounded-xl shadow-lg shadow-[#c9a84c]/20 transition-all flex items-center justify-center gap-2 mt-4"
         >
-          {isLoading ? "ĐANG XỬ LÝ..." : (
+          {isLoading ? "PROCESSING..." : (
             <>
-              CẬP NHẬT MẬT KHẨU
+              UPDATE PASSWORD
               <ArrowRight size={18} />
             </>
           )}

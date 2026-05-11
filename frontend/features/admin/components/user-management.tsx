@@ -38,19 +38,19 @@ export default function UserManagement() {
       const data = await adminService.getUsers();
       setUsers(data);
     } catch (error) {
-      console.error("Lỗi khi tải danh sách khách hàng:", error);
+      console.error("Error loading customer list:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm("Bạn có chắc chắn muốn xóa khách hàng này? Thao tác này không thể hoàn tác.")) {
+    if (confirm("Are you sure you want to delete this customer? This action cannot be undone.")) {
       try {
         await adminService.deleteUser(id);
         fetchUsers();
       } catch (error) {
-        alert("Lỗi khi xóa người dùng");
+        alert("Error deleting user");
       }
     }
   };
@@ -64,8 +64,8 @@ export default function UserManagement() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Quản lý Người dùng</h2>
-        <p className="text-white/40 text-sm">Danh sách tài khoản khách hàng và quản trị viên trong hệ thống</p>
+        <h2 className="text-2xl font-bold">User Management</h2>
+        <p className="text-white/40 text-sm">List of customer and admin accounts in the system</p>
       </div>
 
       <div className="bg-[#0d0d0d] border border-[#c9a84c]/10 rounded-2xl overflow-hidden shadow-2xl">
@@ -73,7 +73,7 @@ export default function UserManagement() {
           <div className="relative flex-1 max-sm:w-full max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c9a84c]/40" size={18} />
             <Input 
-              placeholder="Tìm kiếm theo tên, email, username..." 
+              placeholder="Search by name, email, username..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10 bg-white/5 border-white/10 rounded-xl focus:border-[#c9a84c]/50 transition-colors"
@@ -84,20 +84,20 @@ export default function UserManagement() {
         <Table>
           <TableHeader className="bg-[#c9a84c]/5">
             <TableRow className="border-white/5 hover:bg-transparent">
-              <TableHead className="text-white/60">Người dùng</TableHead>
-              <TableHead className="text-white/60">Liên hệ</TableHead>
-              <TableHead className="text-white/60">Vai trò</TableHead>
-              <TableHead className="text-right text-white/60">Thao tác</TableHead>
+              <TableHead className="text-white/60">User</TableHead>
+              <TableHead className="text-white/60">Contact</TableHead>
+              <TableHead className="text-white/60">Role</TableHead>
+              <TableHead className="text-right text-white/60">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-10 text-white/40">Đang tải dữ liệu...</TableCell>
+                <TableCell colSpan={4} className="text-center py-10 text-white/40">Loading data...</TableCell>
               </TableRow>
             ) : filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-10 text-white/40">Không tìm thấy người dùng nào</TableCell>
+                <TableCell colSpan={4} className="text-center py-10 text-white/40">No users found</TableCell>
               </TableRow>
             ) : filteredUsers.map((user) => (
               <TableRow key={user.id} className="border-white/5 hover:bg-white/5 transition-colors group">

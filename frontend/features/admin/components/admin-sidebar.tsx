@@ -15,12 +15,12 @@ import {
 import { cn } from "@/lib/utils";
 
 const menuItems = [
-  { name: "Tổng quan", icon: LayoutDashboard, href: "/admin", section: "overview" },
-  { name: "Quản lý Phim", icon: Film, href: "/admin/movies", section: "movies" },
-  { name: "Phòng chiếu", icon: DoorOpen, href: "/admin/rooms", section: "rooms" },
-  { name: "Suất chiếu", icon: CalendarDays, href: "/admin/showtimes", section: "showtimes" },
-  { name: "Quản lý Vé", icon: Ticket, href: "/admin/tickets", section: "tickets" },
-  { name: "Người dùng", icon: Users, href: "/admin/users", section: "users" },
+  { name: "Overview", icon: LayoutDashboard, href: "/admin", section: "overview" },
+  { name: "Movie Management", icon: Film, href: "/admin/movies", section: "movies" },
+  { name: "Rooms", icon: DoorOpen, href: "/admin/rooms", section: "rooms" },
+  { name: "Showtimes", icon: CalendarDays, href: "/admin/showtimes", section: "showtimes" },
+  { name: "Tickets", icon: Ticket, href: "/admin/tickets", section: "tickets" },
+  { name: "Users", icon: Users, href: "/admin/users", section: "users" },
 ];
 
 export default function AdminSidebar() {

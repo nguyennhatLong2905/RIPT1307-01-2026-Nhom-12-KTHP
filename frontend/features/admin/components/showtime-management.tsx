@@ -64,19 +64,19 @@ export default function ShowtimeManagement() {
       setMovies(moviesData);
       setRooms(roomsData);
     } catch (error) {
-      console.error("Lỗi khi tải dữ liệu:", error);
+      console.error("Error loading data:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm("Bạn có chắc chắn muốn xóa suất chiếu này?")) {
+    if (confirm("Are you sure you want to delete this showtime?")) {
       try {
         await adminService.deleteShowtime(id);
         fetchData();
       } catch (error) {
-        alert("Lỗi khi xóa suất chiếu");
+        alert("Error deleting showtime");
       }
     }
   };
@@ -101,7 +101,7 @@ export default function ShowtimeManagement() {
       setEditingShowtime(null);
       fetchData();
     } catch (error) {
-      alert("Lỗi khi lưu suất chiếu");
+      alert("Error saving showtime");
     }
   };
 
@@ -109,8 +109,8 @@ export default function ShowtimeManagement() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Quản lý Suất chiếu</h2>
-          <p className="text-white/40 text-sm">Lên lịch chiếu phim cho các phòng và thiết lập giá vé</p>
+          <h2 className="text-2xl font-bold">Showtime Management</h2>
+          <p className="text-white/40 text-sm">Schedule movies for rooms and set ticket prices</p>
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -121,24 +121,24 @@ export default function ShowtimeManagement() {
               onClick={() => setEditingShowtime(null)}
             >
               <Plus size={20} className="mr-2" />
-              Tạo Suất Chiếu
+              Create Showtime
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-[#0d0d0d] border-[#c9a84c]/20 text-white">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold italic tracking-tighter" style={{ color: "#c9a84c" }}>
-                {editingShowtime ? "CẬP NHẬT SUẤT CHIẾU" : "TẠO SUẤT CHIẾU MỚI"}
+                {editingShowtime ? "UPDATE SHOWTIME" : "CREATE NEW SHOWTIME"}
               </DialogTitle>
               <DialogDescription className="text-white/40">
-                Thiết lập thời gian và giá vé cho suất chiếu.
+                Set time and ticket price for the showtime.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 py-4">
               <div className="space-y-2">
-                  <Label htmlFor="movieId">Chọn Phim</Label>
+                  <Label htmlFor="movieId">Select Movie</Label>
                 <Select name="movieId" defaultValue={editingShowtime?.movie?.id?.toString()}>
                   <SelectTrigger className="bg-white/5 border-white/10">
-                    <SelectValue placeholder="Chọn phim..." />
+                    <SelectValue placeholder="Select movie..." />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
                     {movies.map(movie => (
@@ -149,10 +149,10 @@ export default function ShowtimeManagement() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="roomId">Chọn Phòng</Label>
+                <Label htmlFor="roomId">Select Room</Label>
                 <Select name="roomId" defaultValue={editingShowtime?.room?.id?.toString()}>
                   <SelectTrigger className="bg-white/5 border-white/10">
-                    <SelectValue placeholder="Chọn phòng..." />
+                    <SelectValue placeholder="Select room..." />
                   </SelectTrigger>
                   <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
                     {rooms.map(room => (
@@ -164,7 +164,7 @@ export default function ShowtimeManagement() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="startTime">Thời gian bắt đầu</Label>
+                  <Label htmlFor="startTime">Start Time</Label>
                   <Input 
                     id="startTime" 
                     name="startTime" 
@@ -175,19 +175,19 @@ export default function ShowtimeManagement() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="price">Giá vé (VNĐ)</Label>
+                  <Label htmlFor="price">Ticket Price (VND)</Label>
                   <Input id="price" name="price" type="number" defaultValue={editingShowtime?.price} required className="bg-white/5 border-white/10" />
                 </div>
               </div>
 
               <DialogFooter>
-                <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)} className="rounded-xl text-white/60 hover:text-white hover:bg-white/5">Hủy</Button>
+                <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)} className="rounded-xl text-white/60 hover:text-white hover:bg-white/5">Cancel</Button>
                 <Button 
                   type="submit" 
                   className="text-black hover:bg-opacity-90 rounded-xl px-8 font-bold shadow-lg shadow-[#c9a84c]/10"
                   style={{ backgroundColor: "#c9a84c" }}
                 >
-                  Lưu Thay Đổi
+                  Save Changes
                 </Button>
               </DialogFooter>
             </form>
@@ -199,21 +199,21 @@ export default function ShowtimeManagement() {
         <Table>
           <TableHeader className="bg-[#c9a84c]/5">
             <TableRow className="border-white/5 hover:bg-transparent">
-              <TableHead className="text-white/60">Phim</TableHead>
-              <TableHead className="text-white/60">Phòng</TableHead>
-              <TableHead className="text-white/60">Thời gian bắt đầu</TableHead>
-              <TableHead className="text-white/60">Giá vé</TableHead>
-              <TableHead className="text-right text-white/60">Thao tác</TableHead>
+              <TableHead className="text-white/60">Movie</TableHead>
+              <TableHead className="text-white/60">Room</TableHead>
+              <TableHead className="text-white/60">Start Time</TableHead>
+              <TableHead className="text-white/60">Ticket Price</TableHead>
+              <TableHead className="text-right text-white/60">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10 text-white/40">Đang tải dữ liệu...</TableCell>
+                <TableCell colSpan={5} className="text-center py-10 text-white/40">Loading data...</TableCell>
               </TableRow>
             ) : showtimes.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10 text-white/40">Không tìm thấy suất chiếu nào</TableCell>
+                <TableCell colSpan={5} className="text-center py-10 text-white/40">No showtimes found</TableCell>
               </TableRow>
             ) : showtimes.map((showtime) => (
               <TableRow key={showtime.id} className="border-white/5 hover:bg-white/5 transition-colors group">
@@ -232,10 +232,10 @@ export default function ShowtimeManagement() {
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <CalendarDays size={16} className="text-white/40" />
-                    {new Date(showtime.startTime).toLocaleString("vi-VN")}
+                    {new Date(showtime.startTime).toLocaleString("en-US")}
                   </div>
                 </TableCell>
-                <TableCell style={{ color: "#c9a84c" }} className="font-bold">{showtime.price.toLocaleString("vi-VN")}đ</TableCell>
+                <TableCell style={{ color: "#c9a84c" }} className="font-bold">{showtime.price.toLocaleString("en-US")} VND</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
                     <Button 

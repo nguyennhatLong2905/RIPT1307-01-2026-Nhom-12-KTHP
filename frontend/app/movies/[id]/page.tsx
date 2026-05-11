@@ -30,14 +30,14 @@ export default function MovieBookingPage({ params }: { params: Promise<{ id: str
           if (!theaterMap[roomId]) {
             theaterMap[roomId] = {
               id: roomId.toString(),
-              name: "Phòng chiếu " + s.room.name,
+              name: "Room " + s.room.name,
               address: "Luxe Cinema Central",
               showtimes: []
             };
           }
           theaterMap[roomId].showtimes.push({
             id: s.id.toString(),
-            time: new Date(s.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+            time: new Date(s.startTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
             type: "GOLD CLASS",
             theaterId: roomId.toString()
           });
@@ -45,7 +45,7 @@ export default function MovieBookingPage({ params }: { params: Promise<{ id: str
         
         setTheaters(Object.values(theaterMap));
       } catch (error) {
-        console.error("Lỗi tải thông tin phim:", error);
+        console.error("Error loading movie info:", error);
       } finally {
         setIsLoading(false);
       }
@@ -53,7 +53,7 @@ export default function MovieBookingPage({ params }: { params: Promise<{ id: str
     fetchData();
   }, [id]);
 
-  if (isLoading || !movie) return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-[#c9a84c]">ĐANG TẢI...</div>;
+  if (isLoading || !movie) return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-[#c9a84c]">LOADING...</div>;
 
   return (
     <div className="flex h-[calc(100vh-60px)] bg-[#0a0a0a] overflow-hidden pt-16">
@@ -65,8 +65,8 @@ export default function MovieBookingPage({ params }: { params: Promise<{ id: str
           poster: movie.posterUrl || "/images/placeholder.jpg",
           rating: 9.0,
           director: movie.director,
-          cast: "Đang cập nhật",
-          synopsis: movie.description || "Không có mô tả.",
+          cast: "Updating",
+          synopsis: movie.description || "No description available.",
           genre: movie.genre,
           duration: movie.duration,
           trailerUrl: movie.trailerUrl

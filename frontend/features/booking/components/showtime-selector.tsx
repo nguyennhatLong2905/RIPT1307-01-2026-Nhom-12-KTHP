@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Theater, Showtime } from "@/types";
 import { ChevronDown, ChevronUp, MapPin } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { isLoggedIn } from "@/lib/auth-utils";
 
 const DATES = [
   { day: "24", month: "OCT", dayOfWeek: "THU" },
@@ -13,11 +14,13 @@ const DATES = [
   { day: "27", month: "OCT", dayOfWeek: "SUN" },
 ];
 
+type TheaterShowtime = Theater["showtimes"][0];
+
 export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState("24");
   const [expandedTheater, setExpandedTheater] = useState<string>("t1");
-  const [selectedShowtime, setSelectedShowtime] = useState<Showtime | null>(null);
+  const [selectedShowtime, setSelectedShowtime] = useState<TheaterShowtime | null>(null);
 
   const getTheaterById = (id: string) => theaters.find(t => t.id === id);
 
@@ -114,9 +117,13 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
           <button 
             disabled={!selectedShowtime}
             onClick={() => {
+              if (!isLoggedIn()) {
+                router.push(`${window.location.pathname}?login=true`);
+                return;
+              }
               const pathParts = window.location.pathname.split('/');
               const movieId = pathParts[2];
-              router.push(`/movies/${movieId}/seats?showtimeId=${selectedShowtime.id}`);
+              router.push(`/movies/${movieId}/seats?showtimeId=${selectedShowtime!.id}`);
             }}
             className={`px-8 py-3 rounded text-[11px] font-bold tracking-[0.15em] transition-all ${
               selectedShowtime 
@@ -124,7 +131,7 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
                 : "bg-gray-800 text-gray-500 cursor-not-allowed"
             }`}
           >
-            TIẾP TỤC CHỌN GHẾ
+            CONTINUE TO SEATS
           </button>
         </div>
       </div>

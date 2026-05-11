@@ -24,6 +24,11 @@ export interface Movie {
   releaseDate?: string;
   posterUrl?: string;
   trailerUrl?: string;
+  // Các field mở rộng dùng cho Frontend
+  poster?: string;
+  rating?: number;
+  cast?: string;
+  synopsis?: string;
 }
 
 export interface Room {
@@ -40,6 +45,22 @@ export interface Showtime {
   room: Room;
   startTime: string;
   price: number;
+  // Các field mở rộng dùng cho Frontend
+  time?: string;
+  type?: string;
+  theaterId?: string;
+}
+
+export interface Theater {
+  id: string;
+  name: string;
+  address: string;
+  showtimes: {
+    id: string;
+    time: string;
+    type: string;
+    theaterId: string;
+  }[];
 }
 
 export interface ShowtimeDTO {

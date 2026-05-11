@@ -44,7 +44,7 @@ export default function Navbar() {
     }
   }, [searchParams]);
 
-  // Sync active link with current path
+  // Sync active link with current path and redirect Admin from Home
   useEffect(() => {
     if (pathname === "/my-list") {
       setActiveLink("MY LIST");
@@ -64,10 +64,17 @@ export default function Navbar() {
       const response = await axiosInstance.post("/auth/login", { username, password });
       const token = response.data;
       localStorage.setItem("token", token);
-      alert("Đăng nhập thành công!");
-      window.location.reload(); // Reload to update UI and token
+      
+      // If Admin, redirect to dashboard directly
+      if (isAdmin()) {
+        router.push("/admin");
+        setIsSheetOpen(false);
+      } else {
+        alert("Login successful!");
+        window.location.reload(); // Reload for normal users to update UI
+      }
     } catch (error) {
-      alert("Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản!");
+      alert("Login failed. Please check your credentials!");
     } finally {
       setIsLoading(false);
     }
@@ -210,33 +217,45 @@ export default function Navbar() {
                     </div>
                     
                     <div className="w-full space-y-3">
-                      <SheetClose asChild>
-                        <Button
-                          onClick={() => router.push("/bookings")}
-                          className="w-full bg-white/5 hover:bg-[#c9a84c]/10 text-white hover:text-[#c9a84c] border border-white/10 hover:border-[#c9a84c]/30 rounded-xl h-12 transition-all font-bold"
-                        >
-                          LỊCH SỬ ĐẶT VÉ
-                        </Button>
-                      </SheetClose>
+                      {isAdmin() ? (
+                        <>
+                          <SheetClose asChild>
+                            <Button
+                              onClick={() => router.push("/admin")}
+                              className="w-full bg-[#c9a84c]/10 hover:bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/30 rounded-xl h-12 transition-all font-bold"
+                            >
+                              ADMIN DASHBOARD
+                            </Button>
+                          </SheetClose>
+                          <SheetClose asChild>
+                            <Button
+                              onClick={() => router.push("/profile")}
+                              className="w-full bg-white/5 hover:bg-[#c9a84c]/10 text-white hover:text-[#c9a84c] border border-white/10 hover:border-[#c9a84c]/30 rounded-xl h-12 transition-all font-bold"
+                            >
+                              ADMIN PROFILE
+                            </Button>
+                          </SheetClose>
+                        </>
+                      ) : (
+                        <>
+                          <SheetClose asChild>
+                            <Button
+                              onClick={() => router.push("/bookings")}
+                              className="w-full bg-white/5 hover:bg-[#c9a84c]/10 text-white hover:text-[#c9a84c] border border-white/10 hover:border-[#c9a84c]/30 rounded-xl h-12 transition-all font-bold"
+                            >
+                              BOOKING HISTORY
+                            </Button>
+                          </SheetClose>
 
-                      <SheetClose asChild>
-                        <Button
-                          onClick={() => router.push("/profile")}
-                          className="w-full bg-white/5 hover:bg-[#c9a84c]/10 text-white hover:text-[#c9a84c] border border-white/10 hover:border-[#c9a84c]/30 rounded-xl h-12 transition-all font-bold"
-                        >
-                          HỒ SƠ CỦA TÔI
-                        </Button>
-                      </SheetClose>
-
-                      {isAdmin() && (
-                        <SheetClose asChild>
-                          <Button
-                            onClick={() => router.push("/admin")}
-                            className="w-full bg-[#c9a84c]/10 hover:bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/30 rounded-xl h-12 transition-all font-bold"
-                          >
-                            QUẢN TRỊ HỆ THỐNG
-                          </Button>
-                        </SheetClose>
+                          <SheetClose asChild>
+                            <Button
+                              onClick={() => router.push("/profile")}
+                              className="w-full bg-white/5 hover:bg-[#c9a84c]/10 text-white hover:text-[#c9a84c] border border-white/10 hover:border-[#c9a84c]/30 rounded-xl h-12 transition-all font-bold"
+                            >
+                              MY PROFILE
+                            </Button>
+                          </SheetClose>
+                        </>
                       )}
 
                       <Button
@@ -244,7 +263,7 @@ export default function Navbar() {
                         className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-xl h-12 transition-all font-bold flex items-center justify-center gap-2"
                       >
                         <LogOut size={18} />
-                        ĐĂNG XUẤT
+                        LOGOUT
                       </Button>
                     </div>
                   </div>
@@ -263,7 +282,7 @@ export default function Navbar() {
                         id="username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Nhập tên đăng nhập"
+                        placeholder="Enter username"
                         className="border-[#c9a84c]/20 focus-visible:ring-[#c9a84c]/50 h-12 rounded-xl"
                         style={{ backgroundColor: "rgba(255,255,255,0.05)", color: "#e0e0e0" }}
                       />
@@ -276,7 +295,7 @@ export default function Navbar() {
                             onClick={() => router.push("/forgot-password")}
                             className="text-[10px] text-white/40 hover:text-[#c9a84c] uppercase tracking-widest font-bold transition-colors"
                           >
-                            Quên mật khẩu?
+                            Forgot password?
                           </button>
                         </SheetClose>
                       </div>
@@ -285,7 +304,7 @@ export default function Navbar() {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Nhập mật khẩu"
+                        placeholder="Enter password"
                         className="border-[#c9a84c]/20 focus-visible:ring-[#c9a84c]/50 h-12 rounded-xl"
                         style={{ backgroundColor: "rgba(255,255,255,0.05)", color: "#e0e0e0" }}
                       />
@@ -298,18 +317,18 @@ export default function Navbar() {
                       className="w-full h-12 hover:bg-[#d4b455] transition-colors rounded-xl"
                       style={{ backgroundColor: "#c9a84c", color: "#000", fontWeight: "bold", letterSpacing: "0.05em" }}
                     >
-                      {isLoading ? "ĐANG ĐĂNG NHẬP..." : "ĐĂNG NHẬP"}
+                      {isLoading ? "LOGGING IN..." : "LOGIN"}
                     </Button>
                     
                     <div className="text-center space-y-2">
-                      <p className="text-[11px] text-white/40 uppercase tracking-widest">Chưa có tài khoản?</p>
+                      <p className="text-[11px] text-white/40 uppercase tracking-widest">Don't have an account?</p>
                       <SheetClose asChild>
                         <Button
                           variant="ghost"
                           onClick={() => router.push("/register")}
                           className="w-full text-[#c9a84c] hover:text-[#c9a84c] hover:bg-[#c9a84c]/10 rounded-xl font-bold border border-[#c9a84c]/20"
                         >
-                          ĐĂNG KÝ NGAY
+                          REGISTER NOW
                         </Button>
                       </SheetClose>
                     </div>

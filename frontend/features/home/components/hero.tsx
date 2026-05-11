@@ -17,7 +17,7 @@ export default function Hero() {
   const [isLiked, setIsLiked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Lấy ID YouTube từ URL
+  // Get YouTube ID from URL
   const getYouTubeId = (url: string | undefined) => {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -31,7 +31,7 @@ export default function Hero() {
         const allMovies = await movieService.getAllMovies();
         setMovies(allMovies);
         if (allMovies.length > 0) {
-          // Chọn phim đầu tiên làm Hero
+          // Select the first movie as Hero
           const chosen = allMovies[0];
           setHeroMovie(chosen);
           
@@ -41,7 +41,7 @@ export default function Hero() {
           }
         }
       } catch (error) {
-        console.error("Lỗi tải phim cho Hero:", error);
+        console.error("Error loading Hero movie:", error);
       } finally {
         setIsLoading(false);
         setMounted(true);
@@ -72,7 +72,7 @@ export default function Hero() {
       }
       setIsLiked(!isLiked);
     } catch (error) {
-      console.error("Lỗi cập nhật wishlist:", error);
+      console.error("Error updating my list:", error);
     }
   };
 

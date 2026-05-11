@@ -48,19 +48,19 @@ export default function RoomManagement() {
       const data = await adminService.getRooms();
       setRooms(data);
     } catch (error) {
-      console.error("Lỗi khi tải danh sách phòng:", error);
+      console.error("Error loading rooms:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm("Bạn có chắc chắn muốn xóa phòng này?")) {
+    if (confirm("Are you sure you want to delete this room?")) {
       try {
         await adminService.deleteRoom(id);
         fetchRooms();
       } catch (error) {
-        alert("Lỗi khi xóa phòng");
+        alert("Error deleting room");
       }
     }
   };
@@ -84,7 +84,7 @@ export default function RoomManagement() {
       setEditingRoom(null);
       fetchRooms();
     } catch (error) {
-      alert("Lỗi khi lưu phòng");
+      alert("Error saving room");
     }
   };
 
@@ -96,8 +96,8 @@ export default function RoomManagement() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Quản lý Phòng chiếu</h2>
-          <p className="text-white/40 text-sm">Thiết lập danh sách và cấu hình ghế ngồi cho các phòng</p>
+          <h2 className="text-2xl font-bold">Room Management</h2>
+          <p className="text-white/40 text-sm">Setup lists and configure seating for rooms</p>
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -108,41 +108,41 @@ export default function RoomManagement() {
               onClick={() => setEditingRoom(null)}
             >
               <Plus size={20} className="mr-2" />
-              Thêm Phòng Mới
+              Add New Room
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-[#0d0d0d] border-[#c9a84c]/20 text-white">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold italic tracking-tighter" style={{ color: "#c9a84c" }}>
-                {editingRoom ? "CẬP NHẬT PHÒNG" : "THÊM PHÒNG MỚI"}
+                {editingRoom ? "UPDATE ROOM" : "ADD NEW ROOM"}
               </DialogTitle>
               <DialogDescription className="text-white/40">
-                Nhập thông tin cấu hình phòng chiếu bên dưới.
+                Enter room configuration below.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Tên phòng</Label>
-                <Input id="name" name="name" defaultValue={editingRoom?.name} required className="bg-white/5 border-white/10" placeholder="VD: Phòng 01, IMAX..." />
+                <Label htmlFor="name">Room Name</Label>
+                <Input id="name" name="name" defaultValue={editingRoom?.name} required className="bg-white/5 border-white/10" placeholder="e.g. Room 01, IMAX..." />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="rowsCount">Số hàng ghế</Label>
+                  <Label htmlFor="rowsCount">Number of rows</Label>
                   <Input id="rowsCount" name="rowsCount" type="number" defaultValue={editingRoom?.rowsCount} required className="bg-white/5 border-white/10" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="colsCount">Số cột ghế</Label>
+                  <Label htmlFor="colsCount">Number of columns</Label>
                   <Input id="colsCount" name="colsCount" type="number" defaultValue={editingRoom?.colsCount} required className="bg-white/5 border-white/10" />
                 </div>
               </div>
               <DialogFooter>
-                <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)} className="rounded-xl text-white/60 hover:text-white hover:bg-white/5">Hủy</Button>
+                <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)} className="rounded-xl text-white/60 hover:text-white hover:bg-white/5">Cancel</Button>
                 <Button 
                   type="submit" 
                   className="text-black hover:bg-opacity-90 rounded-xl px-8 font-bold shadow-lg shadow-[#c9a84c]/10"
                   style={{ backgroundColor: "#c9a84c" }}
                 >
-                  Lưu Thay Đổi
+                  Save Changes
                 </Button>
               </DialogFooter>
             </form>
@@ -155,7 +155,7 @@ export default function RoomManagement() {
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c9a84c]/40" size={18} />
             <Input 
-              placeholder="Tìm kiếm phòng..." 
+              placeholder="Search rooms..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10 bg-white/5 border-white/10 rounded-xl focus:border-[#c9a84c]/50 transition-colors"
@@ -166,21 +166,21 @@ export default function RoomManagement() {
         <Table>
           <TableHeader className="bg-[#c9a84c]/5">
             <TableRow className="border-white/5 hover:bg-transparent">
-              <TableHead className="text-white/60">Tên phòng</TableHead>
-              <TableHead className="text-white/60">Số hàng</TableHead>
-              <TableHead className="text-white/60">Số cột</TableHead>
-              <TableHead className="text-white/60">Tổng số ghế</TableHead>
-              <TableHead className="text-right text-white/60">Thao tác</TableHead>
+              <TableHead className="text-white/60">Room Name</TableHead>
+              <TableHead className="text-white/60">Rows</TableHead>
+              <TableHead className="text-white/60">Columns</TableHead>
+              <TableHead className="text-white/60">Total Seats</TableHead>
+              <TableHead className="text-right text-white/60">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10 text-white/40">Đang tải dữ liệu...</TableCell>
+                <TableCell colSpan={5} className="text-center py-10 text-white/40">Loading data...</TableCell>
               </TableRow>
             ) : filteredRooms.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10 text-white/40">Không tìm thấy phòng nào</TableCell>
+                <TableCell colSpan={5} className="text-center py-10 text-white/40">No rooms found</TableCell>
               </TableRow>
             ) : filteredRooms.map((room) => (
               <TableRow key={room.id} className="border-white/5 hover:bg-white/5 transition-colors group">

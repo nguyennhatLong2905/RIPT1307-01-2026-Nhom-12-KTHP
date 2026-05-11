@@ -24,11 +24,11 @@ export default function RegisterForm() {
     setIsLoading(true);
     try {
       await authService.register(formData);
-      alert("Đăng ký thành công! Vui lòng đăng nhập.");
+      alert("Registration successful! Please log in.");
       router.push("/");
     } catch (error) {
-      console.error("Lỗi đăng ký:", error);
-      alert("Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.");
+      console.error("Registration error:", error);
+      alert("Registration failed. Please check your information.");
     } finally {
       setIsLoading(false);
     }
@@ -44,12 +44,12 @@ export default function RegisterForm() {
         <h2 className="text-3xl font-bold italic tracking-tighter" style={{ color: "#c9a84c" }}>
           LUXE<span className="text-white">JOIN</span>
         </h2>
-        <p className="text-white/40 text-xs uppercase tracking-widest mt-2">Trở thành hội viên thượng lưu</p>
+        <p className="text-white/40 text-xs uppercase tracking-widest mt-2">Become a premium member</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
         <div className="grid gap-2">
-          <Label className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold">Tên đăng nhập</Label>
+          <Label className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold">Username</Label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c9a84c]/40" size={18} />
             <Input
@@ -63,13 +63,13 @@ export default function RegisterForm() {
         </div>
 
         <div className="grid gap-2">
-          <Label className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold">Họ và tên</Label>
+          <Label className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold">Full Name</Label>
           <div className="relative">
             <UserCircle className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c9a84c]/40" size={18} />
             <Input
               required
               className="pl-10 bg-white/5 border-white/10 focus:border-[#c9a84c]/50 rounded-xl transition-all"
-              placeholder="Nguyễn Văn A"
+              placeholder="John Doe"
               value={formData.fullName}
               onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
             />
@@ -92,7 +92,7 @@ export default function RegisterForm() {
         </div>
 
         <div className="grid gap-2">
-          <Label className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold">Số điện thoại</Label>
+          <Label className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold">Phone Number</Label>
           <div className="relative">
             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c9a84c]/40" size={18} />
             <Input
@@ -106,7 +106,7 @@ export default function RegisterForm() {
         </div>
 
         <div className="grid gap-2">
-          <Label className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold">Mật khẩu</Label>
+          <Label className="text-[#c9a84c] text-[10px] uppercase tracking-widest font-bold">Password</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c9a84c]/40" size={18} />
             <Input
@@ -125,9 +125,9 @@ export default function RegisterForm() {
           disabled={isLoading}
           className="w-full h-12 bg-[#c9a84c] hover:bg-[#b09340] text-black font-bold rounded-xl shadow-lg shadow-[#c9a84c]/20 transition-all flex items-center justify-center gap-2 mt-4"
         >
-          {isLoading ? "ĐANG XỬ LÝ..." : (
+          {isLoading ? "PROCESSING..." : (
             <>
-              ĐĂNG KÝ NGAY
+              REGISTER NOW
               <ArrowRight size={18} />
             </>
           )}
@@ -136,9 +136,9 @@ export default function RegisterForm() {
 
       <div className="text-center relative z-10 pt-4">
         <p className="text-white/40 text-xs">
-          Đã có tài khoản?{" "}
+          Already have an account?{" "}
           <button onClick={() => router.push("/")} className="text-[#c9a84c] hover:underline font-bold">
-            Đăng nhập ngay
+            Log in now
           </button>
         </p>
       </div>

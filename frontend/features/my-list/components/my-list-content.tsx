@@ -1,169 +1,12 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
-import { createPortal } from "react-dom";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Ticket, Heart, Clock, Play } from "lucide-react";
+import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { MovieCard } from "@/features/shared";
 import { wishlistService } from "@/features/home/services/wishlist-service";
 import { Movie as MovieType } from "@/types";
-
-const POPUP_WIDTH = 440;
-const POPUP_HEIGHT = 500;
-
-interface PopupProps {
-  movie: MovieType;
-  anchorRect: DOMRect;
-  liked: boolean;
-  onLike: () => void;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-}
-
-function HoverPopup({ movie, anchorRect, liked, onLike, onMouseEnter, onMouseLeave }: PopupProps) {
-  const router = useRouter();
-
-  const cardCenterX = anchorRect.left + anchorRect.width / 2;
-  const cardCenterY = anchorRect.top + anchorRect.height / 2;
-
-  const left = Math.max(8, Math.min(cardCenterX - POPUP_WIDTH / 2, window.innerWidth - POPUP_WIDTH - 8));
-  const top = Math.max(8, Math.min(cardCenterY - POPUP_HEIGHT / 2, window.innerHeight - POPUP_HEIGHT - 8));
-
-  return createPortal(
-    <div
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      className="fixed z-[9999] w-[440px] rounded-2xl overflow-hidden shadow-2xl border border-white/[0.08] [animation:trendingPopIn_0.25s_cubic-bezier(0.34,1.4,0.64,1)_forwards] [background:linear-gradient(160deg,#1c1c2e_0%,#16213e_60%,#0f3460_100%)]"
-      style={{ top, left }}
-    >
-      {/* Poster */}
-      <div className="relative w-full h-[230px] overflow-hidden">
-        <img
-          src={movie.posterUrl}
-          alt={movie.title}
-          className="w-full h-full object-cover object-top"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#1c1c2e]" />
-        <Badge
-          className="absolute top-3 right-3 border-[#E9C349]/50 bg-black/65 text-[#E9C349] font-bold text-[11px] px-2.5 py-0.5 rounded-lg"
-          variant="outline"
-        >
-          {movie.genre?.split(',')[0] || "Phim"}
-        </Badge>
-      </div>
-
-      {/* Content */}
-      <div className="px-5 pb-5 pt-4 flex flex-col gap-3">
-        <div>
-          <h3 className="text-white font-bold text-lg leading-snug">{movie.title}</h3>
-          <p className="text-[#E9C349] text-[13px] mt-0.5">{movie.director}</p>
-        </div>
-
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <Badge
-            variant="outline"
-            className="border-[#E9C349] text-[#E9C349] font-bold text-[11px] px-2 py-0.5 rounded-md"
-          >
-            HD
-          </Badge>
-          <span className="text-white/50 text-xs">{new Date(movie.releaseDate || '').getFullYear()}</span>
-          <span className="flex items-center gap-1 text-white/50 text-xs">
-            <Clock size={12} />
-            {movie.duration} min
-          </span>
-        </div>
-
-        <div className="flex gap-2.5 mt-2">
-          <Button
-            onClick={() => router.push(`/movies/${movie.id}`)}
-            className="flex-1 gap-1.5 font-bold text-sm text-black rounded-xl py-2.5 h-auto [background:linear-gradient(90deg,#E9C349,#f0d060)] hover:brightness-105 border-none"
-          >
-            <Ticket size={15} />
-            Đặt Vé
-          </Button>
-          <Button
-            variant="outline"
-            onClick={(e) => { e.stopPropagation(); onLike(); }}
-            className={`gap-1.5 rounded-xl py-2.5 h-auto font-semibold text-sm transition-colors ${liked
-              ? "border-[#E9C349] bg-[#E9C349]/15 text-[#E9C349] hover:bg-[#E9C349]/20"
-              : "border-white/20 bg-white/[0.08] text-white hover:bg-white/15"
-              }`}
-          >
-            <Heart size={14} fill={liked ? "#E9C349" : "none"} />
-            BỎ THÍCH
-          </Button>
-        </div>
-      </div>
-    </div>,
-    document.body
-  );
-}
-
-function MovieCard({ movie, onRemove }: { movie: MovieType, onRemove?: () => void }) {
-  const [hovered, setHovered] = useState(false);
-  const [liked, setLiked] = useState(true);
-  const [anchorRect, setAnchorRect] = useState<DOMRect | null>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const handleMouseEnter = () => {
-    if (leaveTimer.current) clearTimeout(leaveTimer.current);
-    if (cardRef.current) setAnchorRect(cardRef.current.getBoundingClientRect());
-    setHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    leaveTimer.current = setTimeout(() => setHovered(false), 120);
-  };
-
-  useEffect(() => () => { if (leaveTimer.current) clearTimeout(leaveTimer.current); }, []);
-
-  const handleLike = async () => {
-    try {
-      await wishlistService.removeFromWishlist(movie.id);
-      setLiked(false);
-      if (onRemove) {
-        setTimeout(onRemove, 300);
-      }
-    } catch (error) {
-      console.error("Lỗi xóa khỏi wishlist:", error);
-    }
-  };
-
-  return (
-    <>
-      <div
-        ref={cardRef}
-        className="w-full aspect-[2/3] rounded-xl overflow-hidden relative cursor-pointer shadow-lg transition-[transform,box-shadow] duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_50px_rgba(0,0,0,0.7)] group"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      >
-        <img
-          alt={movie.title}
-          src={movie.posterUrl}
-          className={`w-full h-full object-cover transition-transform duration-500 ${hovered ? "scale-110" : "scale-100"}`}
-        />
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <div className="w-12 h-12 rounded-full bg-[#E9C349] flex items-center justify-center text-black shadow-[0_0_15px_rgba(233,195,73,0.5)]">
-            <Play className="w-5 h-5 ml-1" fill="currentColor" />
-          </div>
-        </div>
-      </div>
-
-      {hovered && anchorRect && (
-        <HoverPopup
-          movie={movie}
-          anchorRect={anchorRect}
-          liked={liked}
-          onLike={handleLike}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        />
-      )}
-    </>
-  );
-}
 
 export default function MyListContent() {
   const [list, setList] = useState<MovieType[]>([]);
@@ -175,7 +18,7 @@ export default function MyListContent() {
         const data = await wishlistService.getWishlist();
         setList(data);
       } catch (error) {
-        console.error("Lỗi tải wishlist:", error);
+        console.error("Error loading wishlist:", error);
       } finally {
         setIsLoading(false);
       }
@@ -187,7 +30,7 @@ export default function MyListContent() {
     setList(prev => prev.filter(m => m.id !== id));
   };
 
-  if (isLoading) return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-[#c9a84c] animate-pulse">ĐANG TẢI DANH SÁCH...</div>;
+  if (isLoading) return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-[#c9a84c] animate-pulse">LOADING LIST...</div>;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] pt-32 pb-24">
@@ -208,12 +51,12 @@ export default function MyListContent() {
             <div className="flex flex-col gap-2">
               <h1 className="text-white text-4xl md:text-5xl font-bold tracking-tight">My List</h1>
               <p className="text-white/60 text-sm md:text-base">
-                Các bộ phim bạn yêu thích. Sẵn sàng để đặt vé bất cứ lúc nào.
+                Your favorite movies. Ready to book any time.
               </p>
             </div>
             <div className="flex items-center gap-2 text-sm font-semibold text-[#E9C349] bg-[#E9C349]/10 px-4 py-2 rounded-full border border-[#E9C349]/20">
               <Heart size={16} fill="currentColor" />
-              <span>{list.length} phim yêu thích</span>
+              <span>{list.length} favorite movies</span>
             </div>
           </div>
 
@@ -224,6 +67,8 @@ export default function MyListContent() {
                 <MovieCard
                   key={movie.id}
                   movie={movie}
+                  isInitiallyLiked={true}
+                  className="w-full aspect-[2/3] rounded-xl overflow-hidden relative cursor-pointer shadow-lg transition-[transform,box-shadow] duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_50px_rgba(0,0,0,0.7)] group"
                   onRemove={() => handleRemove(movie.id)}
                 />
               ))}
@@ -231,15 +76,15 @@ export default function MyListContent() {
           ) : (
             <div className="flex flex-col items-center justify-center py-32 text-center border border-white/5 rounded-2xl bg-white/[0.02]">
               <Heart className="w-16 h-16 text-white/20 mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">Danh sách trống</h3>
+              <h3 className="text-xl font-semibold text-white mb-2">List is empty</h3>
               <p className="text-white/50 max-w-sm mb-6">
-                Bạn chưa thêm bộ phim nào vào danh sách yêu thích của mình.
+                You haven't added any movies to your favorites list yet.
               </p>
               <Button
                 onClick={() => window.location.href = '/'}
                 className="font-semibold text-black bg-[#E9C349] hover:bg-[#f0d060] rounded-xl px-8"
               >
-                Khám phá ngay
+                Explore now
               </Button>
             </div>
           )}

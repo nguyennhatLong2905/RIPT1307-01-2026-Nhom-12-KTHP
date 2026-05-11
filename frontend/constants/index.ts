@@ -6,13 +6,15 @@ import { Movie, Theater, Seat } from "@/types";
 export const APP_NAME = "LUXE CINEMA";
 
 export const MOCK_MOVIE: Movie = {
-  id: "m1",
+  id: 1,
   title: "DUNE: PART TWO",
   poster: "/images/dune222.webp",
   rating: 9.1,
   director: "Denis Villeneuve",
   cast: "Timothée Chalamet, Zendaya, Rebecca Ferguson",
-  synopsis: "Paul Atreides unites with Chani and the Fremen while on a warpath of revenge against the conspirators who destroyed his family. Facing a choice between the love of his life and the fate of the known universe, he endeavors to prevent a terrible future only he can foresee."
+  synopsis: "Paul Atreides unites with Chani and the Fremen while on a warpath of revenge against the conspirators who destroyed his family. Facing a choice between the love of his life and the fate of the known universe, he endeavors to prevent a terrible future only he can foresee.",
+  genre: "Sci-Fi, Adventure",
+  duration: 166
 };
 
 export const MOCK_THEATERS: Theater[] = [

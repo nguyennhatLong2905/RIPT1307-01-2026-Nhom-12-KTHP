@@ -94,16 +94,26 @@ public class BookingService {
         return booking;
     }
 
-    // Xử lý hủy đơn vé, kiểm tra quyền sở hữu
+    // Xử lý hủy đơn vé, kiểm tra quyền sở hữu hoặc quyền Admin
     public void cancelBooking(Long bookingId, String username) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy đơn đặt vé"));
 
-        if (!booking.getUser().getUsername().equals(username)) {
-            throw new AppException(HttpStatus.FORBIDDEN, "Bạn không có quyền hủy đơn vé này!");
+        // 1. Nếu là chủ sở hữu vé thì cho phép xóa luôn
+        if (booking.getUser().getUsername().equals(username)) {
+            bookingRepository.delete(booking);
+            return;
         }
 
-        bookingRepository.delete(booking);
+        // 2. Nếu không phải chủ sở hữu, kiểm tra xem có phải Admin không
+        User currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng!"));
+
+        if (currentUser.getRole() == User.Role.ADMIN) {
+            bookingRepository.delete(booking);
+        } else {
+            throw new AppException(HttpStatus.FORBIDDEN, "Bạn không có quyền hủy đơn vé này!");
+        }
     }
 
     // Tổng hợp số liệu hệ thống (Tổng vé, Tổng doanh thu) cho Admin

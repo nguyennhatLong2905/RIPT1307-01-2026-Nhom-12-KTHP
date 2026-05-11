@@ -108,4 +108,9 @@ export const adminService = {
     });
     return response.data.url;
   },
+
+  deleteBooking: async (id: number): Promise<string> => {
+    const response = await axiosInstance.delete(`/bookings/${id}`);
+    return response.data;
+  },
 };

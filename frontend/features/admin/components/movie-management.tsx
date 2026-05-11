@@ -56,19 +56,19 @@ export default function MovieManagement() {
       const data = await adminService.getMovies();
       setMovies(data);
     } catch (error) {
-      console.error("Lỗi khi tải danh sách phim:", error);
+      console.error("Error loading movie list:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm("Bạn có chắc chắn muốn xóa phim này?")) {
+    if (confirm("Are you sure you want to delete this movie?")) {
       try {
         await adminService.deleteMovie(id);
         fetchMovies();
       } catch (error) {
-        alert("Lỗi khi xóa phim");
+        alert("Error deleting movie");
       }
     }
   };
@@ -92,7 +92,7 @@ export default function MovieManagement() {
         const uploadedUrl = await adminService.uploadTrailer(selectedFile);
         trailerUrl = uploadedUrl;
       } catch (error) {
-        alert("Lỗi khi tải lên video trailer!");
+        alert("Error uploading video trailer!");
         setIsUploading(false);
         return;
       }
@@ -121,8 +121,8 @@ export default function MovieManagement() {
       setSelectedFile(null);
       fetchMovies();
     } catch (error: any) {
-      const errorMsg = error.response?.data || error.message || "Lỗi không xác định";
-      alert("Lỗi khi lưu phim: " + (typeof errorMsg === 'object' ? JSON.stringify(errorMsg) : errorMsg));
+      const errorMsg = error.response?.data || error.message || "Unknown error";
+      alert("Error saving movie: " + (typeof errorMsg === 'object' ? JSON.stringify(errorMsg) : errorMsg));
     }
   };
 
@@ -135,8 +135,8 @@ export default function MovieManagement() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Quản lý Phim</h2>
-          <p className="text-white/40 text-sm">Thêm mới, cập nhật thông tin và quản lý danh sách phim</p>
+          <h2 className="text-2xl font-bold">Movie Management</h2>
+          <p className="text-white/40 text-sm">Add new, update information and manage movie list</p>
         </div>
         
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
@@ -153,48 +153,48 @@ export default function MovieManagement() {
               onClick={() => setEditingMovie(null)}
             >
               <Plus size={20} className="mr-2" />
-              Thêm Phim Mới
+              Add New Movie
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-[#0d0d0d] border-[#c9a84c]/20 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold italic tracking-tighter" style={{ color: "#c9a84c" }}>
-                {editingMovie ? "CẬP NHẬT PHIM" : "THÊM PHIM MỚI"}
+                {editingMovie ? "UPDATE MOVIE" : "ADD NEW MOVIE"}
               </DialogTitle>
               <DialogDescription className="text-white/40">
-                Nhập thông tin chi tiết cho bộ phim bên dưới.
+                Enter movie details below.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Tiêu đề phim</Label>
+                  <Label htmlFor="title">Movie Title</Label>
                   <Input id="title" name="title" defaultValue={editingMovie?.title} required className="bg-white/5 border-white/10" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="director">Đạo diễn</Label>
+                  <Label htmlFor="director">Director</Label>
                   <Input id="director" name="director" defaultValue={editingMovie?.director} required className="bg-white/5 border-white/10" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="genre">Thể loại</Label>
-                  <Input id="genre" name="genre" defaultValue={editingMovie?.genre} required className="bg-white/5 border-white/10" placeholder="Hành động, Viễn tưởng..." />
+                  <Label htmlFor="genre">Genre</Label>
+                  <Input id="genre" name="genre" defaultValue={editingMovie?.genre} required className="bg-white/5 border-white/10" placeholder="Action, Sci-fi..." />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="duration">Thời lượng (phút)</Label>
+                  <Label htmlFor="duration">Duration (min)</Label>
                   <Input id="duration" name="duration" type="number" defaultValue={editingMovie?.duration} required className="bg-white/5 border-white/10" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="releaseDate">Ngày phát hành</Label>
+                  <Label htmlFor="releaseDate">Release Date</Label>
                   <Input id="releaseDate" name="releaseDate" type="date" defaultValue={editingMovie?.releaseDate} required className="bg-white/5 border-white/10" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="posterUrl">URL Ảnh Poster</Label>
+                  <Label htmlFor="posterUrl">Poster Image URL</Label>
                   <Input id="posterUrl" name="posterUrl" defaultValue={editingMovie?.posterUrl} className="bg-white/5 border-white/10" />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="trailerFile">Tải lên Video Trailer (từ máy tính)</Label>
+                <Label htmlFor="trailerFile">Upload Video Trailer (local file)</Label>
                 <div className="flex gap-2">
                   <Input 
                     id="trailerFile" 
@@ -210,17 +210,17 @@ export default function MovieManagement() {
                   )}
                 </div>
                 {editingMovie?.trailerUrl && !selectedFile && (
-                  <p className="text-[10px] text-white/30 italic mt-1">Đang sử dụng: {editingMovie.trailerUrl}</p>
+                  <p className="text-[10px] text-white/30 italic mt-1">Currently using: {editingMovie.trailerUrl}</p>
                 )}
                 <input type="hidden" name="trailerUrl" defaultValue={editingMovie?.trailerUrl} />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Mô tả phim</Label>
+                <Label htmlFor="description">Movie Description</Label>
                 <Textarea id="description" name="description" defaultValue={editingMovie?.description} className="bg-white/5 border-white/10 min-h-[100px]" />
               </div>
               <DialogFooter className="mt-6">
-                <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)} className="rounded-xl text-white/60 hover:text-white hover:bg-white/5">Hủy</Button>
+                <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)} className="rounded-xl text-white/60 hover:text-white hover:bg-white/5">Cancel</Button>
                 <Button 
                   type="submit" 
                   disabled={isUploading}
@@ -230,10 +230,10 @@ export default function MovieManagement() {
                   {isUploading ? (
                     <>
                       <Loader2 size={18} className="mr-2 animate-spin" />
-                      Đang tải video...
+                      Uploading video...
                     </>
                   ) : (
-                    "Lưu Thay Đổi"
+                    "Save Changes"
                   )}
                 </Button>
               </DialogFooter>
@@ -247,7 +247,7 @@ export default function MovieManagement() {
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c9a84c]/40" size={18} />
             <Input 
-              placeholder="Tìm kiếm phim..." 
+              placeholder="Search movies..." 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10 bg-white/5 border-white/10 rounded-xl focus:border-[#c9a84c]/50 transition-colors"
@@ -259,21 +259,21 @@ export default function MovieManagement() {
           <TableHeader className="bg-[#c9a84c]/5">
             <TableRow className="border-white/5 hover:bg-transparent">
               <TableHead className="text-white/60">Poster</TableHead>
-              <TableHead className="text-white/60">Tên phim</TableHead>
-              <TableHead className="text-white/60">Thể loại</TableHead>
-              <TableHead className="text-white/60">Thời lượng</TableHead>
-              <TableHead className="text-white/60">Ngày phát hành</TableHead>
-              <TableHead className="text-right text-white/60">Thao tác</TableHead>
+              <TableHead className="text-white/60">Movie Title</TableHead>
+              <TableHead className="text-white/60">Genre</TableHead>
+              <TableHead className="text-white/60">Duration</TableHead>
+              <TableHead className="text-white/60">Release Date</TableHead>
+              <TableHead className="text-right text-white/60">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-10 text-white/40">Đang tải dữ liệu...</TableCell>
+                <TableCell colSpan={6} className="text-center py-10 text-white/40">Loading data...</TableCell>
               </TableRow>
             ) : filteredMovies.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-10 text-white/40">Không tìm thấy phim nào</TableCell>
+                <TableCell colSpan={6} className="text-center py-10 text-white/40">No movies found</TableCell>
               </TableRow>
             ) : filteredMovies.map((movie) => (
               <TableRow key={movie.id} className="border-white/5 hover:bg-white/5 transition-colors group">
@@ -296,7 +296,7 @@ export default function MovieManagement() {
                 </TableCell>
                 <TableCell className="font-semibold">{movie.title}</TableCell>
                 <TableCell>{movie.genre}</TableCell>
-                <TableCell>{movie.duration} phút</TableCell>
+                <TableCell>{movie.duration} min</TableCell>
                 <TableCell>{movie.releaseDate}</TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2">
