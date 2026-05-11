@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function SplashScreen() {
   const [isVisible, setIsVisible] = useState(true);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin");
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -60,7 +63,7 @@ export default function SplashScreen() {
 
         {/* Tagline */}
         <p className="mt-8 text-[10px] md:text-xs tracking-[1em] uppercase text-[#c9a84c]/60 animate-fade-in-up [animation-delay:0.6s]">
-          WELCOME TO LUXE CINEMA
+          {isAdmin ? "ADMINISTRATOR DASHBOARD" : "WELCOME TO LUXE CINEMA"}
         </p>
       </div>
     </div>
