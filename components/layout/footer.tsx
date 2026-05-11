@@ -1,6 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  if (pathname.startsWith('/admin')) return null;
 
   const footerLinks = [
     { label: "PRIVACY POLICY", href: "/privacy" },

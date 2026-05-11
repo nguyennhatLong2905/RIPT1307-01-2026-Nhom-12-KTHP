@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Search, User } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,7 +25,10 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [activeLink, setActiveLink] = useState("MOVIES");
+
+  if (pathname.startsWith('/admin')) return null;
 
   const handleNavClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
