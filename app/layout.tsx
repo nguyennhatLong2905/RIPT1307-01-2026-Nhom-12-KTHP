@@ -3,6 +3,7 @@ import { Montserrat } from "next/font/google";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import SplashScreen from "@/components/layout/splash-screen";
+import ClientProviders from "@/components/layout/client-providers";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -27,12 +28,15 @@ export default function RootLayout({
       className={`${montserrat.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#0a0a0a] text-white overscroll-none">
-        <SplashScreen />
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <ClientProviders>
+          <SplashScreen />
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </ClientProviders>
       </body>
     </html>
   );
 }
+
 

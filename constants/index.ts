@@ -67,3 +67,12 @@ export const MOCK_SEATS: Seat[] = (() => {
   });
   return seats;
 })();
+
+export const MOCK_USER = {
+  id: "u1",
+  name: "Nguyễn Văn A",
+  email: "user@luxecinema.com",
+  avatar: "",
+  phone: "0901234567",
+  memberSince: "2024-01-15",
+};
