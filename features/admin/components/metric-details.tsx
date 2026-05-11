@@ -232,11 +232,15 @@ export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDe
                 });
             }
         } else {
+            // Instead of shifting array elements (which breaks the cumulative 0h-8h logic),
+            // we apply a pseudo-random multiplier based on the day to simulate different data.
             const dateShift = parseInt(selectedDate.split('-')[2]) % 5; 
-            const shiftedValues = [...arr.slice(dateShift), ...arr.slice(0, dateShift)];
-            result = arr.map((item, i) => ({
+            // Multiplier ranges from 0.8 to 1.2
+            const dateMultiplier = 0.8 + (dateShift * 0.1); 
+            
+            result = arr.map(item => ({
                 ...item,
-                value: shiftedValues[i].value
+                value: item.value === null ? null : Math.round(item.value * dateMultiplier)
             }));
         }
         if (cinemaMultiplier !== 1.0) {
