@@ -73,6 +73,4 @@ Mọi trang con của Admin đều phải nằm trong `app/admin/...`. Bạn kh�
 - **Module Đơn hàng:**
   - Tra cứu mã vé (Booking ID).
   - Giao diện hoàn vé, đổi suất chiếu cho khách hàng.
-
----
-*Mọi thắc mắc trong quá trình code, vui lòng nhắn tin trực tiếp trên nhóm để Nhat Long hỗ trợ.*
+  
