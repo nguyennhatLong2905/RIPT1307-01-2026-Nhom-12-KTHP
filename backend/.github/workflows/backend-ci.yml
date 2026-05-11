@@ -1,0 +1,34 @@
+name: Java Spring Boot CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    # Chỉ định thư mục chứa mã nguồn Spring Boot
+    defaults:
+      run:
+        working-directory: ./THLTW
+
+    steps:
+    # Bước 1: Kéo code từ GitHub về máy ảo
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # Bước 2: Cài đặt môi trường Java 21
+    - name: Set up JDK 21
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: maven
+
+    # Bước 3: Chạy lệnh Build để kiểm tra lỗi cú pháp và đóng gói
+    # Tạm thời bỏ qua test (-DskipTests) để tránh lỗi kết nối Database ảo
+    - name: Build with Maven
+      run: mvn clean package -DskipTests

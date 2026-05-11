@@ -1,0 +1,18 @@
+# Node / Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.env*
+
+# Java / Backend
+backend/THLTW/target/
+backend/THLTW/.mvn/
+backend/THLTW/uploads/
+backend/THLTW/.idea/
+backend/THLTW/*.iml
+
+# System
+.DS_Store
+Thumbs.db
+*.log

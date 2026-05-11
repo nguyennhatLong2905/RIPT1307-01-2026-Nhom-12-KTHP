@@ -1,0 +1,81 @@
+// TypeScript interfaces và types dùng chung cho toàn dự án
+
+export enum UserRole {
+  ADMIN = "ADMIN",
+  CUSTOMER = "CUSTOMER",
+}
+
+export interface User {
+  id: number;
+  username: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  role: UserRole;
+}
+
+export interface Movie {
+  id: number;
+  title: string;
+  description?: string;
+  director: string;
+  genre: string;
+  duration: number;
+  releaseDate?: string;
+  posterUrl?: string;
+  trailerUrl?: string;
+}
+
+export interface Room {
+  id: number;
+  name: string;
+  rowsCount: number;
+  colsCount: number;
+  totalSeats?: number;
+}
+
+export interface Showtime {
+  id: number;
+  movie: Movie;
+  room: Room;
+  startTime: string;
+  price: number;
+}
+
+export interface ShowtimeDTO {
+  movieId: number;
+  roomId: number;
+  startTime: string;
+  price: number;
+}
+
+export interface Stats {
+  totalRevenue: number;
+  totalBookings: number;
+  totalMovies: number;
+  totalUsers: number;
+  [key: string]: any;
+}
+
+export interface Seat {
+  id: string;
+  row: string;
+  number: number;
+  status: 'available' | 'selected' | 'sold';
+}
+
+export interface BookingState {
+  movieId: string;
+  theaterId: string;
+  showtimeId: string;
+  selectedSeats: Seat[];
+  totalPrice: number;
+}
+export interface Booking {
+  id: number;
+  user: User;
+  showtime: Showtime;
+  seatNumbers: string;
+  totalAmount: number;
+  bookingDate: string;
+}
