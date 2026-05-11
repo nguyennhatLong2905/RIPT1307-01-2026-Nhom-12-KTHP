@@ -55,6 +55,36 @@ const generate24hData = (base: number, volatility: number) => {
     });
 };
 
+const ticketsMock = {
+    realtime: generate24hData(150, 50),
+    day: [
+        { name: "T2", value: 1200 }, { name: "T3", value: 1500 }, { name: "T4", value: 1800 },
+        { name: "T5", value: 1400 }, { name: "T6", value: 2500 }, { name: "T7", value: 3200 }, { name: "CN", value: 3500 },
+    ],
+    week: [
+        { name: "Tuần 1", value: 8500 }, { name: "Tuần 2", value: 9200 },
+        { name: "Tuần 3", value: 11000 }, { name: "Tuần 4", value: 13500 },
+    ],
+    month: [
+        { name: "T1", value: 21000 }, { name: "T2", value: 24500 }, { name: "T3", value: 28000 },
+        { name: "T4", value: 22000 }, { name: "T5", value: 35000 }, { name: "T6", value: 42000 },
+        { name: "T7", value: 45000 }, { name: "T8", value: 51000 }, { name: "T9", value: 48000 },
+        { name: "T10", value: 55000 }, { name: "T11", value: 62000 }, { name: "T12", value: 75000 },
+    ],
+    year: [
+        { name: "2020", value: 150000 }, { name: "2021", value: 120000 },
+        { name: "2022", value: 280000 }, { name: "2023", value: 350000 }, { name: "2024", value: 480000 },
+    ],
+};
+
+const calculateOccupancy = (ticketsArray: any[], capacity: number) => {
+    return ticketsArray.map(item => ({
+        ...item,
+        // Calculate percentage: (tickets / capacity) * 100, max 100%
+        value: item.value === null ? null : Math.min(100, Math.round((item.value / capacity) * 100))
+    }));
+};
+
 const mockDataMap: Record<string, any> = {
     revenue: {
         realtime: generate24hData(5000000, 2000000),
@@ -77,27 +107,7 @@ const mockDataMap: Record<string, any> = {
             { name: "2022", value: 28000000000 }, { name: "2023", value: 35000000000 }, { name: "2024", value: 48000000000 },
         ],
     },
-    tickets: {
-        realtime: generate24hData(150, 50),
-        day: [
-            { name: "T2", value: 1200 }, { name: "T3", value: 1500 }, { name: "T4", value: 1800 },
-            { name: "T5", value: 1400 }, { name: "T6", value: 2500 }, { name: "T7", value: 3200 }, { name: "CN", value: 3500 },
-        ],
-        week: [
-            { name: "Tuần 1", value: 8500 }, { name: "Tuần 2", value: 9200 },
-            { name: "Tuần 3", value: 11000 }, { name: "Tuần 4", value: 13500 },
-        ],
-        month: [
-            { name: "T1", value: 21000 }, { name: "T2", value: 24500 }, { name: "T3", value: 28000 },
-            { name: "T4", value: 22000 }, { name: "T5", value: 35000 }, { name: "T6", value: 42000 },
-            { name: "T7", value: 45000 }, { name: "T8", value: 51000 }, { name: "T9", value: 48000 },
-            { name: "T10", value: 55000 }, { name: "T11", value: 62000 }, { name: "T12", value: 75000 },
-        ],
-        year: [
-            { name: "2020", value: 150000 }, { name: "2021", value: 120000 },
-            { name: "2022", value: 280000 }, { name: "2023", value: 350000 }, { name: "2024", value: 480000 },
-        ],
-    },
+    tickets: ticketsMock,
     customers: {
         realtime: generate24hData(20, 10),
         day: [
@@ -120,25 +130,17 @@ const mockDataMap: Record<string, any> = {
         ],
     },
     occupancy: {
-        realtime: generate24hData(40, 20).map(d => ({ ...d, value: Math.min(100, Math.max(0, d.value)) })),
-        day: [
-            { name: "T2", value: 65 }, { name: "T3", value: 68 }, { name: "T4", value: 72 },
-            { name: "T5", value: 64 }, { name: "T6", value: 82 }, { name: "T7", value: 95 }, { name: "CN", value: 92 },
-        ],
-        week: [
-            { name: "Tuần 1", value: 70 }, { name: "Tuần 2", value: 72 },
-            { name: "Tuần 3", value: 75 }, { name: "Tuần 4", value: 78 },
-        ],
-        month: [
-            { name: "T1", value: 65 }, { name: "T2", value: 68 }, { name: "T3", value: 72 },
-            { name: "T4", value: 64 }, { name: "T5", value: 75 }, { name: "T6", value: 82 },
-            { name: "T7", value: 85 }, { name: "T8", value: 88 }, { name: "T9", value: 84 },
-            { name: "T10", value: 78 }, { name: "T11", value: 80 }, { name: "T12", value: 85 },
-        ],
-        year: [
-            { name: "2020", value: 55 }, { name: "2021", value: 45 },
-            { name: "2022", value: 65 }, { name: "2023", value: 72 }, { name: "2024", value: 78 },
-        ],
+        // Assume max daily capacity of the entire cinema system is ~3500 seats
+        // For Realtime (24h accumulation):
+        realtime: calculateOccupancy(ticketsMock.realtime, 3500),
+        // Daily: capacity is 4500 seats per day 
+        day: calculateOccupancy(ticketsMock.day, 4500),
+        // Weekly: capacity is 4500 * 7 = 31500 seats
+        week: calculateOccupancy(ticketsMock.week, 31500),
+        // Monthly: capacity is 4500 * 30 = 135000 seats
+        month: calculateOccupancy(ticketsMock.month, 135000),
+        // Yearly: capacity is 4500 * 365 = 1642500 seats
+        year: calculateOccupancy(ticketsMock.year, 1642500),
     }
 };
 
