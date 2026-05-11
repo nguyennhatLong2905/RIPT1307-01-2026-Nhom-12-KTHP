@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, ArrowLeft, Calendar } from "lucide-react";
+import { X, ArrowLeft, Calendar, MapPin } from "lucide-react";
 import {
     LineChart,
     Line,
@@ -15,6 +15,7 @@ import {
     AreaChart,
     Area,
 } from "recharts";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface MetricDetailsProps {
     isOpen: boolean;
@@ -26,23 +27,16 @@ interface MetricDetailsProps {
         trendUp: boolean;
         type: string; // 'revenue' | 'tickets' | 'customers' | 'occupancy'
     } | null;
-}
-
-// Generate realistic looking 24h data deterministically (cumulative)
+}
 const generate24hData = (base: number, volatility: number) => {
     let cumulativeValue = 0;
     return Array.from({ length: 13 }).map((_, i) => {
-        const hour = i * 2;
-        
-        // At 0h, value is always 0 (start of day)
+        const hour = i * 2;
         if (hour === 0) {
             return { name: "0h", value: 0 };
-        }
-
-        // Simulate cinema business hours: no sales 2h-6h, sales start picking up at 8h
+        }
         let hourlyIncrement = 0;
-        if (hour >= 8) {
-            // Peak hours around 18-22h
+        if (hour >= 8) {
             const multiplier = (hour >= 18 && hour <= 22) ? 1.5 : (hour >= 8 && hour <= 12) ? 0.8 : 1;
             hourlyIncrement = Math.max(0, (base / 10) * multiplier + Math.sin(hour) * (volatility / 10));
         }
@@ -79,8 +73,7 @@ const ticketsMock = {
 
 const calculateOccupancy = (ticketsArray: any[], capacity: number) => {
     return ticketsArray.map(item => ({
-        ...item,
-        // Calculate percentage: (tickets / capacity) * 100, max 100%
+        ...item,
         value: item.value === null ? null : Math.min(100, Math.round((item.value / capacity) * 100))
     }));
 };
@@ -129,17 +122,11 @@ const mockDataMap: Record<string, any> = {
             { name: "2022", value: 28000 }, { name: "2023", value: 35000 }, { name: "2024", value: 48000 },
         ],
     },
-    occupancy: {
-        // Assume max daily capacity of the entire cinema system is ~3500 seats
-        // For Realtime (24h accumulation):
-        realtime: calculateOccupancy(ticketsMock.realtime, 3500),
-        // Daily: capacity is 4500 seats per day 
-        day: calculateOccupancy(ticketsMock.day, 4500),
-        // Weekly: capacity is 4500 * 7 = 31500 seats
-        week: calculateOccupancy(ticketsMock.week, 31500),
-        // Monthly: capacity is 4500 * 30 = 135000 seats
-        month: calculateOccupancy(ticketsMock.month, 135000),
-        // Yearly: capacity is 4500 * 365 = 1642500 seats
+    occupancy: {
+        realtime: calculateOccupancy(ticketsMock.realtime, 3500),
+        day: calculateOccupancy(ticketsMock.day, 4500),
+        week: calculateOccupancy(ticketsMock.week, 31500),
+        month: calculateOccupancy(ticketsMock.month, 135000),
         year: calculateOccupancy(ticketsMock.year, 1642500),
     }
 };
@@ -169,9 +156,7 @@ const CustomTooltip = ({ active, payload, label, title, metricType }: any) => {
         );
     }
     return null;
-};
-
-// Generic Chart Component that handles different visual types based on metric
+};
 const GenericChart = ({ data, title, metricType, heightClass = "h-[300px]" }: any) => {
     let strokeColor = "#10b981"; // Green for customers, occupancy
     let fillColor = "#10b981";
@@ -226,39 +211,47 @@ const GenericChart = ({ data, title, metricType, heightClass = "h-[300px]" }: an
     );
 };
 
-export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDetailsProps) {
-    // Get today's date in YYYY-MM-DD format as default
+export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDetailsProps) {
     const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
+    const [selectedCinema, setSelectedCinema] = useState("all");
 
-    if (!isOpen || !metric) return null;
-
-    // Simulate different data when date changes by slicing/reversing the mock data array
-    // In a real app, you would fetch new data based on selectedDate
+    if (!isOpen || !metric) return null;
     const metricData = mockDataMap[metric.type] || mockDataMap.revenue;
     const isToday = selectedDate === new Date().toISOString().split('T')[0];
     
-    // Simple pseudo-random shuffle to simulate data change based on date string
-    const dateShift = parseInt(selectedDate.split('-')[2]) % 5; 
-    const applyDateShift = (arr: any[]) => {
+    const cinemaMultiplier = selectedCinema === 'amc' ? 1.2 : selectedCinema === 'regal' ? 0.8 : selectedCinema === 'alamo' ? 0.9 : 1.0;
+
+    const applyDataModifiers = (arr: any[]) => {
+        let result = arr;
         if (isToday) {
-            // Simulate true real-time: cut off data after the current hour
-            if (arr.length === 13) { // This identifies the 24h realtime array
+            if (arr.length === 13) {
                 const currentHour = new Date().getHours();
-                return arr.map(item => {
+                result = arr.map(item => {
                     const hourLabel = parseInt(item.name.replace('h', ''));
-                    // Return null for future hours so the chart line stops
                     return { ...item, value: hourLabel > currentHour ? null : item.value };
                 });
             }
-            return arr;
+        } else {
+            const dateShift = parseInt(selectedDate.split('-')[2]) % 5; 
+            const shiftedValues = [...arr.slice(dateShift), ...arr.slice(0, dateShift)];
+            result = arr.map((item, i) => ({
+                ...item,
+                value: shiftedValues[i].value
+            }));
+        }
+        if (cinemaMultiplier !== 1.0) {
+            result = result.map(item => {
+                if (item.value === null) return item;
+                if (metric.type === 'occupancy') {
+                    return { ...item, value: Math.min(100, Math.round(item.value * cinemaMultiplier)) };
+                } else {
+                    const fraction = selectedCinema === 'amc' ? 0.45 : selectedCinema === 'regal' ? 0.3 : 0.25;
+                    return { ...item, value: Math.round(item.value * fraction) };
+                }
+            });
         }
-        
-        // Shift values but keep chronological labels intact for past dates
-        const shiftedValues = [...arr.slice(dateShift), ...arr.slice(0, dateShift)];
-        return arr.map((item, i) => ({
-            ...item,
-            value: shiftedValues[i].value
-        }));
+
+        return result;
     };
 
     return (
@@ -266,7 +259,7 @@ export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDe
             <div className="max-w-7xl mx-auto p-6 md:p-8">
                 
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
+                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-8">
                     <div>
                         <button 
                             onClick={onClose}
@@ -278,19 +271,44 @@ export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDe
                             <span className="font-medium">Quay lại Bảng Điều Khiển</span>
                         </button>
                         <h1 className="text-3xl font-bold text-white mb-2">Báo Cáo Chi Tiết: {metric.title}</h1>
-                        <p className="text-slate-400">Phân tích chuyên sâu dữ liệu với các khung thời gian linh hoạt.</p>
+                        <p className="text-slate-400">
+                            {metric.type === 'customers' 
+                                ? "Phân tích lượng tài khoản mới được tạo khi đăng ký xem phim."
+                                : "Phân tích chuyên sâu dữ liệu với các khung thời gian linh hoạt."}
+                        </p>
                     </div>
 
-                    <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 rounded-xl p-2 px-4 shadow-sm">
-                        <Calendar className="h-5 w-5 text-slate-400" />
-                        <div className="flex flex-col">
-                            <label className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Tra cứu theo ngày</label>
-                            <input 
-                                type="date" 
-                                value={selectedDate}
-                                onChange={(e) => setSelectedDate(e.target.value)}
-                                className="bg-transparent text-white font-medium focus:outline-none focus:ring-0 [&::-webkit-calendar-picker-indicator]:invert"
-                            />
+                    <div className="flex flex-col sm:flex-row gap-4 items-end sm:items-center">
+                        {/* Cinema Selector (For all metrics) */}
+                        <Tabs value={selectedCinema} onValueChange={setSelectedCinema} className="w-full sm:w-auto">
+                            <TabsList className="bg-slate-900 border border-slate-800">
+                                <TabsTrigger value="all" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white text-slate-400">
+                                    <MapPin className="h-3 w-3 mr-2" />
+                                    Toàn Hệ Thống
+                                </TabsTrigger>
+                                <TabsTrigger value="amc" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white text-slate-400">
+                                    AMC Empire 25
+                                </TabsTrigger>
+                                <TabsTrigger value="regal" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white text-slate-400">
+                                    Regal E-Walk
+                                </TabsTrigger>
+                                <TabsTrigger value="alamo" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white text-slate-400">
+                                    Alamo Drafthouse
+                                </TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+
+                        <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 rounded-xl p-2 px-4 shadow-sm w-full sm:w-auto">
+                            <Calendar className="h-5 w-5 text-slate-400" />
+                            <div className="flex flex-col">
+                                <label className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Tra cứu theo ngày</label>
+                                <input 
+                                    type="date" 
+                                    value={selectedDate}
+                                    onChange={(e) => setSelectedDate(e.target.value)}
+                                    className="bg-transparent text-white font-medium focus:outline-none focus:ring-0 [&::-webkit-calendar-picker-indicator]:invert"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -299,7 +317,7 @@ export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDe
                 <div className="flex flex-col gap-6">
                     {/* Top Chart: Real-time 24h */}
                     <GenericChart 
-                        data={applyDateShift(metricData.realtime)} 
+                        data={applyDataModifiers(metricData.realtime)} 
                         title={`Theo Thời Gian Thực (24h ${isToday ? 'Hôm Nay' : 'ngày ' + selectedDate})`} 
                         metricType={metric.type}
                         heightClass="h-[350px]"
@@ -308,25 +326,25 @@ export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDe
                     {/* Bottom Grid: Day, Week, Month, Year */}
                     <div className="grid gap-6 md:grid-cols-2">
                         <GenericChart 
-                            data={applyDateShift(metricData.day)} 
+                            data={applyDataModifiers(metricData.day)} 
                             title="Theo Ngày (7 ngày qua)" 
                             metricType={metric.type} 
                             heightClass="h-[250px]"
                         />
                         <GenericChart 
-                            data={applyDateShift(metricData.week)} 
+                            data={applyDataModifiers(metricData.week)} 
                             title="Theo Tuần (4 tuần gần nhất)" 
                             metricType={metric.type} 
                             heightClass="h-[250px]"
                         />
                         <GenericChart 
-                            data={applyDateShift(metricData.month)} 
+                            data={applyDataModifiers(metricData.month)} 
                             title="Theo Tháng (12 tháng)" 
                             metricType={metric.type} 
                             heightClass="h-[250px]"
                         />
                         <GenericChart 
-                            data={applyDateShift(metricData.year)} 
+                            data={applyDataModifiers(metricData.year)} 
                             title="Theo Năm (5 năm qua)" 
                             metricType={metric.type} 
                             heightClass="h-[250px]"
