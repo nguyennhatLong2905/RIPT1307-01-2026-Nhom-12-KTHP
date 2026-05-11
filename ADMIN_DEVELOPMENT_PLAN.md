@@ -58,7 +58,7 @@ Mọi trang con của Admin đều phải nằm trong `app/admin/...`. Bạn kh�
 
 ## Chi tiết chức năng cần làm
 
-### Giai đoạn 2 (Linh)
+### Giai đoạn 2 (Linh)   
 - **Module Quản lý Phim:**
   - Bảng danh sách phim (Lọc theo trạng thái Đang chiếu, Sắp chiếu).
   - Form Thêm/Sửa phim (Tên, đạo diễn, poster, thời lượng, độ tuổi).

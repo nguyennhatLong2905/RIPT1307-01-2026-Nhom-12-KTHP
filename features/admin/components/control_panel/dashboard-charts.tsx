@@ -195,7 +195,7 @@ export default function DashboardCharts() {
                                     position: "right",
                                     fill: "#8B949E",
                                     fontSize: 11,
-                                    formatter: (v: number) => `${v}%`,
+                                    formatter: (v: any) => `${v}%`,
                                 }}
                             />
                         </BarChart>

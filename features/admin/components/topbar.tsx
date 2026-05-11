@@ -5,8 +5,9 @@ import { Bell, Search, UserCircle } from "lucide-react";
 export default function Topbar() {
     return (
         <header
-            className="sticky top-0 z-30 flex h-16 w-full items-center justify-between px-6 backdrop-blur-md"
+            className="fixed top-0 right-0 z-30 flex h-16 items-center justify-between px-6 backdrop-blur-md"
             style={{
+                left: "16rem",
                 background: "rgba(11, 14, 20, 0.85)",
                 borderBottom: "1px solid #1F2532",
             }}

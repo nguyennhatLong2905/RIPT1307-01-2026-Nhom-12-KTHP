@@ -16,7 +16,7 @@ export default function AdminLayout({
       <Sidebar />
       <div className="flex flex-1 flex-col ml-64">
         <Topbar />
-        <main className="flex-1 overflow-y-auto p-6" style={{ background: "#0B0E14" }}>
+        <main className="flex-1 overflow-y-auto p-6 pt-22" style={{ background: "#0B0E14" }}>
           {children}
         </main>
       </div>

@@ -56,6 +56,17 @@ export default function DashboardMetrics() {
 
     return (
         <>
+            <div>
+                <h1
+                    className="text-3xl font-bold tracking-tight"
+                    style={{ color: "#FFFFFF" }}
+                >
+                    Bảng Điều Khiển
+                </h1>
+                <p className="text-sm mt-1" style={{ color: "#8B949E" }}>
+                    Tổng quan về tình hình kinh doanh và hoạt động của hệ thống rạp.
+                </p>
+            </div>
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
                 {metrics.map((metric, index) => (
                     <div
