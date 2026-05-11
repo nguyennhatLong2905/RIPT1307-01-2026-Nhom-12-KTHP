@@ -8,15 +8,15 @@ Tài liệu này hướng dẫn chi tiết cách các thành viên trong nhóm p
 ## Phân công Giai đoạn (Phases)
 
 - **Giai đoạn 1:** Layout Admin & Dashboard (Module 1) - **[Người thực hiện: Nhat Long]** - *(Trạng thái: Đã hoàn thành)*
-- **Giai đoạn 2:** Quản lý Phim, Rạp và Phòng Chiếu (Module 2, 3) - **[Người thực hiện: Thành viên khác]**
-- **Giai đoạn 3:** Quản lý Lịch Chiếu & Đơn hàng (Module 4, 5) - **[Người thực hiện: Thành viên khác]**
+- **Giai đoạn 2:** Quản lý Phim, Rạp và Phòng Chiếu (Module 2, 3) - **[Người thực hiện: Linh]**
+- **Giai đoạn 3:** Quản lý Lịch Chiếu & Đơn hàng (Module 4, 5) - **[Người thực hiện: Linh]**
 - **Giai đoạn 4:** Người dùng, Khuyến mãi, Cài đặt & Tổng hợp (Module 6, 7, 8) - **[Người thực hiện: Nhat Long]**
 
 ---
 
-## Hướng dẫn code cho Giai đoạn 2 & 3 (Dành cho các thành viên khác)
+## Hướng dẫn code cho Giai đoạn 2 & 3 (Dành cho Linh)
 
-Để giữ cho code đồng bộ và đúng chuẩn, các bạn thực hiện Giai đoạn 2 và 3 cần tuân thủ cấu trúc sau:
+Để giữ cho code đồng bộ và đúng chuẩn, Linh khi thực hiện Giai đoạn 2 và 3 cần tuân thủ cấu trúc sau:
 
 ### 1. Cấu trúc Thư mục & Routing
 
@@ -58,7 +58,7 @@ Mọi trang con của Admin đều phải nằm trong `app/admin/...`. Bạn kh�
 
 ## Chi tiết chức năng cần làm
 
-### Giai đoạn 2 (Thành viên A)
+### Giai đoạn 2 (Linh)
 - **Module Quản lý Phim:**
   - Bảng danh sách phim (Lọc theo trạng thái Đang chiếu, Sắp chiếu).
   - Form Thêm/Sửa phim (Tên, đạo diễn, poster, thời lượng, độ tuổi).
@@ -66,7 +66,7 @@ Mọi trang con của Admin đều phải nằm trong `app/admin/...`. Bạn kh�
   - Bảng danh sách rạp.
   - Sơ đồ ma trận ghế ngồi cho từng phòng (Thường, VIP, Sweetbox).
 
-### Giai đoạn 3 (Thành viên B)
+### Giai đoạn 3 (Linh)
 - **Module Lịch Chiếu:**
   - Giao diện chọn Phim -> Rạp -> Phòng -> Khung giờ.
   - Cảnh báo trùng lặp giờ chiếu tự động.
