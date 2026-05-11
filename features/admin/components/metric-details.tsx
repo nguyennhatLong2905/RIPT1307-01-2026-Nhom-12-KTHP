@@ -261,12 +261,14 @@ const GenericChart = ({ data, title, metricType, heightClass = "h-[300px]" }: an
 };
 
 export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDetailsProps) {
-    const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
+    const todayStr = new Date().toISOString().split('T')[0];
+    const [selectedDate, setSelectedDate] = useState(() => todayStr);
     const [selectedCinema, setSelectedCinema] = useState("all");
 
     if (!isOpen || !metric) return null;
     const metricData = mockDataMap[metric.type] || mockDataMap.revenue;
-    const isToday = selectedDate === new Date().toISOString().split('T')[0];
+    const isToday = selectedDate === todayStr;
+    const isFuture = selectedDate > todayStr;
     const cinemaMultiplier = selectedCinema === 'amc' ? 1.2 : selectedCinema === 'regal' ? 0.8 : selectedCinema === 'alamo' ? 0.9 : 1.0;
     
     const applyDataModifiers = (arr: any[]) => {
@@ -274,7 +276,9 @@ export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDe
         const isRealtime = arr.length === 13;
 
         if (isRealtime) {
-            if (isToday) {
+            if (isFuture) {
+                result = arr.map(item => ({ ...item, value: null }));
+            } else if (isToday) {
                 const currentHour = new Date().getHours();
                 result = arr.map(item => {
                     const hourLabel = parseInt(item.name.replace('h', ''));
@@ -370,9 +374,10 @@ export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDe
                                 <input
                                     type="date"
                                     value={selectedDate}
+                                    max={todayStr}
                                     onChange={(e) => setSelectedDate(e.target.value)}
                                     className="bg-transparent font-medium focus:outline-none focus:ring-0 [&::-webkit-calendar-picker-indicator]:invert"
-                                    style={{ color: "#FFFFFF" }}
+                                    style={{ color: isFuture ? "#F43F5E" : "#FFFFFF" }}
                                 />
                             </div>
                         </div>
@@ -382,6 +387,16 @@ export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDe
                 {/* Charts Section */}
                 <div className="flex flex-col gap-6">
                     {/* Top Chart: Real-time 24h */}
+                    {isFuture && (
+                        <div
+                            className="flex items-center justify-center gap-3 rounded-xl px-4 py-3 mb-2"
+                            style={{ background: "rgba(244,63,94,0.08)", border: "1px solid rgba(244,63,94,0.3)", borderRadius: "12px" }}
+                        >
+                            <span style={{ color: "#F43F5E", fontSize: "14px", fontWeight: 600 }}>
+                                ⚠ Không có dữ liệu cho ngày trong tương lai ({selectedDate})
+                            </span>
+                        </div>
+                    )}
                     <GenericChart 
                         data={applyDataModifiers(metricData.realtime)} 
                         title={`Theo Thời Gian Thực (24h ${isToday ? 'Hôm Nay' : 'ngày ' + selectedDate})`} 
