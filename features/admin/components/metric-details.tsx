@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { X, ArrowLeft, Calendar, MapPin } from "lucide-react";
 import {
-    LineChart,
-    Line,
+    AreaChart,
+    Area,
     BarChart,
     Bar,
     XAxis,
@@ -12,8 +12,6 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    AreaChart,
-    Area,
 } from "recharts";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -27,26 +25,60 @@ interface MetricDetailsProps {
         trendUp: boolean;
         type: string; // 'revenue' | 'tickets' | 'customers' | 'occupancy'
     } | null;
-}
+}
 const generate24hData = (base: number, volatility: number) => {
-    let cumulativeValue = 0;
-    return Array.from({ length: 13 }).map((_, i) => {
-        const hour = i * 2;
-        if (hour === 0) {
-            return { name: "0h", value: 0 };
-        }
-        let hourlyIncrement = 0;
-        if (hour >= 8) {
-            const multiplier = (hour >= 18 && hour <= 22) ? 1.5 : (hour >= 8 && hour <= 12) ? 0.8 : 1;
-            hourlyIncrement = Math.max(0, (base / 10) * multiplier + Math.sin(hour) * (volatility / 10));
-        }
+    // 1. Khởi tạo 13 mốc thời gian (0h đến 24h), giá trị mặc định là 0 để tránh đứt đoạn
+    const result = Array.from({ length: 13 }).map((_, i) => ({
+        name: `${i * 2}h`,
+        value: 0
+    }));
 
-        cumulativeValue += hourlyIncrement;
-        return {
-            name: `${hour}h`,
-            value: Math.floor(cumulativeValue)
-        };
+    // Giả lập danh sách các giao dịch (transactions) ngẫu nhiên trong 24h
+    const transactions: { timestamp: Date; amount: number }[] = [];
+    const numTransactions = 50 + Math.floor(Math.random() * 30); // 50-80 giao dịch
+    const now = new Date();
+    
+    for (let i = 0; i < numTransactions; i++) {
+        const hour = Math.floor(Math.random() * 24);
+        const minute = Math.floor(Math.random() * 60);
+        
+        let multiplier = 1;
+        if (hour >= 18 && hour <= 22) multiplier = 1.5;
+        else if (hour >= 8 && hour <= 12) multiplier = 0.8;
+        else if (hour >= 0 && hour < 8) multiplier = 0.1;
+        
+        // Tạo khoảng trống (0) vào khung giờ đêm
+        if (hour >= 0 && hour < 8 && Math.random() > 0.3) continue;
+
+        // Chia nhỏ base và volatility để mỗi giao dịch chỉ chiếm một phần
+        const amount = Math.max(0, (base / 10) * multiplier + Math.sin(hour) * (volatility / 5));
+        const txnDate = new Date(now);
+        txnDate.setHours(hour, minute, 0, 0);
+        
+        transactions.push({ timestamp: txnDate, amount });
+    }
+
+    // 2. Logic Data Binning: Phân bổ giao dịch vào các mốc chẵn kế tiếp
+    transactions.forEach(txn => {
+        const hours = txn.timestamp.getHours();
+        const minutes = txn.timestamp.getMinutes();
+        const seconds = txn.timestamp.getSeconds();
+        
+        let binIndex = 0;
+        if (hours === 0 && minutes === 0 && seconds === 0) {
+            binIndex = 0; // Mốc 0h
+        } else {
+            // Đổi ra giờ thập phân, chia 2 và làm tròn lên
+            const exactTimeInHours = hours + minutes / 60 + seconds / 3600;
+            binIndex = Math.ceil(exactTimeInHours / 2);
+        }
+        
+        if (binIndex > 12) binIndex = 12; // Giới hạn mốc tối đa là 24h (index 12)
+        
+        result[binIndex].value += Math.floor(txn.amount);
     });
+
+    return result;
 };
 
 const ticketsMock = {
@@ -73,14 +105,14 @@ const ticketsMock = {
 
 const calculateOccupancy = (ticketsArray: any[], capacity: number) => {
     return ticketsArray.map(item => ({
-        ...item,
+        ...item,
         value: item.value === null ? null : Math.min(100, Math.round((item.value / capacity) * 100))
     }));
 };
 
 const mockDataMap: Record<string, any> = {
     revenue: {
-        realtime: generate24hData(5000000, 2000000),
+        realtime: generate24hData(10000000, 3000000),
         day: [
             { name: "T2", value: 120000000 }, { name: "T3", value: 150000000 }, { name: "T4", value: 180000000 },
             { name: "T5", value: 140000000 }, { name: "T6", value: 250000000 }, { name: "T7", value: 320000000 }, { name: "CN", value: 350000000 },
@@ -122,11 +154,11 @@ const mockDataMap: Record<string, any> = {
             { name: "2022", value: 28000 }, { name: "2023", value: 35000 }, { name: "2024", value: 48000 },
         ],
     },
-    occupancy: {
-        realtime: calculateOccupancy(ticketsMock.realtime, 3500),
-        day: calculateOccupancy(ticketsMock.day, 4500),
-        week: calculateOccupancy(ticketsMock.week, 31500),
-        month: calculateOccupancy(ticketsMock.month, 135000),
+    occupancy: {
+        realtime: calculateOccupancy(ticketsMock.realtime, 350),
+        day: calculateOccupancy(ticketsMock.day, 4500),
+        week: calculateOccupancy(ticketsMock.week, 31500),
+        month: calculateOccupancy(ticketsMock.month, 135000),
         year: calculateOccupancy(ticketsMock.year, 1642500),
     }
 };
@@ -134,76 +166,93 @@ const mockDataMap: Record<string, any> = {
 const CustomTooltip = ({ active, payload, label, title, metricType }: any) => {
     if (active && payload && payload.length) {
         let valueStr = payload[0].value.toLocaleString();
-        let colorClass = "text-green-500";
+        let accentColor = "#2DD4BF";
         if (metricType === 'revenue') {
             valueStr += " đ";
-            colorClass = "text-red-500";
+            accentColor = "#7C3AED";
         } else if (metricType === 'tickets') {
             valueStr += " vé";
-            colorClass = "text-blue-500";
+            accentColor = "#2DD4BF";
         } else if (metricType === 'occupancy') {
             valueStr += "%";
         }
 
         return (
-            <div className="bg-slate-900 border border-slate-700 p-3 rounded-lg shadow-xl">
-                <p className="text-slate-300 font-medium mb-1">{label}</p>
-                <p className={`${colorClass} font-bold text-lg`}>
+            <div style={{
+                background: "#0B0E14",
+                border: `1px solid ${accentColor}60`,
+                borderRadius: "10px",
+                padding: "10px 14px",
+                boxShadow: `0 0 20px ${accentColor}30`,
+            }}>
+                <p style={{ color: "#8B949E", fontSize: "12px", marginBottom: "4px" }}>{label}</p>
+                <p style={{ color: accentColor, fontWeight: 700, fontSize: "16px" }}>
                     {valueStr}
                 </p>
-                <p className="text-xs text-slate-500 mt-1">{title}</p>
+                <p style={{ color: "#8B949E", fontSize: "11px", marginTop: "4px" }}>{title}</p>
             </div>
         );
     }
     return null;
-};
+};
 const GenericChart = ({ data, title, metricType, heightClass = "h-[300px]" }: any) => {
-    let strokeColor = "#10b981"; // Green for customers, occupancy
-    let fillColor = "#10b981";
-
-    if (metricType === 'revenue') {
-        strokeColor = "#dc2626"; // Red
-        fillColor = "url(#colorRevenue)";
-    } else if (metricType === 'tickets') {
-        strokeColor = "#3b82f6"; // Blue
-        fillColor = "#3b82f6";
-    }
+    const isRevenue = metricType === 'revenue';
+    const isTickets = metricType === 'tickets';
 
     return (
-        <div className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 flex flex-col w-full">
-            <h3 className="text-lg font-semibold text-white mb-4">{title}</h3>
+        <div
+            className="flex flex-col w-full"
+            style={{
+                background: "#161B22",
+                border: "1px solid #1F2532",
+                boxShadow: "0 4px 20px 0 rgba(0,0,0,0.5)",
+                borderRadius: "16px",
+                padding: "24px",
+            }}
+        >
+            <h3 className="text-base font-semibold mb-4" style={{ color: "#FFFFFF" }}>{title}</h3>
             <div className={`w-full ${heightClass}`}>
                 <ResponsiveContainer width="100%" height="100%">
-                    {metricType === 'revenue' ? (
-                        <AreaChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                    {isTickets ? (
+                        <BarChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                             <defs>
-                                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#dc2626" stopOpacity={0.3}/>
-                                    <stop offset="95%" stopColor="#dc2626" stopOpacity={0}/>
+                                <linearGradient id="neonBarV" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor="#7C3AED" />
+                                    <stop offset="100%" stopColor="#2DD4BF" />
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                            <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#1F2532" vertical={false} />
+                            <XAxis dataKey="name" stroke="#8B949E" fontSize={11} tickLine={false} axisLine={false} />
                             <YAxis hide={true} />
-                            <Tooltip content={<CustomTooltip title={title} metricType={metricType} />} />
-                            <Area type="monotone" dataKey="value" stroke={strokeColor} fillOpacity={1} fill={fillColor} />
-                        </AreaChart>
-                    ) : metricType === 'tickets' ? (
-                        <BarChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                            <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                            <YAxis hide={true} />
-                            <Tooltip content={<CustomTooltip title={title} metricType={metricType} />} cursor={{ fill: '#1e293b' }} />
-                            <Bar dataKey="value" fill={fillColor} radius={[4, 4, 0, 0]} barSize={32} />
+                            <Tooltip content={<CustomTooltip title={title} metricType={metricType} />} cursor={{ fill: 'rgba(124,58,237,0.08)' }} />
+                            <Bar dataKey="value" fill="url(#neonBarV)" radius={[4, 4, 0, 0]} barSize={28} />
                         </BarChart>
                     ) : (
-                        <LineChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                            <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                        <AreaChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                            <defs>
+                                <linearGradient id={`neonLine_${metricType}`} x1="0" y1="0" x2="1" y2="0">
+                                    <stop offset="0%" stopColor="#7C3AED" />
+                                    <stop offset="100%" stopColor="#2DD4BF" />
+                                </linearGradient>
+                                <linearGradient id={`neonFill_${metricType}`} x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#7C3AED" stopOpacity={0.35} />
+                                    <stop offset="95%" stopColor="#2DD4BF" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#1F2532" vertical={false} />
+                            <XAxis dataKey="name" stroke="#8B949E" fontSize={11} tickLine={false} axisLine={false} />
                             <YAxis hide={true} />
                             <Tooltip content={<CustomTooltip title={title} metricType={metricType} />} />
-                            <Line type="monotone" dataKey="value" stroke={strokeColor} strokeWidth={3} dot={{ r: 4, fill: strokeColor, strokeWidth: 0 }} activeDot={{ r: 6 }} />
-                        </LineChart>
+                            <Area
+                                type="monotone"
+                                dataKey="value"
+                                stroke={`url(#neonLine_${metricType})`}
+                                strokeWidth={2.5}
+                                fill={`url(#neonFill_${metricType})`}
+                                dot={{ r: 3, fill: "#0B0E14", stroke: "#7C3AED", strokeWidth: 2 }}
+                                activeDot={{ r: 5, fill: "#2DD4BF", stroke: "#FFFFFF", strokeWidth: 2 }}
+                            />
+                        </AreaChart>
                     )}
                 </ResponsiveContainer>
             </div>
@@ -211,18 +260,18 @@ const GenericChart = ({ data, title, metricType, heightClass = "h-[300px]" }: an
     );
 };
 
-export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDetailsProps) {
+export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDetailsProps) {
     const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
     const [selectedCinema, setSelectedCinema] = useState("all");
 
-    if (!isOpen || !metric) return null;
+    if (!isOpen || !metric) return null;
     const metricData = mockDataMap[metric.type] || mockDataMap.revenue;
     const isToday = selectedDate === new Date().toISOString().split('T')[0];
     
     const cinemaMultiplier = selectedCinema === 'amc' ? 1.2 : selectedCinema === 'regal' ? 0.8 : selectedCinema === 'alamo' ? 0.9 : 1.0;
 
     const applyDataModifiers = (arr: any[]) => {
-        let result = arr;
+        let result = arr;
         if (isToday) {
             if (arr.length === 13) {
                 const currentHour = new Date().getHours();
@@ -242,13 +291,13 @@ export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDe
                 ...item,
                 value: item.value === null ? null : Math.round(item.value * dateMultiplier)
             }));
-        }
+        }
         if (cinemaMultiplier !== 1.0) {
             result = result.map(item => {
                 if (item.value === null) return item;
                 if (metric.type === 'occupancy') {
                     return { ...item, value: Math.min(100, Math.round(item.value * cinemaMultiplier)) };
-                } else {
+                } else {
                     const fraction = selectedCinema === 'amc' ? 0.45 : selectedCinema === 'regal' ? 0.3 : 0.25;
                     return { ...item, value: Math.round(item.value * fraction) };
                 }
@@ -259,24 +308,30 @@ export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDe
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-slate-950 overflow-y-auto animate-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed inset-0 z-50 overflow-y-auto animate-in slide-in-from-bottom-4 duration-300" style={{ background: "rgba(11,14,20,0.97)", backdropFilter: "blur(12px)" }}>
             <div className="max-w-7xl mx-auto p-6 md:p-8">
                 
                 {/* Header Section */}
                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-8">
                     <div>
-                        <button 
+                        <button
                             onClick={onClose}
-                            className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-6 group"
+                            className="flex items-center gap-2 transition-all duration-200 mb-6 group"
+                            style={{ color: "#8B949E" }}
+                            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#2DD4BF"; }}
+                            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = "#8B949E"; }}
                         >
-                            <div className="p-2 rounded-full bg-slate-900 group-hover:bg-slate-800 transition-colors">
+                            <div
+                                className="p-2 rounded-full transition-all duration-200"
+                                style={{ background: "#161B22", border: "1px solid #1F2532" }}
+                            >
                                 <ArrowLeft className="h-5 w-5" />
                             </div>
-                            <span className="font-medium">Quay lại Bảng Điều Khiển</span>
+                            <span className="font-medium text-sm">Quay lại Bảng Điều Khiển</span>
                         </button>
-                        <h1 className="text-3xl font-bold text-white mb-2">Báo Cáo Chi Tiết: {metric.title}</h1>
-                        <p className="text-slate-400">
-                            {metric.type === 'customers' 
+                        <h1 className="text-3xl font-bold mb-2" style={{ color: "#FFFFFF" }}>Báo Cáo Chi Tiết: {metric.title}</h1>
+                        <p style={{ color: "#8B949E" }}>
+                            {metric.type === 'customers'
                                 ? "Phân tích lượng tài khoản mới được tạo khi đăng ký xem phim."
                                 : "Phân tích chuyên sâu dữ liệu với các khung thời gian linh hoạt."}
                         </p>
@@ -285,32 +340,41 @@ export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDe
                     <div className="flex flex-col sm:flex-row gap-4 items-end sm:items-center">
                         {/* Cinema Selector (For all metrics) */}
                         <Tabs value={selectedCinema} onValueChange={setSelectedCinema} className="w-full sm:w-auto">
-                            <TabsList className="bg-slate-900 border border-slate-800">
-                                <TabsTrigger value="all" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white text-slate-400">
+                            <TabsList style={{ background: "#161B22", border: "1px solid #1F2532" }}>
+                                <TabsTrigger value="all" className="data-[state=active]:text-white" style={{ color: "#8B949E" }}
+                                    data-state-active-style={{ background: "linear-gradient(90deg,#7C3AED,#2DD4BF)", color: "#fff" }}>
                                     <MapPin className="h-3 w-3 mr-2" />
                                     Toàn Hệ Thống
                                 </TabsTrigger>
-                                <TabsTrigger value="amc" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white text-slate-400">
+                                <TabsTrigger value="amc" className="data-[state=active]:text-white" style={{ color: "#8B949E" }}>
                                     AMC Empire 25
                                 </TabsTrigger>
-                                <TabsTrigger value="regal" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white text-slate-400">
+                                <TabsTrigger value="regal" className="data-[state=active]:text-white" style={{ color: "#8B949E" }}>
                                     Regal E-Walk
                                 </TabsTrigger>
-                                <TabsTrigger value="alamo" className="data-[state=active]:bg-slate-800 data-[state=active]:text-white text-slate-400">
+                                <TabsTrigger value="alamo" className="data-[state=active]:text-white" style={{ color: "#8B949E" }}>
                                     Alamo Drafthouse
                                 </TabsTrigger>
                             </TabsList>
                         </Tabs>
 
-                        <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 rounded-xl p-2 px-4 shadow-sm w-full sm:w-auto">
-                            <Calendar className="h-5 w-5 text-slate-400" />
+                        <div
+                            className="flex items-center gap-3 rounded-xl p-2 px-4 w-full sm:w-auto"
+                            style={{
+                                background: "#161B22",
+                                border: "1px solid #1F2532",
+                                boxShadow: "0 4px 20px 0 rgba(0,0,0,0.4)",
+                            }}
+                        >
+                            <Calendar className="h-5 w-5" style={{ color: "#7C3AED" }} />
                             <div className="flex flex-col">
-                                <label className="text-[10px] uppercase font-bold tracking-wider text-slate-500">Tra cứu theo ngày</label>
-                                <input 
-                                    type="date" 
+                                <label className="text-[10px] uppercase font-bold tracking-wider" style={{ color: "#8B949E" }}>Tra cứu theo ngày</label>
+                                <input
+                                    type="date"
                                     value={selectedDate}
                                     onChange={(e) => setSelectedDate(e.target.value)}
-                                    className="bg-transparent text-white font-medium focus:outline-none focus:ring-0 [&::-webkit-calendar-picker-indicator]:invert"
+                                    className="bg-transparent font-medium focus:outline-none focus:ring-0 [&::-webkit-calendar-picker-indicator]:invert"
+                                    style={{ color: "#FFFFFF" }}
                                 />
                             </div>
                         </div>

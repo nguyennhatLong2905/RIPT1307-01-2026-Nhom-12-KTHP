@@ -12,7 +12,9 @@ const metrics = [
         trendUp: true,
         icon: DollarSign,
         description: "So với tháng trước",
-        type: "revenue"
+        type: "revenue",
+        accentColor: "#7C3AED",
+        glowColor: "rgba(124,58,237,0.4)",
     },
     {
         title: "Vé Đã Bán",
@@ -21,7 +23,9 @@ const metrics = [
         trendUp: true,
         icon: Ticket,
         description: "So với tháng trước",
-        type: "tickets"
+        type: "tickets",
+        accentColor: "#2DD4BF",
+        glowColor: "rgba(45,212,191,0.4)",
     },
     {
         title: "Khách Hàng Mới",
@@ -30,7 +34,9 @@ const metrics = [
         trendUp: false,
         icon: Users,
         description: "So với tháng trước",
-        type: "customers"
+        type: "customers",
+        accentColor: "#7C3AED",
+        glowColor: "rgba(124,58,237,0.4)",
     },
     {
         title: "Tỷ Lệ Lấp Đầy",
@@ -39,7 +45,9 @@ const metrics = [
         trendUp: true,
         icon: TrendingUp,
         description: "Trung bình toàn hệ thống",
-        type: "occupancy"
+        type: "occupancy",
+        accentColor: "#2DD4BF",
+        glowColor: "rgba(45,212,191,0.4)",
     },
 ];
 
@@ -48,35 +56,86 @@ export default function DashboardMetrics() {
 
     return (
         <>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
                 {metrics.map((metric, index) => (
-                    <div 
-                        key={index} 
+                    <div
+                        key={index}
                         onClick={() => setSelectedMetric(metric)}
-                        className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 shadow-sm cursor-pointer hover:bg-slate-800/80 transition-colors relative overflow-hidden group"
+                        className="relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-300 group"
+                        style={{
+                            background: "#161B22",
+                            border: "1px solid #1F2532",
+                            boxShadow: "0 4px 20px 0 rgba(0,0,0,0.5)",
+                            padding: "24px",
+                        }}
+                        onMouseEnter={(e) => {
+                            (e.currentTarget as HTMLDivElement).style.borderColor = metric.accentColor + "60";
+                            (e.currentTarget as HTMLDivElement).style.boxShadow = `0 4px 30px 0 rgba(0,0,0,0.6), 0 0 20px 0 ${metric.glowColor}`;
+                            (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)";
+                        }}
+                        onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLDivElement).style.borderColor = "#1F2532";
+                            (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 20px 0 rgba(0,0,0,0.5)";
+                            (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+                        }}
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-slate-800/0 via-slate-800/10 to-slate-800/0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div
+                            className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10 blur-3xl pointer-events-none"
+                            style={{ background: metric.accentColor, transform: "translate(40%, -40%)" }}
+                        />
+
                         <div className="relative z-10">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-sm font-medium text-slate-400">{metric.title}</h3>
-                                <metric.icon className="h-4 w-4 text-slate-500" />
+                            <div className="flex items-center justify-between mb-5">
+                                <h3 className="text-sm font-medium" style={{ color: "#8B949E" }}>
+                                    {metric.title}
+                                </h3>
+                                <div
+                                    className="h-9 w-9 rounded-xl flex items-center justify-center"
+                                    style={{
+                                        background: `linear-gradient(135deg, ${metric.accentColor}25, ${metric.accentColor}10)`,
+                                        border: `1px solid ${metric.accentColor}40`,
+                                    }}
+                                >
+                                    <metric.icon
+                                        className="h-4 w-4"
+                                        style={{
+                                            color: metric.accentColor,
+                                            filter: `drop-shadow(0 0 4px ${metric.glowColor})`,
+                                        }}
+                                    />
+                                </div>
                             </div>
-                            <div className="mt-4 flex items-baseline gap-2">
-                                <span className="text-2xl font-bold text-white">{metric.value}</span>
-                                <span className={`text-xs font-medium ${metric.trendUp ? 'text-green-500' : 'text-red-500'}`}>
+
+                            <div className="flex items-end gap-3 mb-2">
+                                <span
+                                    className="text-2xl font-bold"
+                                    style={{
+                                        color: "#FFFFFF",
+                                        textShadow: `0 0 20px ${metric.glowColor}`,
+                                    }}
+                                >
+                                    {metric.value}
+                                </span>
+                                <span
+                                    className="text-sm font-semibold mb-0.5"
+                                    style={{ color: metric.trendUp ? "#2DD4BF" : "#F43F5E" }}
+                                >
                                     {metric.trend}
                                 </span>
                             </div>
-                            <p className="mt-1 text-xs text-slate-500">{metric.description}</p>
+
+                            <p className="text-xs" style={{ color: "#8B949E" }}>
+                                {metric.description}
+                            </p>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <MetricDetailsModal 
-                isOpen={!!selectedMetric} 
-                onClose={() => setSelectedMetric(null)} 
-                metric={selectedMetric} 
+            <MetricDetailsModal
+                isOpen={!!selectedMetric}
+                onClose={() => setSelectedMetric(null)}
+                metric={selectedMetric}
             />
         </>
     );
