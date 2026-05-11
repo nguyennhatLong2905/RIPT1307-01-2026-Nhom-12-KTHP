@@ -264,40 +264,38 @@ export default function MetricDetailsModal({ isOpen, onClose, metric }: MetricDe
     const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().split('T')[0]);
     const [selectedCinema, setSelectedCinema] = useState("all");
 
-    if (!isOpen || !metric) return null;
+    if (!isOpen || !metric) return null;
     const metricData = mockDataMap[metric.type] || mockDataMap.revenue;
     const isToday = selectedDate === new Date().toISOString().split('T')[0];
-    
     const cinemaMultiplier = selectedCinema === 'amc' ? 1.2 : selectedCinema === 'regal' ? 0.8 : selectedCinema === 'alamo' ? 0.9 : 1.0;
-
+    
     const applyDataModifiers = (arr: any[]) => {
         let result = arr;
-        if (isToday) {
-            if (arr.length === 13) {
+        const isRealtime = arr.length === 13;
+
+        if (isRealtime) {
+            if (isToday) {
                 const currentHour = new Date().getHours();
                 result = arr.map(item => {
                     const hourLabel = parseInt(item.name.replace('h', ''));
                     return { ...item, value: hourLabel > currentHour ? null : item.value };
                 });
+            } else {
+                const dateShift = parseInt(selectedDate.split('-')[2]) % 5;
+                const dateMultiplier = 0.8 + (dateShift * 0.1);
+                result = arr.map(item => ({
+                    ...item,
+                    value: item.value === null ? null : Math.round(item.value * dateMultiplier)
+                }));
             }
-        } else {
-            // Instead of shifting array elements (which breaks the cumulative 0h-8h logic),
-            // we apply a pseudo-random multiplier based on the day to simulate different data.
-            const dateShift = parseInt(selectedDate.split('-')[2]) % 5; 
-            // Multiplier ranges from 0.8 to 1.2
-            const dateMultiplier = 0.8 + (dateShift * 0.1); 
-            
-            result = arr.map(item => ({
-                ...item,
-                value: item.value === null ? null : Math.round(item.value * dateMultiplier)
-            }));
         }
+
         if (cinemaMultiplier !== 1.0) {
             result = result.map(item => {
                 if (item.value === null) return item;
                 if (metric.type === 'occupancy') {
                     return { ...item, value: Math.min(100, Math.round(item.value * cinemaMultiplier)) };
-                } else {
+                } else {
                     const fraction = selectedCinema === 'amc' ? 0.45 : selectedCinema === 'regal' ? 0.3 : 0.25;
                     return { ...item, value: Math.round(item.value * fraction) };
                 }
