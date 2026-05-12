@@ -34,7 +34,12 @@ export default function Navbar() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (searchParams.get("login") === "true") {
@@ -80,7 +85,7 @@ export default function Navbar() {
     }
   };
 
-  const userLoggedIn = typeof window !== "undefined" && !!localStorage.getItem("token");
+  const userLoggedIn = mounted && typeof window !== "undefined" && !!localStorage.getItem("token");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -186,6 +191,7 @@ export default function Navbar() {
                 placeholder="SEARCH"
                 className="bg-transparent text-sm tracking-widest outline-none w-32 placeholder:text-neutral-500"
                 style={{ color: "#e0e0e0" }}
+                suppressHydrationWarning
               />
             </div>
           )}
@@ -217,7 +223,7 @@ export default function Navbar() {
                     </div>
                     
                     <div className="w-full space-y-3">
-                      {isAdmin() ? (
+                      {mounted && isAdmin() ? (
                         <>
                           <SheetClose asChild>
                             <Button
