@@ -9,3 +9,5 @@ export { default as BookingList } from "./components/bookings/booking-list";
 export { default as UserDashboard } from "./components/users/user-dashboard";
 export { default as PromotionDashboard } from "./components/promotions/promotion-dashboard";
 export { default as SettingsDashboard } from "./components/settings/settings-dashboard";
+export { default as AdminLayoutWrapper } from "./components/admin-layout-wrapper";
+

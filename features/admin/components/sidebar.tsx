@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, Film, MapPin, Calendar, Ticket, Users, Tag, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +18,13 @@ const menuItems = [
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const router = useRouter();
+
+    function handleLogout() {
+        // Xóa mock token hoặc token thật
+        localStorage.removeItem("admin_token");
+        router.push("/admin/login");
+    }
 
     return (
         <aside
@@ -98,6 +105,7 @@ export default function Sidebar() {
                 style={{ borderTop: "1px solid #1F2532", background: "#0B0E14" }}
             >
                 <button
+                    onClick={handleLogout}
                     className="flex w-full items-center rounded-xl px-3 py-2 text-sm transition-all duration-200"
                     style={{ color: "#8B949E", border: "1px solid transparent" }}
                     onMouseEnter={(e) => {
