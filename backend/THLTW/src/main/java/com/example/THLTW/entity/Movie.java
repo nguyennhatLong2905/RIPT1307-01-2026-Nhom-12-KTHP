@@ -40,7 +40,10 @@ public class Movie {
     private List<Showtime> showtimes;
 
     private LocalDate releaseDate;
+    
+    @Column(length = 1000)
     private String posterUrl;
-    @Column(length = 500)
+    
+    @Column(length = 1000)
     private String trailerUrl;
 }

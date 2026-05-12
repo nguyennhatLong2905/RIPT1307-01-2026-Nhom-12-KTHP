@@ -17,6 +17,72 @@ export default function Hero() {
   const [isLiked, setIsLiked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Marquee auto-scroll and drag logic
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || isLoading) return;
+
+    let animationId: number;
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+
+    const playScroll = () => {
+      if (!isDown && el) {
+        el.scrollLeft += 0.8; // Tốc độ chạy tự động
+        if (el.scrollLeft >= el.scrollWidth / 2) {
+          el.scrollLeft -= el.scrollWidth / 2;
+        }
+      }
+      animationId = requestAnimationFrame(playScroll);
+    };
+
+    animationId = requestAnimationFrame(playScroll);
+
+    const handlePointerDown = (e: PointerEvent) => {
+      isDown = true;
+      startX = e.pageX - el.offsetLeft;
+      scrollLeft = el.scrollLeft;
+      el.style.cursor = 'grabbing';
+      el.style.scrollBehavior = 'auto'; // Tắt smooth khi kéo
+    };
+
+    const handlePointerUp = () => {
+      isDown = false;
+      el.style.cursor = 'grab';
+    };
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - el.offsetLeft;
+      const walk = (x - startX) * 1.5; // Tốc độ kéo
+      el.scrollLeft = scrollLeft - walk;
+
+      // Xử lý vòng lặp khi kéo
+      if (el.scrollLeft >= el.scrollWidth / 2) {
+        el.scrollLeft -= el.scrollWidth / 2;
+        startX = e.pageX - el.offsetLeft;
+        scrollLeft = el.scrollLeft;
+      } else if (el.scrollLeft <= 0) {
+        el.scrollLeft += el.scrollWidth / 2;
+        startX = e.pageX - el.offsetLeft;
+        scrollLeft = el.scrollLeft;
+      }
+    };
+
+    el.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("pointerup", handlePointerUp);
+    el.addEventListener("pointermove", handlePointerMove);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      el.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("pointerup", handlePointerUp);
+      el.removeEventListener("pointermove", handlePointerMove);
+    };
+  }, [isLoading, movies]);
+
   // Get YouTube ID from URL
   const getYouTubeId = (url: string | undefined) => {
     if (!url) return null;
@@ -75,70 +141,6 @@ export default function Hero() {
       console.error("Error updating my list:", error);
     }
   };
-
-  // Marquee auto-scroll logic
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    let animationId: number;
-    let isDown = false;
-    let startX = 0;
-    let scrollLeft = 0;
-
-    const playScroll = () => {
-      if (!isDown && el) {
-        el.scrollLeft += 1;
-        if (el.scrollLeft >= el.scrollWidth / 2) {
-          el.scrollLeft -= el.scrollWidth / 2;
-        }
-      }
-      animationId = requestAnimationFrame(playScroll);
-    };
-
-    animationId = requestAnimationFrame(playScroll);
-
-    const handlePointerDown = (e: PointerEvent) => {
-      isDown = true;
-      startX = e.pageX - el.offsetLeft;
-      scrollLeft = el.scrollLeft;
-      el.style.cursor = 'grabbing';
-    };
-    const handlePointerUp = () => {
-      isDown = false;
-      el.style.cursor = 'grab';
-    };
-    const handlePointerMove = (e: PointerEvent) => {
-      if (!isDown) return;
-      e.preventDefault();
-      const x = e.pageX - el.offsetLeft;
-      const walk = (x - startX) * 2;
-      el.scrollLeft = scrollLeft - walk;
-
-      if (el.scrollLeft >= el.scrollWidth / 2) {
-        el.scrollLeft -= el.scrollWidth / 2;
-        startX = e.pageX - el.offsetLeft;
-        scrollLeft = el.scrollLeft;
-      } else if (el.scrollLeft <= 0) {
-        el.scrollLeft += el.scrollWidth / 2;
-        startX = e.pageX - el.offsetLeft;
-        scrollLeft = el.scrollLeft;
-      }
-    };
-
-    el.addEventListener("pointerdown", handlePointerDown);
-    el.addEventListener("pointerup", handlePointerUp);
-    el.addEventListener("pointerleave", handlePointerUp);
-    el.addEventListener("pointermove", handlePointerMove);
-
-    return () => {
-      cancelAnimationFrame(animationId);
-      el.removeEventListener("pointerdown", handlePointerDown);
-      el.removeEventListener("pointerup", handlePointerUp);
-      el.removeEventListener("pointerleave", handlePointerUp);
-      el.removeEventListener("pointermove", handlePointerMove);
-    };
-  }, [isLoading]);
 
   if (isLoading || !heroMovie) {
     return <div className="w-full h-[80vh] bg-black flex items-center justify-center text-[#c9a84c]">Luxe Cinema...</div>;
@@ -241,11 +243,18 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Movies Marquee */}
-      <div className="bg-black py-10 border-t border-white/5 w-full overflow-hidden relative">
-        <div
+      {/* Movies Marquee - Hybrid Auto-scroll + Drag */}
+      <div className="bg-black py-10 border-t border-white/5 w-full relative group">
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            .hide-scrollbar::-webkit-scrollbar { display: none; }
+            .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+          `,
+        }} />
+        
+        <div 
           ref={scrollRef}
-          className="flex w-full overflow-x-hidden select-none cursor-grab active:cursor-grabbing"
+          className="flex w-full overflow-x-auto hide-scrollbar select-none cursor-grab active:cursor-grabbing"
           style={{ touchAction: 'pan-y' }}
         >
           <div className="flex w-max gap-6 px-6">
@@ -256,7 +265,7 @@ export default function Hero() {
                 src={movie.posterUrl}
                 draggable={false}
                 onClick={() => router.push(`/movies/${movie.id}`)}
-                className="w-[180px] md:w-[220px] lg:w-[280px] h-[120px] md:h-[150px] lg:h-[180px] object-cover rounded-2xl hover:opacity-100 opacity-60 hover:scale-105 transition-all shadow-2xl cursor-pointer border border-white/5"
+                className="w-[180px] md:w-[220px] lg:w-[280px] h-[120px] md:h-[150px] lg:h-[180px] object-cover rounded-2xl hover:opacity-100 opacity-60 hover:scale-105 transition-all shadow-2xl cursor-pointer border border-white/5 flex-shrink-0"
               />
             ))}
           </div>
