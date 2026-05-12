@@ -23,7 +23,8 @@ export const adminService = {
         totalBookings: 0,
         totalMovies: 0,
         totalUsers: 0,
-        revenueByMonth: {}
+        revenueByMonth: {},
+        recentBookings: []
       };
     }
   },
