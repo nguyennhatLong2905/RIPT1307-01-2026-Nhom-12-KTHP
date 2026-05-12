@@ -5,21 +5,16 @@ export const adminService = {
   // Statistics
   getStats: async (): Promise<Stats> => {
     try {
-      const [statsRes, moviesRes, usersRes] = await Promise.all([
-        axiosInstance.get("/admin/stats"),
-        axiosInstance.get("/movies"),
-        axiosInstance.get("/admin/users")
-      ]);
-
-      const backendStats = statsRes.data;
+      const response = await axiosInstance.get("/admin/dashboard/stats");
+      const data = response.data;
       
       return {
-        ...backendStats,
-        totalRevenue: backendStats.doanhThu || 0,
-        totalBookings: backendStats.tongSoVe || 0,
-        totalMovies: moviesRes.data.length || 0,
-        totalUsers: usersRes.data.length || 0,
-        lichSuDatVe: backendStats.lichSuDatVe || []
+        totalRevenue: data.totalRevenue || 0,
+        totalBookings: data.totalBookings || 0,
+        totalMovies: data.totalMovies || 0,
+        totalUsers: data.totalCustomers || 0,
+        revenueByMonth: data.revenueByMonth || {},
+        recentBookings: data.recentBookings || []
       };
     } catch (error) {
       console.error("Lỗi khi lấy thống kê:", error);
@@ -28,7 +23,7 @@ export const adminService = {
         totalBookings: 0,
         totalMovies: 0,
         totalUsers: 0,
-        lichSuDatVe: []
+        revenueByMonth: {}
       };
     }
   },

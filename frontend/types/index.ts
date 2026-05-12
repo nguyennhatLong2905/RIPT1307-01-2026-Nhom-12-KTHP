@@ -75,6 +75,8 @@ export interface Stats {
   totalBookings: number;
   totalMovies: number;
   totalUsers: number;
+  revenueByMonth: Record<string, number>;
+  recentBookings: Booking[];
   [key: string]: any;
 }
 

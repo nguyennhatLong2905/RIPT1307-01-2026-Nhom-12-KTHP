@@ -5,9 +5,7 @@ import {
   TrendingUp, 
   Ticket, 
   Film, 
-  Users,
-  ArrowUpRight,
-  ArrowDownRight
+  Users
 } from "lucide-react";
 import { Stats } from "@/types";
 
@@ -21,37 +19,21 @@ export default function DashboardStats({ stats }: DashboardStatsProps) {
       title: "Tổng doanh thu",
       value: stats ? `${stats.totalRevenue?.toLocaleString("vi-VN")}đ` : "---",
       icon: TrendingUp,
-      color: "text-emerald-400",
-      bg: "bg-emerald-400/10",
-      trend: "+12.5%",
-      isPositive: true,
     },
     {
       title: "Tổng lượt đặt vé",
       value: stats?.totalBookings || "0",
       icon: Ticket,
-      color: "text-blue-400",
-      bg: "bg-blue-400/10",
-      trend: "+8.2%",
-      isPositive: true,
     },
     {
       title: "Phim đang chiếu",
       value: stats?.totalMovies || "0",
       icon: Film,
-      color: "text-purple-400",
-      bg: "bg-purple-400/10",
-      trend: "0%",
-      isPositive: true,
     },
     {
       title: "Khách hàng",
       value: stats?.totalUsers || "0",
       icon: Users,
-      color: "text-amber-400",
-      bg: "bg-amber-400/10",
-      trend: "+5.1%",
-      isPositive: true,
     },
   ];
 
@@ -69,10 +51,6 @@ export default function DashboardStats({ stats }: DashboardStatsProps) {
             <div className="flex justify-between items-start mb-4">
               <div className={`p-3 rounded-xl bg-[#c9a84c]/10 text-[#c9a84c] border border-[#c9a84c]/20`}>
                 <card.icon size={24} />
-              </div>
-              <div className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-full bg-white/5 ${card.isPositive ? "text-emerald-400" : "text-red-400"}`}>
-                {card.trend}
-                {card.isPositive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
               </div>
             </div>
             <div>

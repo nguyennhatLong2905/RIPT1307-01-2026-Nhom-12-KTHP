@@ -15,4 +15,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByResetToken(String token);
     // Tìm theo vai trò (ADMIN/CUSTOMER)
     List<User> findByRole(User.Role role);
+    Long countByRole(User.Role role);
 }

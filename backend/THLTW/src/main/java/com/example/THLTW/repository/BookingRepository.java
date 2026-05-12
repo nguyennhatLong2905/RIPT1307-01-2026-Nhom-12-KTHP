@@ -25,4 +25,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     // Tìm đơn đặt vé theo username
     List<Booking> findByUserUsername(String username);
+
+    // Thống kê doanh thu theo tháng (Yêu cầu MySQL)
+    @Query(value = "SELECT DATE_FORMAT(booking_date, '%Y-%m') as month, SUM(total_amount) as total FROM bookings GROUP BY month ORDER BY month DESC LIMIT 6", nativeQuery = true)
+    List<Object[]> getMonthlyRevenue();
 }

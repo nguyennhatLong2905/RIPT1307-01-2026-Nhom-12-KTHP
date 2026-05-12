@@ -32,7 +32,10 @@ export default function AdminOverviewPage() {
       
       <DashboardStats stats={stats} />
       
-      <AdminCharts bookings={stats?.lichSuDatVe || []} />
+      <AdminCharts 
+        revenueByMonth={stats?.revenueByMonth || {}} 
+        recentBookings={stats?.recentBookings || []} 
+      />
     </div>
   );
 }
