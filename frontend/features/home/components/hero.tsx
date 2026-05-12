@@ -83,13 +83,7 @@ export default function Hero() {
     };
   }, [isLoading, movies]);
 
-  // Get YouTube ID from URL
-  const getYouTubeId = (url: string | undefined) => {
-    if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
-  };
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -146,33 +140,24 @@ export default function Hero() {
     return <div className="w-full h-[80vh] bg-black flex items-center justify-center text-[#c9a84c]">Luxe Cinema...</div>;
   }
 
-  const videoId = getYouTubeId(heroMovie.trailerUrl);
-  const isLocalVideo = heroMovie.trailerUrl?.includes("/api/files/") || heroMovie.trailerUrl?.match(/\.(mp4|webm|ogg)$/i);
-  const videoSource = isLocalVideo ? (heroMovie.trailerUrl?.startsWith("http") ? heroMovie.trailerUrl : `http://localhost:8080${heroMovie.trailerUrl}`) : null;
+  const trailerUrl = heroMovie.trailerUrl;
+  const isVideo = trailerUrl?.match(/\.(mp4|webm|ogg|mov)$/i) || trailerUrl?.includes("video/upload");
 
   return (
     <div id="hero" className="w-full flex flex-col bg-black overflow-hidden">
       <div className="w-full min-h-[80vh] flex flex-col relative overflow-hidden">
         {/* Background Layer */}
         <div className="absolute inset-0 z-0 transition-opacity duration-1000" style={{ opacity: mounted ? 1 : 0 }}>
-          {videoId ? (
-            <div className="w-full h-full pointer-events-none scale-[1.2]">
-              <iframe
-                className="w-full h-full object-cover opacity-60"
-                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1`}
-                allow="autoplay; encrypted-media"
-                frameBorder="0"
-              />
-            </div>
-          ) : isLocalVideo ? (
+          {isVideo ? (
             <video
               autoPlay
               muted
               loop
               playsInline
               className="absolute inset-0 w-full h-full object-cover opacity-60"
+              key={trailerUrl}
             >
-              <source src={videoSource!} type="video/mp4" />
+              <source src={trailerUrl} type="video/mp4" />
             </video>
           ) : (
             <img
