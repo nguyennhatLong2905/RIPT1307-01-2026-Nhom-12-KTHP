@@ -157,6 +157,17 @@ export default function MovieDetailPanel({ movie, onClose, onEdit }: MovieDetail
                             </button>
                         </div>
 
+                        <p className="text-xs font-semibold mb-2" style={{ color: "#C9D1D9" }}>Backdrop URL</p>
+                        <input
+                            type="text"
+                            defaultValue={movie.backdrop ?? ""}
+                            placeholder="URL ảnh backdrop (banner nền rộng)..."
+                            className="w-full rounded-lg px-3 py-2 text-xs outline-none transition-all mb-4"
+                            style={{ background: "#0D1117", border: "1px solid #1F2532", color: "#FFFFFF" }}
+                            onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(124,58,237,0.6)"; }}
+                            onBlur={(e) => { e.currentTarget.style.borderColor = "#1F2532"; }}
+                        />
+
                         <p className="text-xs font-semibold mb-3" style={{ color: "#C9D1D9" }}>Phân loại độ tuổi</p>
                         <div className="flex gap-2">
                             {allRatings.map((r) => {

@@ -81,6 +81,22 @@ export default function BookingList() {
     if (selected?.id === id) setSelected((prev) => prev ? { ...prev, status } : null);
   }
 
+  function handleReschedule(id: string, newShowtime: { date: string; time: string; room: string }) {
+    setBookings((prev) =>
+      prev.map((b) =>
+        b.id === id
+          ? { ...b, showDate: newShowtime.date, showtime: newShowtime.time, room: newShowtime.room }
+          : b
+      )
+    );
+    // Cập nhật cả selected panel
+    if (selected?.id === id) {
+      setSelected((prev) =>
+        prev ? { ...prev, showDate: newShowtime.date, showtime: newShowtime.time, room: newShowtime.room } : null
+      );
+    }
+  }
+
   const COLS = ["Mã Vé", "Khách Hàng", "Phim", "Suất chiếu", "Ghế", "Tổng tiền", "Trạng thái", "Hành động"];
 
   return (
@@ -248,6 +264,7 @@ export default function BookingList() {
           booking={selected}
           onClose={() => setSelected(null)}
           onStatusChange={handleStatusChange}
+          onReschedule={handleReschedule}
         />
       )}
     </>

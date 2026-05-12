@@ -10,6 +10,7 @@ export interface Movie {
     actors: string;
     status: MovieStatus;
     poster: string;
+    backdrop: string;
     summary: string;
     trailerUrl: string;
     isPublic: boolean;
@@ -27,6 +28,7 @@ export const moviesData: Movie[] = [
         actors: "Hồng Ánh, Hứa Vĩ Văn, Tuấn Trần, Trấn Thành",
         status: "Đang chiếu",
         poster: "/images/mai.jpg",
+        backdrop: "/images/mai.jpg",
         summary: "Đất Rừng Phương Nam là câu chuyện về cuộc đời của cậu bé An, lớn lên giữa thiên nhiên hoang dã của vùng đất phương Nam, trải qua những cuộc phiêu lưu đầy cảm xúc và khám phá những giá trị văn hóa truyền thống.",
         trailerUrl: "https://youtube.com/watch?v=example1",
         isPublic: true,
@@ -42,6 +44,7 @@ export const moviesData: Movie[] = [
         actors: "Kaity Nguyễn, Thuận Nguyễn, Quốc Cường",
         status: "Sắp chiếu",
         poster: "/images/mưa đỏ.jpg",
+        backdrop: "/images/mưa đỏ.jpg",
         summary: "Câu chuyện về người phụ nữ trong xã hội phong kiến Việt Nam thế kỷ 19, phải đối mặt với những định kiến và tìm kiếm tự do cho bản thân.",
         trailerUrl: "https://youtube.com/watch?v=example2",
         isPublic: true,
@@ -57,6 +60,7 @@ export const moviesData: Movie[] = [
         actors: "Phương Anh Đào, Tuấn Trần, Hồng Đào, NSƯT Hữu Châu",
         status: "Đang chiếu",
         poster: "/images/mai.jpg",
+        backdrop: "/images/mai.jpg",
         summary: "Mai - một cô gái mạnh mẽ nhưng mang trong mình nhiều tổn thương. Câu chuyện tình yêu giữa Mai và Dương đầy cảm xúc.",
         trailerUrl: "https://youtube.com/watch?v=example3",
         isPublic: true,
@@ -72,6 +76,7 @@ export const moviesData: Movie[] = [
         actors: "Trấn Thành, Kiều Minh Tuấn, Ốc Thanh Vân",
         status: "Đang chiếu",
         poster: "/images/chuyentausinhtu.jpg",
+        backdrop: "/images/chuyentausinhtu.jpg",
         summary: "Phần 7 của loạt phim Lật Mặt với câu chuyện về gia đình, tình bạn và những ước mơ giản dị trong cuộc sống.",
         trailerUrl: "https://youtube.com/watch?v=example4",
         isPublic: true,
@@ -87,6 +92,7 @@ export const moviesData: Movie[] = [
         actors: "Thu Trang, Tiến Luật, Huỳnh Phương",
         status: "Ngừng chiếu",
         poster: "/images/greenbook.jpg",
+        backdrop: "/images/greenbook.jpg",
         summary: "Những câu chuyện hài hước và cảm động về cuộc sống hàng ngày của cư dân trong một con xóm nhỏ.",
         trailerUrl: "https://youtube.com/watch?v=example5",
         isPublic: false,
@@ -102,6 +108,7 @@ export const moviesData: Movie[] = [
         actors: "Quang Tuấn, Uông Phía Hàm, Nguyễn Thị Phương Thanh",
         status: "Ngừng chiếu",
         poster: "/images/doomday.jpg",
+        backdrop: "/images/doomday.jpg",
         summary: "Tết năm ấy, ngôi làng hẻo lánh chìm trong nỗi sợ hãi khi những bí mật kinh hoàng từ quá khứ dần được hé lộ.",
         trailerUrl: "https://youtube.com/watch?v=example6",
         isPublic: false,
@@ -117,6 +124,7 @@ export const moviesData: Movie[] = [
         actors: "Lâm Thanh Mỹ, Quang Tuấn",
         status: "Ngừng chiếu",
         poster: "/images/Poster_phim_Kỵ_sĩ_bóng_đêm_2008.jpg",
+        backdrop: "/images/Poster_phim_Kỵ_sĩ_bóng_đêm_2008.jpg",
         summary: "Câu chuyện rùng rợn về con quỷ cẩu và những hệ lụy khi con người tham lam, phản bội lời thề.",
         trailerUrl: "https://youtube.com/watch?v=example7",
         isPublic: false,
@@ -132,6 +140,7 @@ export const moviesData: Movie[] = [
         actors: "Hoàng Thùy Linh, Thanh Sơn",
         status: "Sắp chiếu",
         poster: "/images/mưa đỏ.jpg",
+        backdrop: "/images/mưa đỏ.jpg",
         summary: "Cuộc chiến sinh tồn giữa lòng thành phố khi một cơn mưa đỏ bí ẩn kéo đến, mang theo nguy hiểm chết người.",
         trailerUrl: "https://youtube.com/watch?v=example8",
         isPublic: true,

@@ -58,8 +58,8 @@ export default function CinemaModal({ isOpen, onClose, onSave, cinema }: CinemaM
   const inputCls = "w-full rounded-xl px-3 py-2.5 text-sm bg-[#0D1117] border border-[#1F2532] text-white outline-none focus:border-violet-500/60 transition-colors";
   const statusList: { key: CinemaStatus; label: string; color: string }[] = [
     { key: "Active",   label: "Đang hoạt động", color: "#2DD4BF" },
-    { key: "Pending",  label: "Sắp chiếu",      color: "#60A5FA" },
-    { key: "Inactive", label: "Ngừng chiếu",    color: "#8B949E" },
+    { key: "Pending",  label: "Chưa hoạt động", color: "#60A5FA" },
+    { key: "Inactive", label: "Ngừng hoạt động", color: "#8B949E" },
   ];
 
   const tabs: { key: Tab; label: string }[] = [

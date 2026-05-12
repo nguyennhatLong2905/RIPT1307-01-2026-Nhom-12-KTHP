@@ -28,6 +28,9 @@ export default function SeatLayoutEditor({ initial, onSave }: SeatLayoutEditorPr
   const lastPainted = useRef<string>("");
 
   const initMatrix = () => {
+    if (isDirty && !window.confirm("Sơ đồ ghế hiện tại sẽ bị xóa và khởi tạo lại. Bạn có chắc muốn tiếp tục?")) {
+      return;
+    }
     const r = Math.min(Math.max(parseInt(rowsInput) || 1, 1), 26);
     const c = Math.min(Math.max(parseInt(colsInput) || 1, 1), 30);
     setRows(r); setCols(c);

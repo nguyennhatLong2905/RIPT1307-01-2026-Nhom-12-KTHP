@@ -8,6 +8,7 @@ interface Props {
   booking: Booking;
   onClose: () => void;
   onStatusChange: (id: string, status: Booking["status"]) => void;
+  onReschedule?: (id: string, newShowtime: { date: string; time: string; room: string }) => void;
 }
 
 const inputCls = "w-full rounded-xl border border-[#1F2532] bg-[#0D1117] px-3 py-2 text-sm text-white outline-none transition-all focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/15";
@@ -27,7 +28,7 @@ function InfoRow({ icon: Icon, label, value, accent }: { icon: React.ComponentTy
   );
 }
 
-export default function BookingDetailPanel({ booking, onClose, onStatusChange }: Props) {
+export default function BookingDetailPanel({ booking, onClose, onStatusChange, onReschedule }: Props) {
   const stCfg = statusConfig[booking.status];
   const [showReschedule, setShowReschedule] = useState(false);
   const [showRefund, setShowRefund] = useState(false);
@@ -37,6 +38,12 @@ export default function BookingDetailPanel({ booking, onClose, onStatusChange }:
   const [refunded, setRefunded] = useState(false);
 
   function handleReschedule() {
+    // Cập nhật thông tin suất chiếu mới lên parent component
+    onReschedule?.(booking.id, {
+      date: selectedShowtime.date,
+      time: selectedShowtime.time,
+      room: selectedShowtime.room,
+    });
     setRescheduled(true);
     setTimeout(() => { setShowReschedule(false); setRescheduled(false); }, 1200);
   }

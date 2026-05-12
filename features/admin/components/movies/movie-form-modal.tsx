@@ -22,6 +22,7 @@ const emptyForm = {
     actors: "",
     status: "Sắp chiếu" as MovieStatus,
     poster: "/images/mai.jpg",
+    backdrop: "",
     summary: "",
     trailerUrl: "",
     isPublic: true,
@@ -43,6 +44,7 @@ export default function MovieFormModal({ isOpen, onClose, onSave, movie }: Movie
                 actors: movie.actors,
                 status: movie.status,
                 poster: movie.poster,
+                backdrop: movie.backdrop ?? "",
                 summary: movie.summary,
                 trailerUrl: movie.trailerUrl,
                 isPublic: movie.isPublic,
@@ -67,6 +69,7 @@ export default function MovieFormModal({ isOpen, onClose, onSave, movie }: Movie
             actors: form.actors,
             status: form.status,
             poster: form.poster,
+            backdrop: form.backdrop,
             summary: form.summary,
             trailerUrl: form.trailerUrl,
             isPublic: form.isPublic,
@@ -132,8 +135,8 @@ export default function MovieFormModal({ isOpen, onClose, onSave, movie }: Movie
                             <FormField label="Diễn viên chính" value={form.actors} onChange={(v) => setForm({ ...form, actors: v })} style={inputStyle} />
                         </div>
 
-                        {/* Row 3: Duration + Release Date + Poster URL */}
-                        <div className="grid grid-cols-3 gap-4">
+                        {/* Row 3: Duration + Release Date */}
+                        <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="mb-1.5 block text-xs font-semibold" style={{ color: "#8B949E" }}>Thời lượng (phút)</label>
                                 <input
@@ -147,7 +150,12 @@ export default function MovieFormModal({ isOpen, onClose, onSave, movie }: Movie
                                 />
                             </div>
                             <FormField label="Ngày khởi chiếu" value={form.releaseDate} onChange={(v) => setForm({ ...form, releaseDate: v })} placeholder="YYYY-MM-DD" style={inputStyle} />
+                        </div>
+
+                        {/* Row 4: Poster URL + Backdrop URL */}
+                        <div className="grid grid-cols-2 gap-4">
                             <FormField label="Poster URL" value={form.poster} onChange={(v) => setForm({ ...form, poster: v })} style={inputStyle} />
+                            <FormField label="Backdrop URL" value={form.backdrop} onChange={(v) => setForm({ ...form, backdrop: v })} style={inputStyle} />
                         </div>
 
                         {/* Trailer */}

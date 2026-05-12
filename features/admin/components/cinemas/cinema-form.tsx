@@ -10,8 +10,8 @@ type FilterKey = "all" | CinemaStatus;
 const filterTabs: { key: FilterKey; label: string; status?: CinemaStatus }[] = [
   { key: "all",      label: "Tất cả" },
   { key: "Active",   label: "Đang hoạt động", status: "Active" },
-  { key: "Pending",  label: "Sắp chiếu",      status: "Pending" },
-  { key: "Inactive", label: "Ngừng chiếu",    status: "Inactive" },
+  { key: "Pending",  label: "Chưa hoạt động", status: "Pending" },
+  { key: "Inactive", label: "Ngừng hoạt động", status: "Inactive" },
 ];
 
 export default function CinemaForm() {

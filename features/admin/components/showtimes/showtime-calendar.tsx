@@ -153,7 +153,7 @@ export default function ShowtimeCalendar() {
     const [h, m] = data.startTime.split(":").map(Number);
     const meta = MOVIES_META[data.movieTitle] ?? { color: data.color, colorHex: "#3B82F6" };
     const st: Showtime = {
-      id: genId(), movieTitle: data.movieTitle, room: data.room,
+      id: genId(), cinemaId: cinema.id, movieTitle: data.movieTitle, room: data.room,
       startMinutes: h * 60 + m, durationMinutes: data.duration,
       cleaningMinutes: data.cleaningMinutes, language: data.language,
       format: data.format, color: meta.color, colorHex: meta.colorHex, status: "normal",
@@ -167,7 +167,7 @@ export default function ShowtimeCalendar() {
     const [h, m] = data.startTime.split(":").map(Number);
     const meta = MOVIES_META[data.movieTitle] ?? { color: data.color, colorHex: "#3B82F6" };
     update(showtimes.map(s => s.id !== selected.id ? s : {
-      ...s, movieTitle: data.movieTitle, room: data.room,
+      ...s, cinemaId: cinema.id, movieTitle: data.movieTitle, room: data.room,
       startMinutes: h * 60 + m, durationMinutes: data.duration,
       cleaningMinutes: data.cleaningMinutes, language: data.language,
       format: data.format, color: meta.color, colorHex: meta.colorHex,
@@ -193,7 +193,7 @@ export default function ShowtimeCalendar() {
     const dur = { "Avengers: Endgame": 181, "Dune: Part Two": 166, "Lật Mặt 7": 120, "Mai": 130 }[cfg.movie] ?? 120;
     const news: Showtime[] = cfg.rooms.flatMap(room =>
       Array.from({ length: cfg.slots }, (_, i) => ({
-        id: genId(), movieTitle: cfg.movie, room,
+        id: genId(), cinemaId: cinema.id, movieTitle: cfg.movie, room,
         startMinutes: cfg.startHour * 60 + i * (dur + cfg.interval),
         durationMinutes: dur, cleaningMinutes: 15,
         language: "2D Lồng Tiếng", format: "2D",

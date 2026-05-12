@@ -45,8 +45,8 @@ export const roomFormatOptions: RoomFormat[] = ["Standard", "3D", "IMAX", "VIP"]
 
 export const statusConfig: Record<CinemaStatus, { label: string; color: string; bg: string; glow: string }> = {
   Active:   { label: "Đang hoạt động", color: "#2DD4BF", bg: "rgba(45,212,191,0.1)",  glow: "#2DD4BF" },
-  Pending:  { label: "Sắp chiếu",      color: "#60A5FA", bg: "rgba(96,165,250,0.1)",  glow: "#60A5FA" },
-  Inactive: { label: "Ngừng chiếu",    color: "#8B949E", bg: "rgba(139,148,158,0.1)", glow: "#8B949E" },
+  Pending:  { label: "Chưa hoạt động", color: "#60A5FA", bg: "rgba(96,165,250,0.1)",  glow: "#60A5FA" },
+  Inactive: { label: "Ngừng hoạt động", color: "#8B949E", bg: "rgba(139,148,158,0.1)", glow: "#8B949E" },
 };
 
 // ===== Helper: generate empty seat map =====
