@@ -4,5 +4,8 @@ export { default as DashboardMetrics } from "./components/control_panel/dashboar
 export { default as DashboardCharts } from "./components/control_panel/dashboard-charts";
 export { default as MovieTable } from "./components/movies/movie-table";
 export { default as CinemaForm } from "./components/cinemas/cinema-form";
-export {default as ShowTime } from "./components/showtimes/showtime-calendar";
+export { default as ShowTime } from "./components/showtimes/showtime-calendar";
 export { default as BookingList } from "./components/bookings/booking-list";
+export { default as UserDashboard } from "./components/users/user-dashboard";
+export { default as PromotionDashboard } from "./components/promotions/promotion-dashboard";
+export { default as SettingsDashboard } from "./components/settings/settings-dashboard";
