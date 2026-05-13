@@ -22,24 +22,28 @@ export default function MovieBookingPage({ params }: { params: Promise<{ id: str
 
         const showtimes = await showtimeService.getShowtimesByMovie(movieId);
         
-        // Nhóm showtimes theo rạp (vì backend trả về list phẳng)
-        // Ở đây chúng ta giả định rạp từ room hoặc mock rạp
+        // Nhóm showtimes theo rạp (Cinema) từ thông tin phòng (Room)
         const theaterMap: Record<number, Theater> = {};
         showtimes.forEach(s => {
-          const roomId = s.room.id;
-          if (!theaterMap[roomId]) {
-            theaterMap[roomId] = {
-              id: roomId.toString(),
-              name: "Room " + s.room.name,
-              address: "Luxe Cinema Central",
+          const cinema = s.room.cinema;
+          const cinemaId = cinema?.id || 0; // 0 for unassigned
+          
+          if (!theaterMap[cinemaId]) {
+            theaterMap[cinemaId] = {
+              id: cinemaId.toString(),
+              name: cinema?.name || "Luxe Cinema Central",
+              address: cinema?.address || "Hồ Chí Minh",
+              imageUrl: cinema?.imageUrl,
+              description: cinema?.description,
               showtimes: []
             };
           }
-          theaterMap[roomId].showtimes.push({
+          
+          theaterMap[cinemaId].showtimes.push({
             id: s.id.toString(),
-            time: new Date(s.startTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-            type: "GOLD CLASS",
-            theaterId: roomId.toString()
+            time: new Date(s.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+            type: s.room.name.includes("GOLD") ? "GOLD CLASS" : "DELUXE",
+            theaterId: cinemaId.toString()
           });
         });
         

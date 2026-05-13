@@ -85,6 +85,7 @@ public class SecurityConfig {
                 ).permitAll()
                 
                 // Phân quyền chi tiết dựa trên cấp bậc người dùng
+                .requestMatchers(HttpMethod.GET, "/api/admin/cinemas/**").permitAll()
                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")      // Chỉ tài khoản ADMIN được phép
                 .requestMatchers("/api/users/**").authenticated()       // Xem trang cá nhân phải đăng nhập
                 .requestMatchers("/api/bookings/**").authenticated()    // Đăng nhập mới được phép đặt vé

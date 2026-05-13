@@ -34,6 +34,7 @@ public class RoomService {
         room.setName(details.getName());
         room.setRowsCount(details.getRowsCount());
         room.setColsCount(details.getColsCount());
+        room.setCinema(details.getCinema());
         return roomRepository.save(room);
     }
 

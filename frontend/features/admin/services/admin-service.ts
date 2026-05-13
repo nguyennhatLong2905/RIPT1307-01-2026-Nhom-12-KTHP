@@ -1,7 +1,23 @@
 import axiosInstance from "@/lib/axios";
-import { Movie, Room, Showtime, ShowtimeDTO, User, Stats } from "@/types";
+import { Movie, Room, Showtime, ShowtimeDTO, User, Stats, Cinema } from "@/types";
 
 export const adminService = {
+  // Cinema Management
+  getCinemas: async (): Promise<Cinema[]> => {
+    const response = await axiosInstance.get("/admin/cinemas");
+    return response.data;
+  },
+  addCinema: async (cinema: Omit<Cinema, "id">): Promise<Cinema> => {
+    const response = await axiosInstance.post("/admin/cinemas", cinema);
+    return response.data;
+  },
+  updateCinema: async (id: number, cinema: Partial<Cinema>): Promise<Cinema> => {
+    const response = await axiosInstance.put(`/admin/cinemas/${id}`, cinema);
+    return response.data;
+  },
+  deleteCinema: async (id: number): Promise<void> => {
+    await axiosInstance.delete(`/admin/cinemas/${id}`);
+  },
   // Statistics
   getStats: async (): Promise<Stats> => {
     try {

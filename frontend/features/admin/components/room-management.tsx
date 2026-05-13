@@ -28,8 +28,15 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import { adminService } from "../services/admin-service";
-import { Room } from "@/types";
+import { Room, Cinema } from "@/types";
 
 export default function RoomManagement() {
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -37,10 +44,30 @@ export default function RoomManagement() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRoom, setEditingRoom] = useState<Partial<Room> | null>(null);
+  const [cinemas, setCinemas] = useState<Cinema[]>([]);
+  const [selectedCinemaId, setSelectedCinemaId] = useState<string>("");
 
   useEffect(() => {
     fetchRooms();
+    fetchCinemas();
   }, []);
+
+  useEffect(() => {
+    if (editingRoom?.cinema) {
+      setSelectedCinemaId(editingRoom.cinema.id.toString());
+    } else {
+      setSelectedCinemaId("");
+    }
+  }, [editingRoom]);
+
+  const fetchCinemas = async () => {
+    try {
+      const data = await adminService.getCinemas();
+      setCinemas(data);
+    } catch (error) {
+      console.error("Error loading cinemas:", error);
+    }
+  };
 
   const fetchRooms = async () => {
     setIsLoading(true);
@@ -72,6 +99,7 @@ export default function RoomManagement() {
       name: formData.get("name"),
       rowsCount: parseInt(formData.get("rowsCount") as string),
       colsCount: parseInt(formData.get("colsCount") as string),
+      cinema: selectedCinemaId ? { id: parseInt(selectedCinemaId) } : null
     };
 
     try {
@@ -82,6 +110,7 @@ export default function RoomManagement() {
       }
       setIsDialogOpen(false);
       setEditingRoom(null);
+      setSelectedCinemaId("");
       fetchRooms();
     } catch (error) {
       alert("Error saving room");
@@ -89,7 +118,8 @@ export default function RoomManagement() {
   };
 
   const filteredRooms = rooms.filter(room => 
-    room.name.toLowerCase().includes(search.toLowerCase())
+    room.name.toLowerCase().includes(search.toLowerCase()) ||
+    room.cinema?.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -121,6 +151,21 @@ export default function RoomManagement() {
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="cinema">Cinema Branch</Label>
+                <Select value={selectedCinemaId} onValueChange={setSelectedCinemaId} required>
+                  <SelectTrigger className="bg-white/5 border-white/10">
+                    <SelectValue placeholder="Select a cinema" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0d0d0d] border-[#c9a84c]/20 text-white">
+                    {cinemas.map(cinema => (
+                      <SelectItem key={cinema.id} value={cinema.id.toString()}>
+                        {cinema.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="name">Room Name</Label>
                 <Input id="name" name="name" defaultValue={editingRoom?.name} required className="bg-white/5 border-white/10" placeholder="e.g. Room 01, IMAX..." />
@@ -166,6 +211,7 @@ export default function RoomManagement() {
         <Table>
           <TableHeader className="bg-[#c9a84c]/5">
             <TableRow className="border-white/5 hover:bg-transparent">
+              <TableHead className="text-white/60">Cinema</TableHead>
               <TableHead className="text-white/60">Room Name</TableHead>
               <TableHead className="text-white/60">Rows</TableHead>
               <TableHead className="text-white/60">Columns</TableHead>
@@ -176,14 +222,17 @@ export default function RoomManagement() {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10 text-white/40">Loading data...</TableCell>
+                <TableCell colSpan={6} className="text-center py-10 text-white/40">Loading data...</TableCell>
               </TableRow>
             ) : filteredRooms.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10 text-white/40">No rooms found</TableCell>
+                <TableCell colSpan={6} className="text-center py-10 text-white/40">No rooms found</TableCell>
               </TableRow>
             ) : filteredRooms.map((room) => (
               <TableRow key={room.id} className="border-white/5 hover:bg-white/5 transition-colors group">
+                <TableCell className="text-[#c9a84c] font-medium">
+                  {room.cinema?.name || "Unassigned"}
+                </TableCell>
                 <TableCell className="font-semibold flex items-center gap-2">
                   <DoorOpen size={18} style={{ color: "#c9a84c" }} />
                   {room.name}

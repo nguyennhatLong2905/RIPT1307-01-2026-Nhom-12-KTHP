@@ -31,12 +31,21 @@ export interface Movie {
   synopsis?: string;
 }
 
+export interface Cinema {
+  id: number;
+  name: string;
+  address: string;
+  imageUrl?: string;
+  description?: string;
+}
+
 export interface Room {
   id: number;
   name: string;
   rowsCount: number;
   colsCount: number;
   totalSeats?: number;
+  cinema?: Cinema;
 }
 
 export interface Showtime {
@@ -55,6 +64,8 @@ export interface Theater {
   id: string;
   name: string;
   address: string;
+  imageUrl?: string;
+  description?: string;
   showtimes: {
     id: string;
     time: string;

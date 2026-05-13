@@ -10,12 +10,14 @@ import {
   CalendarDays, 
   Users, 
   ChevronRight,
-  Ticket
+  Ticket,
+  MapPin
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
   { name: "Overview", icon: LayoutDashboard, href: "/admin", section: "overview" },
+  { name: "Cinemas", icon: MapPin, href: "/admin/cinemas", section: "cinemas" },
   { name: "Movie Management", icon: Film, href: "/admin/movies", section: "movies" },
   { name: "Rooms", icon: DoorOpen, href: "/admin/rooms", section: "rooms" },
   { name: "Showtimes", icon: CalendarDays, href: "/admin/showtimes", section: "showtimes" },
