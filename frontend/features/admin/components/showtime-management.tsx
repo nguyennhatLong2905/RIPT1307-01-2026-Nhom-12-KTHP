@@ -100,8 +100,9 @@ export default function ShowtimeManagement() {
       setIsDialogOpen(false);
       setEditingShowtime(null);
       fetchData();
-    } catch (error) {
-      alert("Error saving showtime");
+    } catch (error: any) {
+      const msg = error?.response?.data?.message || "Lỗi khi lưu suất chiếu";
+      alert(msg);
     }
   };
 
