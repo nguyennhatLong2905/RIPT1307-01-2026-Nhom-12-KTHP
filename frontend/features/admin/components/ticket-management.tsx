@@ -35,11 +35,8 @@ export default function TicketManagement() {
   const fetchBookings = async () => {
     setIsLoading(true);
     try {
-      // Vì backend tích hợp lịch sử vé vào stats
-      const stats = await adminService.getStats();
-      if (stats.lichSuDatVe) {
-        setBookings(stats.lichSuDatVe);
-      }
+      const data = await adminService.getBookings();
+      setBookings(data);
     } catch (error) {
       console.error("Error loading tickets:", error);
     } finally {
@@ -98,11 +95,11 @@ export default function TicketManagement() {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10 text-white/40">Loading data...</TableCell>
+                <TableCell colSpan={6} className="text-center py-10 text-white/40">Loading data...</TableCell>
               </TableRow>
             ) : filteredBookings.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10 text-white/40">No ticket transactions found</TableCell>
+                <TableCell colSpan={6} className="text-center py-10 text-white/40">No ticket transactions found</TableCell>
               </TableRow>
             ) : filteredBookings.map((booking) => (
               <TableRow key={booking.id} className="border-white/5 hover:bg-white/5 transition-colors group">
@@ -122,7 +119,7 @@ export default function TicketManagement() {
                     <div className="font-medium text-white/80">{booking.showtime.movie.title}</div>
                     <div className="flex items-center gap-2 text-xs text-white/40">
                       <MapPin size={12} />
-                      {booking.showtime.room.name}
+                      {booking.showtime.room.cinema?.name ? `${booking.showtime.room.cinema.name} - ${booking.showtime.room.name}` : booking.showtime.room.name}
                     </div>
                   </div>
                 </TableCell>

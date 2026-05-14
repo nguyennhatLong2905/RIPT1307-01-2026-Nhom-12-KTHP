@@ -7,7 +7,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "rooms")
+@Table(name = "rooms", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"name", "cinema_id"})
+})
 @Data
 public class Room {
     public Room() {
@@ -18,15 +20,17 @@ public class Room {
     private Long id;
 
     @NotBlank(message = "Tên phòng không được để trống")
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @NotNull(message = "Số hàng không được để trống")
     @Min(value = 1, message = "Số hàng phải lớn hơn 0")
+    @Max(value = 15, message = "Số hàng tối đa là 15")
     private Integer rowsCount;
 
     @NotNull(message = "Số cột không được để trống")
     @Min(value = 1, message = "Số cột phải lớn hơn 0")
+    @Max(value = 20, message = "Số cột tối đa là 20")
     private Integer colsCount;
 
     public Integer getTotalSeats() { // Tính tổng số ghế trong phòng

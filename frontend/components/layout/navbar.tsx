@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import axiosInstance from "@/lib/axios";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { isAdmin, isLoggedIn } from "@/lib/auth-utils";
+import { Movie } from "@/types";
 import {
   Sheet,
   SheetClose,
@@ -37,6 +38,41 @@ export default function Navbar() {
   const [loginError, setLoginError] = useState("");
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [allMovies, setAllMovies] = useState<Movie[]>([]);
+  const [searchResults, setSearchResults] = useState<Movie[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    const fetchMoviesForSearch = async () => {
+      try {
+        const response = await axiosInstance.get("/movies");
+        if (Array.isArray(response.data)) {
+          setAllMovies(response.data);
+        }
+      } catch (err) {
+        console.error("Error loading movies for search:", err);
+      }
+    };
+    fetchMoviesForSearch();
+  }, []);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    setIsSearching(true);
+    const timer = setTimeout(() => {
+      const filtered = allMovies.filter(m => 
+        m.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setSearchResults(filtered);
+      setIsSearching(false);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [searchQuery, allMovies]);
 
   useEffect(() => {
     setMounted(true);
@@ -179,21 +215,72 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           {/* Ô tìm kiếm - Ẩn khi là trang admin */}
           {!pathname?.startsWith("/admin") && (
-            <div
-              className="flex items-center gap-3 rounded-full px-5 py-2"
-              style={{
-                backgroundColor: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-              }}
-            >
-              <Search size={20} style={{ color: "#c9a84c" }} />
-              <input
-                type="text"
-                placeholder="SEARCH"
-                className="bg-transparent text-sm tracking-widest outline-none w-32 placeholder:text-neutral-500"
-                style={{ color: "#e0e0e0" }}
-                suppressHydrationWarning
-              />
+            <div className="relative">
+              <div
+                className="flex items-center gap-3 rounded-full px-5 py-2 transition-all duration-300 focus-within:border-[#c9a84c]/50 focus-within:bg-white/10"
+                style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.08)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
+                }}
+              >
+                <Search size={20} style={{ color: "#c9a84c" }} />
+                <input
+                  type="text"
+                  placeholder="SEARCH"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="bg-transparent text-sm tracking-widest outline-none w-32 placeholder:text-neutral-500 transition-all focus:w-48"
+                  style={{ color: "#e0e0e0" }}
+                  suppressHydrationWarning
+                />
+              </div>
+
+              {/* Kết quả tìm kiếm dropdown */}
+              {searchQuery.trim().length > 0 && (
+                <div 
+                  className="absolute right-0 top-full mt-2 w-72 rounded-2xl border border-[#c9a84c]/20 bg-[#0d0d0d] p-2 shadow-[0_10px_40px_rgba(0,0,0,0.8)] backdrop-blur-xl transition-all max-h-80 overflow-y-auto z-50 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-[#c9a84c]/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-[#c9a84c]/40 transition-colors"
+                  style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(201, 168, 76, 0.2) transparent" }}
+                >
+                  {isSearching ? (
+                    <div className="p-4 text-center text-xs text-white/40 italic">Searching...</div>
+                  ) : searchResults.length === 0 ? (
+                    <div className="p-4 text-center text-xs text-white/40 italic">No movies found</div>
+                  ) : (
+                    <div className="space-y-1">
+                      {searchResults.map((movie) => (
+                        <button
+                          key={movie.id}
+                          onClick={() => {
+                            router.push(`/movies/${movie.id}`);
+                            setSearchQuery("");
+                          }}
+                          className="flex w-full items-center gap-3 rounded-xl p-2 transition-colors hover:bg-white/5 text-left group cursor-pointer"
+                        >
+                          {movie.posterUrl ? (
+                            <img
+                              src={movie.posterUrl}
+                              alt={movie.title}
+                              className="h-12 w-9 rounded-lg object-cover border border-white/10 group-hover:border-[#c9a84c]/40 transition-colors"
+                            />
+                          ) : (
+                            <div className="h-12 w-9 rounded-lg bg-white/5 flex items-center justify-center text-[10px] text-white/30 border border-white/10">
+                              FILM
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-bold text-white/90 truncate group-hover:text-[#c9a84c] transition-colors">
+                              {movie.title}
+                            </div>
+                            <div className="text-[10px] text-white/40 truncate mt-0.5">
+                              {movie.genre || "N/A"} • {movie.duration} min
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 

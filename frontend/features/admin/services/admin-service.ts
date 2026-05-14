@@ -1,5 +1,5 @@
 import axiosInstance from "@/lib/axios";
-import { Movie, Room, Showtime, ShowtimeDTO, User, Stats, Cinema } from "@/types";
+import { Movie, Room, Showtime, ShowtimeDTO, User, Stats, Cinema, Booking } from "@/types";
 
 export const adminService = {
   // Cinema Management
@@ -119,6 +119,11 @@ export const adminService = {
       },
     });
     return response.data.url;
+  },
+
+  getBookings: async (): Promise<Booking[]> => {
+    const response = await axiosInstance.get("/admin/bookings");
+    return response.data;
   },
 
   deleteBooking: async (id: number): Promise<string> => {

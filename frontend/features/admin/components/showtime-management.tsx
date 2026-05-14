@@ -187,7 +187,9 @@ export default function ShowtimeManagement() {
                   </SelectTrigger>
                   <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
                     {rooms.map(room => (
-                      <SelectItem key={room.id} value={room.id.toString()}>{room.name}</SelectItem>
+                      <SelectItem key={room.id} value={room.id.toString()}>
+                        {room.cinema?.name ? `${room.cinema.name} - ${room.name}` : room.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -257,7 +259,7 @@ export default function ShowtimeManagement() {
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <DoorOpen size={16} className="text-blue-400" />
-                    {showtime.room.name}
+                    {showtime.room.cinema?.name ? `${showtime.room.cinema.name} - ${showtime.room.name}` : showtime.room.name}
                   </div>
                 </TableCell>
                 <TableCell>

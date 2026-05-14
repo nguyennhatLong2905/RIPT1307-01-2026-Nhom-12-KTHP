@@ -173,11 +173,13 @@ export default function RoomManagement() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="rowsCount">Number of rows</Label>
-                  <Input id="rowsCount" name="rowsCount" type="number" defaultValue={editingRoom?.rowsCount} required className="bg-white/5 border-white/10" />
+                  <Input id="rowsCount" name="rowsCount" type="number" min="1" max="15" defaultValue={editingRoom?.rowsCount} required className="bg-white/5 border-white/10" />
+                  <p className="text-[10px] text-white/40">Max 15 rows</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="colsCount">Number of columns</Label>
-                  <Input id="colsCount" name="colsCount" type="number" defaultValue={editingRoom?.colsCount} required className="bg-white/5 border-white/10" />
+                  <Input id="colsCount" name="colsCount" type="number" min="1" max="20" defaultValue={editingRoom?.colsCount} required className="bg-white/5 border-white/10" />
+                  <p className="text-[10px] text-white/40">Max 20 columns</p>
                 </div>
               </div>
               <DialogFooter>

@@ -3,6 +3,7 @@ package com.example.THLTW.controller;
 import com.example.THLTW.entity.Movie;
 import com.example.THLTW.entity.Room;
 import com.example.THLTW.entity.Showtime;
+import com.example.THLTW.entity.Booking;
 import com.example.THLTW.entity.User;
 import com.example.THLTW.dto.ShowtimeDTO;
 import com.example.THLTW.service.*;
@@ -132,5 +133,20 @@ public class AdminController {
     @GetMapping("/stats")
     public Map<String, Object> getStats() {
         return bookingService.getStatistics();
+    }
+
+    // ==========================================
+    // 6. QUẢN LÝ ĐẶT VÉ (BOOKING MANAGEMENT)
+    // ==========================================
+    @GetMapping("/bookings")
+    public List<Booking> getAllBookings() {
+        Map<String, Object> stats = bookingService.getStatistics();
+        if (stats.get("lichSuDatVe") != null) {
+            List<Booking> bookings = (List<Booking>) stats.get("lichSuDatVe");
+            return bookings.stream()
+                    .sorted((a, b) -> b.getId().compareTo(a.getId()))
+                    .toList();
+        }
+        return List.of();
     }
 }
