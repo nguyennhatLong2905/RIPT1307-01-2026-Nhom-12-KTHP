@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Theater, Showtime } from "@/types";
+import { Theater } from "@/types";
 import { ChevronDown, ChevronUp, MapPin } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { isLoggedIn } from "@/lib/auth-utils";
@@ -25,70 +25,70 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
   const getTheaterById = (id: string) => theaters.find(t => t.id === id);
 
   return (
-    <div className="flex flex-col h-full bg-[#0a0a0a] text-white">
-      <ScrollArea className="flex-1 p-10 pb-32">
-        <div className="mb-10">
-          <h2 className="text-[#DAB254] text-[10px] font-bold tracking-[0.2em] mb-6">SELECT DATE</h2>
-          <div className="flex gap-4">
+    <div className="flex h-full flex-col bg-[#0a0a0a] text-white">
+      <ScrollArea className="flex-1 px-7 py-6 pb-36 lg:px-10 lg:py-8">
+        <div className="mb-7">
+          <h2 className="mb-4 text-[10px] font-bold tracking-[0.2em] text-[#DAB254]">SELECT DATE</h2>
+          <div className="flex flex-wrap gap-3">
             {DATES.map((date) => (
               <button
                 key={date.day}
                 onClick={() => setSelectedDate(date.day)}
-                className={`flex flex-col items-center justify-center w-16 h-20 rounded-md border transition-all ${
+                className={`flex h-16 w-14 flex-col items-center justify-center rounded-md border transition-all lg:h-[72px] lg:w-16 ${
                   selectedDate === date.day 
-                    ? "border-[#DAB254] bg-[#DAB254]/5" 
-                    : "border-gray-800 hover:border-gray-600 bg-[#141414]"
+                    ? "border-[#DAB254] bg-[#DAB254]/10 shadow-[0_0_18px_rgba(218,178,84,0.12)]" 
+                    : "border-gray-800 bg-[#141414] hover:border-gray-600 hover:bg-[#181818]"
                 }`}
               >
-                <span className="text-[9px] text-gray-400 mb-1">{date.month}</span>
-                <span className="text-xl font-light mb-1">{date.day}</span>
-                <span className="text-[9px] text-[#DAB254]">{date.dayOfWeek}</span>
+                <span className="mb-0.5 text-[8px] text-gray-400 lg:text-[9px]">{date.month}</span>
+                <span className="mb-0.5 text-lg font-light lg:text-xl">{date.day}</span>
+                <span className="text-[8px] text-[#DAB254] lg:text-[9px]">{date.dayOfWeek}</span>
               </button>
             ))}
           </div>
         </div>
 
         <div>
-          <h2 className="text-[#DAB254] text-[10px] font-bold tracking-[0.2em] mb-6">THEATERS & SHOWTIMES</h2>
-          <div className="space-y-4">
+          <h2 className="mb-4 text-[10px] font-bold tracking-[0.2em] text-[#DAB254]">THEATERS & SHOWTIMES</h2>
+          <div className="space-y-3">
             {theaters.map((theater) => (
               <div 
                 key={theater.id} 
-                className="bg-[#141414] rounded-lg overflow-hidden border border-gray-800/50"
+                className="overflow-hidden rounded-xl border border-gray-800/60 bg-[#141414]/95 shadow-[0_18px_40px_rgba(0,0,0,0.22)]"
               >
                 <button 
-                  className="w-full flex items-center justify-between p-6 hover:bg-[#1a1a1a] transition-colors"
+                  className="flex w-full items-center justify-between gap-4 p-4 transition-colors hover:bg-[#1a1a1a] lg:p-5"
                   onClick={() => setExpandedTheater(expandedTheater === theater.id ? "" : theater.id)}
                 >
-                  <div className="flex items-start gap-4">
-                    <MapPin className="w-5 h-5 text-[#DAB254] mt-0.5 shrink-0" />
-                    <div className="text-left">
-                      <h3 className="text-base font-medium">{theater.name}</h3>
-                      <p className="text-[10px] text-gray-500 mt-1 uppercase tracking-wider">{theater.address}</p>
+                  <div className="flex min-w-0 items-start gap-3">
+                    <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-[#DAB254]" />
+                    <div className="min-w-0 text-left">
+                      <h3 className="truncate text-sm font-medium lg:text-base">{theater.name}</h3>
+                      <p className="mt-1 line-clamp-2 text-[10px] uppercase tracking-wider text-gray-500">{theater.address}</p>
                     </div>
                   </div>
                   {expandedTheater === theater.id ? (
-                    <ChevronUp className="w-4 h-4 text-[#DAB254]" />
+                    <ChevronUp className="h-4 w-4 shrink-0 text-[#DAB254]" />
                   ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-500" />
+                    <ChevronDown className="h-4 w-4 shrink-0 text-gray-500" />
                   )}
                 </button>
 
                 {expandedTheater === theater.id && (
-                  <div className="p-6 pt-0 border-t border-gray-800/50 mt-2">
-                    <div className="grid grid-cols-3 gap-4 pt-6">
+                  <div className="border-t border-gray-800/50 px-4 pb-4 pt-3 lg:px-5 lg:pb-5">
+                    <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
                       {theater.showtimes.map((showtime) => (
                         <button
                           key={showtime.id}
                           onClick={() => setSelectedShowtime(showtime)}
-                          className={`flex flex-col items-center justify-center py-4 rounded-md border transition-all ${
+                          className={`flex flex-col items-center justify-center rounded-lg border py-3 transition-all ${
                             selectedShowtime?.id === showtime.id
-                              ? "border-[#DAB254] bg-[#DAB254]/10"
-                              : "border-gray-800 bg-[#1a1a1a] hover:border-gray-600"
+                              ? "border-[#DAB254] bg-[#DAB254]/10 shadow-[0_0_18px_rgba(218,178,84,0.12)]"
+                              : "border-gray-800 bg-[#1a1a1a] hover:border-gray-600 hover:bg-[#202020]"
                           }`}
                         >
-                          <span className="text-sm text-[#DAB254] mb-1">{showtime.time}</span>
-                          <span className="text-[8px] text-gray-400 tracking-[0.1em] text-center uppercase">
+                          <span className="mb-1 text-sm font-medium text-[#DAB254]">{showtime.time}</span>
+                          <span className="text-center text-[8px] uppercase tracking-[0.1em] text-gray-400">
                             {showtime.type}
                           </span>
                         </button>
@@ -102,16 +102,16 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
         </div>
       </ScrollArea>
 
-      <div className="fixed bottom-0 right-0 w-1/2 p-6 bg-gradient-to-t from-black via-[#0a0a0a] to-transparent pointer-events-none">
-        <div className="bg-[#141414] border border-gray-800 rounded-lg p-5 flex items-center justify-between pointer-events-auto shadow-2xl">
-          <div>
-            <h4 className="text-[9px] text-gray-400 tracking-[0.2em] mb-2 uppercase">Selected Showtime</h4>
+      <div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-4 pt-10 bg-gradient-to-t from-black via-[#0a0a0a]/95 to-transparent pointer-events-none">
+        <div className="pointer-events-auto flex items-center justify-between gap-4 rounded-xl border border-gray-800 bg-[#141414]/95 p-4 shadow-2xl backdrop-blur">
+          <div className="min-w-0">
+            <h4 className="mb-1.5 text-[9px] uppercase tracking-[0.2em] text-gray-400">Selected Showtime</h4>
             {selectedShowtime ? (
-              <p className="text-[#DAB254] text-sm font-medium">
+              <p className="truncate text-sm font-medium text-[#DAB254]">
                 {selectedShowtime.time} • {getTheaterById(selectedShowtime.theaterId)?.name}
               </p>
             ) : (
-              <p className="text-gray-600 text-sm italic">Please select a showtime</p>
+              <p className="text-sm italic text-gray-600">Please select a showtime</p>
             )}
           </div>
           <button 
@@ -125,10 +125,10 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
               const movieId = pathParts[2];
               router.push(`/movies/${movieId}/seats?showtimeId=${selectedShowtime!.id}`);
             }}
-            className={`px-8 py-3 rounded text-[11px] font-bold tracking-[0.15em] transition-all ${
+            className={`shrink-0 rounded-lg px-5 py-3 text-[10px] font-bold tracking-[0.15em] transition-all lg:px-7 lg:text-[11px] ${
               selectedShowtime 
-                ? "bg-gradient-to-r from-[#DAB254] to-[#FF8C6B] text-black hover:opacity-90 shadow-[0_0_20px_rgba(218,178,84,0.3)]" 
-                : "bg-gray-800 text-gray-500 cursor-not-allowed"
+                ? "bg-gradient-to-r from-[#DAB254] to-[#FF8C6B] text-black shadow-[0_0_20px_rgba(218,178,84,0.3)] hover:opacity-90" 
+                : "cursor-not-allowed bg-gray-800 text-gray-500"
             }`}
           >
             CONTINUE TO SEATS
