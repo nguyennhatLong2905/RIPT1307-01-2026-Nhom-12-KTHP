@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, User, LogOut } from "lucide-react";
+import { Search, User, LogOut, LockKeyhole, Sparkles, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,6 +34,7 @@ export default function Navbar() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [loginError, setLoginError] = useState("");
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
@@ -64,6 +65,7 @@ export default function Navbar() {
 
 
   const handleLogin = async () => {
+    setLoginError("");
     setIsLoading(true);
     try {
       const response = await axiosInstance.post("/auth/login", { username, password });
@@ -75,11 +77,10 @@ export default function Navbar() {
         router.push("/admin");
         setIsSheetOpen(false);
       } else {
-        alert("Login successful!");
         window.location.reload(); // Reload for normal users to update UI
       }
     } catch (error) {
-      alert("Login failed. Please check your credentials!");
+      setLoginError("Login failed. Please check your username and password.");
     } finally {
       setIsLoading(false);
     }
@@ -276,63 +277,118 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <SheetHeader className="mt-4">
-                    <SheetTitle style={{
-                      color: "#c9a84c", letterSpacing: "0.1em", fontWeight: "bold", fontSize: "2em", textAlign: "center"
-                    }}>LOGIN</SheetTitle>
-                  </SheetHeader>
-                  <div className="grid flex-1 auto-rows-min gap-6 px-4 py-8">
-                    <div className="grid gap-3">
-                      <Label htmlFor="username" style={{ color: "#c9a84c", fontSize: "0.8rem", letterSpacing: "0.05em" }}>USERNAME</Label>
-                      <Input
-                        id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Enter username"
-                        className="border-[#c9a84c]/20 focus-visible:ring-[#c9a84c]/50 h-12 rounded-xl"
-                        style={{ backgroundColor: "rgba(255,255,255,0.05)", color: "#e0e0e0" }}
-                      />
+                  <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                    <div className="absolute -right-24 -top-24 h-56 w-56 rounded-full bg-[#c9a84c]/20 blur-3xl" />
+                    <div className="absolute -bottom-20 left-8 h-44 w-44 rounded-full bg-[#ff8c6b]/10 blur-3xl" />
+                    <div className="absolute inset-x-8 top-28 h-px bg-gradient-to-r from-transparent via-[#c9a84c]/40 to-transparent" />
+                  </div>
+
+                  <SheetHeader className="relative mt-4 items-center text-center">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#c9a84c]/30 bg-[#c9a84c]/10 shadow-[0_0_35px_rgba(201,168,76,0.18)]">
+                      <LockKeyhole className="h-8 w-8 text-[#c9a84c]" />
                     </div>
-                    <div className="grid gap-3">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="password" style={{ color: "#c9a84c", fontSize: "0.8rem", letterSpacing: "0.05em" }}>PASSWORD</Label>
-                        <SheetClose asChild>
-                          <button 
-                            onClick={() => router.push("/forgot-password")}
-                            className="text-[10px] text-white/40 hover:text-[#c9a84c] uppercase tracking-widest font-bold transition-colors"
-                          >
-                            Forgot password?
-                          </button>
-                        </SheetClose>
+                    <SheetTitle className="text-center text-3xl font-black tracking-[0.18em] text-[#c9a84c]">
+                      WELCOME BACK
+                    </SheetTitle>
+                    <SheetDescription className="max-w-xs text-center text-xs leading-5 text-white/45">
+                      Sign in once to book tickets, save favorite movies and access your Luxe Cinema account.
+                    </SheetDescription>
+                  </SheetHeader>
+
+                  <div className="relative mt-8 grid flex-1 auto-rows-min gap-5 px-4">
+                    <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 shadow-2xl backdrop-blur">
+                      <div className="mb-5 flex items-center gap-3 rounded-2xl border border-[#c9a84c]/15 bg-[#c9a84c]/5 p-3">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#c9a84c]/15 text-[#c9a84c]">
+                          <Sparkles className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold uppercase tracking-[0.18em] text-white">Member Access</p>
+                          <p className="text-[11px] text-white/40">For both user and admin accounts</p>
+                        </div>
                       </div>
-                      <Input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter password"
-                        className="border-[#c9a84c]/20 focus-visible:ring-[#c9a84c]/50 h-12 rounded-xl"
-                        style={{ backgroundColor: "rgba(255,255,255,0.05)", color: "#e0e0e0" }}
-                      />
+
+                      <div className="grid gap-4">
+                        <div className="grid gap-2.5">
+                          <Label htmlFor="username" className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#c9a84c]">
+                            Username
+                          </Label>
+                          <div className="group relative">
+                            <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35 transition-colors group-focus-within:text-[#c9a84c]" />
+                            <Input
+                              id="username"
+                              value={username}
+                              onChange={(e) => setUsername(e.target.value)}
+                              placeholder="Enter username"
+                              autoComplete="username"
+                              className="h-12 rounded-2xl border-white/10 bg-black/30 pl-11 text-white placeholder:text-white/25 focus-visible:border-[#c9a84c]/50 focus-visible:ring-[#c9a84c]/30"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid gap-2.5">
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="password" className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#c9a84c]">
+                              Password
+                            </Label>
+                            <SheetClose asChild>
+                              <button 
+                                onClick={() => router.push("/forgot-password")}
+                                className="text-[10px] font-bold uppercase tracking-widest text-white/40 transition-colors hover:text-[#c9a84c]"
+                              >
+                                Forgot password?
+                              </button>
+                            </SheetClose>
+                          </div>
+                          <div className="group relative">
+                            <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35 transition-colors group-focus-within:text-[#c9a84c]" />
+                            <Input
+                              id="password"
+                              type="password"
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              placeholder="Enter password"
+                              autoComplete="current-password"
+                              className="h-12 rounded-2xl border-white/10 bg-black/30 pl-11 text-white placeholder:text-white/25 focus-visible:border-[#c9a84c]/50 focus-visible:ring-[#c9a84c]/30"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {loginError && (
+                        <div className="mt-4 rounded-2xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-xs leading-5 text-red-200">
+                          {loginError}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 text-[10px] uppercase tracking-widest text-white/45">
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                        <ShieldCheck className="mb-2 h-4 w-4 text-[#c9a84c]" />
+                        Secure login
+                      </div>
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                        <User className="mb-2 h-4 w-4 text-[#c9a84c]" />
+                        Auto role detect
+                      </div>
                     </div>
                   </div>
-                  <SheetFooter className="mt-auto flex flex-col gap-4">
+
+                  <SheetFooter className="relative mt-auto flex flex-col gap-4 border-t border-white/10 bg-black/10 px-4 pt-5">
                     <Button
                       onClick={handleLogin}
-                      disabled={isLoading}
-                      className="w-full h-12 hover:bg-[#d4b455] transition-colors rounded-xl"
-                      style={{ backgroundColor: "#c9a84c", color: "#000", fontWeight: "bold", letterSpacing: "0.05em" }}
+                      disabled={isLoading || !username.trim() || !password.trim()}
+                      className="h-12 w-full rounded-2xl bg-gradient-to-r from-[#c9a84c] to-[#ff8c6b] font-black tracking-[0.14em] text-black shadow-[0_0_28px_rgba(201,168,76,0.22)] transition-all hover:scale-[1.01] hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-45"
                     >
                       {isLoading ? "LOGGING IN..." : "LOGIN"}
                     </Button>
                     
-                    <div className="text-center space-y-2">
-                      <p className="text-[11px] text-white/40 uppercase tracking-widest">Don't have an account?</p>
+                    <div className="space-y-2 text-center">
+                      <p className="text-[11px] uppercase tracking-widest text-white/40">Don't have an account?</p>
                       <SheetClose asChild>
                         <Button
                           variant="ghost"
                           onClick={() => router.push("/register")}
-                          className="w-full text-[#c9a84c] hover:text-[#c9a84c] hover:bg-[#c9a84c]/10 rounded-xl font-bold border border-[#c9a84c]/20"
+                          className="h-11 w-full rounded-2xl border border-[#c9a84c]/25 bg-[#c9a84c]/5 font-bold text-[#c9a84c] hover:bg-[#c9a84c]/10 hover:text-[#c9a84c]"
                         >
                           REGISTER NOW
                         </Button>
