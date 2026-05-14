@@ -47,6 +47,7 @@ export default function ShowtimeManagement() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingShowtime, setEditingShowtime] = useState<Partial<Showtime> | null>(null);
+  const [notice, setNotice] = useState<{ title: string; message: string } | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -102,12 +103,41 @@ export default function ShowtimeManagement() {
       fetchData();
     } catch (error: any) {
       const msg = error?.response?.data?.message || "Lỗi khi lưu suất chiếu";
-      alert(msg);
+      setNotice({
+        title: "Không thể lưu suất chiếu",
+        message: msg,
+      });
     }
   };
 
   return (
     <div className="space-y-6">
+      <Dialog open={!!notice} onOpenChange={(open) => !open && setNotice(null)}>
+        <DialogContent className="max-w-md border-[#c9a84c]/30 bg-[#0d0d0d] text-white shadow-[0_0_60px_rgba(201,168,76,0.18)]">
+          <DialogHeader className="space-y-3 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-[#c9a84c]/30 bg-[#c9a84c]/10 text-[#c9a84c]">
+              !
+            </div>
+            <DialogTitle className="text-xl font-bold italic tracking-tight text-[#c9a84c]">
+              {notice?.title}
+            </DialogTitle>
+            <DialogDescription className="text-center leading-relaxed text-white/70">
+              {notice?.message}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button
+              type="button"
+              onClick={() => setNotice(null)}
+              className="min-w-28 rounded-xl px-8 font-bold text-black hover:bg-opacity-90"
+              style={{ backgroundColor: "#c9a84c" }}
+            >
+              OK
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold">Showtime Management</h2>
