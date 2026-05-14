@@ -8,7 +8,9 @@ import {
   Trash2, 
   Film,
   Upload,
-  Loader2
+  Loader2,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { 
   Table, 
@@ -40,6 +42,10 @@ export default function MovieManagement() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingMovie, setEditingMovie] = useState<Partial<Movie> | null>(null);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   
   // States cho file upload
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -130,6 +136,11 @@ export default function MovieManagement() {
     movie.title.toLowerCase().includes(search.toLowerCase()) ||
     movie.genre.toLowerCase().includes(search.toLowerCase())
   );
+
+  // Tính toán phân trang
+  const totalPages = Math.max(1, Math.ceil(filteredMovies.length / itemsPerPage));
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedMovies = filteredMovies.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="space-y-6">
@@ -249,7 +260,10 @@ export default function MovieManagement() {
             <Input 
               placeholder="Search movies..." 
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
               className="pl-10 bg-white/5 border-white/10 rounded-xl focus:border-[#c9a84c]/50 transition-colors"
             />
           </div>
@@ -271,11 +285,11 @@ export default function MovieManagement() {
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-10 text-white/40">Loading data...</TableCell>
               </TableRow>
-            ) : filteredMovies.length === 0 ? (
+            ) : paginatedMovies.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-10 text-white/40">No movies found</TableCell>
               </TableRow>
-            ) : filteredMovies.map((movie) => (
+            ) : paginatedMovies.map((movie) => (
               <TableRow key={movie.id} className="border-white/5 hover:bg-white/5 transition-colors group">
                 <TableCell>
                   <div className="w-12 h-16 rounded-lg bg-white/5 overflow-hidden border border-white/10 flex items-center justify-center relative group-hover:border-[#c9a84c]/30 transition-colors">
@@ -326,6 +340,46 @@ export default function MovieManagement() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Thanh phân trang cao cấp nằm ở giữa, bên ngoài bảng */}
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6">
+          <div className="flex items-center gap-1 bg-[#0d0d0d] p-1.5 rounded-xl border border-[#c9a84c]/20 shadow-lg">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              className="h-8 w-8 rounded-lg text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-30"
+            >
+              <ChevronLeft size={16} />
+            </Button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <Button
+                key={page}
+                variant={currentPage === page ? "default" : "ghost"}
+                onClick={() => setCurrentPage(page)}
+                className={`h-8 w-8 rounded-lg text-xs font-bold transition-all ${
+                  currentPage === page 
+                    ? "bg-[#c9a84c] text-black hover:bg-[#c9a84c]/90 shadow-md shadow-[#c9a84c]/20" 
+                    : "text-white/60 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {page}
+              </Button>
+            ))}
+            <Button 
+              variant="ghost" 
+              size="icon"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              className="h-8 w-8 rounded-lg text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-30"
+            >
+              <ChevronRight size={16} />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

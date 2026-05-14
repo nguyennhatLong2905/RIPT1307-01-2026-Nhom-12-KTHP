@@ -6,9 +6,12 @@ import com.example.THLTW.entity.Showtime;
 import com.example.THLTW.entity.Booking;
 import com.example.THLTW.entity.User;
 import com.example.THLTW.dto.ShowtimeDTO;
+import com.example.THLTW.repository.BookingRepository;
 import com.example.THLTW.service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -34,21 +37,27 @@ public class AdminController {
     @Autowired
     private RoomService roomService;
 
+    @Autowired
+    private BookingRepository bookingRepository;
+
     // ==========================================
     // 1. QUẢN LÝ PHIM (MOVIE MANAGEMENT)
     // ==========================================
     @PostMapping("/movies")
+    @CacheEvict(value = "movies", allEntries = true)
     public Movie addMovie(@RequestBody @Valid Movie movie) {
         return movieService.addMovie(movie);
     }
 
     @PutMapping("/movies/{id}")
+    @CacheEvict(value = "movies", allEntries = true)
     public ResponseEntity<?> updateMovie(@PathVariable Long id, @RequestBody @Valid Movie movieDetails) {
         movieService.updateMovie(id, movieDetails);
         return ResponseEntity.ok("Cập nhật phim thành công!");
     }
 
     @DeleteMapping("/movies/{id}")
+    @CacheEvict(value = "movies", allEntries = true)
     public ResponseEntity<?> deleteMovie(@PathVariable Long id) {
         movieService.deleteMovie(id);
         return ResponseEntity.ok("Xóa phim thành công!");
@@ -58,6 +67,7 @@ public class AdminController {
     // 2. QUẢN LÝ PHÒNG CHIẾU (ROOM MANAGEMENT)
     // ==========================================
     @PostMapping("/rooms")
+    @CacheEvict(value = "adminRooms", allEntries = true)
     public Room addRoom(@RequestBody @Valid Room room) {
         return roomService.addRoom(room);
     }
@@ -68,12 +78,14 @@ public class AdminController {
     }
 
     @DeleteMapping("/rooms/{id}")
+    @CacheEvict(value = "adminRooms", allEntries = true)
     public ResponseEntity<?> deleteRoom(@PathVariable Long id) {
         roomService.deleteRoom(id);
         return ResponseEntity.ok("Xóa phòng chiếu thành công!");
     }
 
     @PutMapping("/rooms/{id}")
+    @CacheEvict(value = "adminRooms", allEntries = true)
     public ResponseEntity<?> updateRoom(@PathVariable Long id, @RequestBody @Valid Room roomDetails) {
         roomService.updateRoom(id, roomDetails);
         return ResponseEntity.ok("Cập nhật phòng chiếu thành công!");
@@ -83,6 +95,7 @@ public class AdminController {
     // 3. QUẢN LÝ SUẤT CHIẾU (SHOWTIME MANAGEMENT)
     // ==========================================
     @PostMapping("/showtimes")
+    @CacheEvict(value = "adminShowtimes", allEntries = true)
     public ResponseEntity<?> createShowtime(@RequestBody @Valid ShowtimeDTO dto) {
         Showtime showtime = new Showtime();
         showtime.setStartTime(dto.getStartTime());
@@ -98,6 +111,7 @@ public class AdminController {
     }
 
     @PutMapping("/showtimes/{id}")
+    @CacheEvict(value = "adminShowtimes", allEntries = true)
     public ResponseEntity<?> updateShowtime(@PathVariable Long id, @RequestBody @Valid ShowtimeDTO dto) {
         Showtime details = new Showtime();
         details.setStartTime(dto.getStartTime());
@@ -108,6 +122,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/showtimes/{id}")
+    @CacheEvict(value = "adminShowtimes", allEntries = true)
     public ResponseEntity<?> deleteShowtime(@PathVariable Long id) {
         showtimeService.deleteShowtime(id);
         return ResponseEntity.ok("Xóa suất chiếu thành công!");
@@ -122,6 +137,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/users/{id}")
+    @CacheEvict(value = "adminUsers", allEntries = true)
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok("Xóa người dùng thành công!");
@@ -140,13 +156,7 @@ public class AdminController {
     // ==========================================
     @GetMapping("/bookings")
     public List<Booking> getAllBookings() {
-        Map<String, Object> stats = bookingService.getStatistics();
-        if (stats.get("lichSuDatVe") != null) {
-            List<Booking> bookings = (List<Booking>) stats.get("lichSuDatVe");
-            return bookings.stream()
-                    .sorted((a, b) -> b.getId().compareTo(a.getId()))
-                    .toList();
-        }
-        return List.of();
+        // Tối ưu hóa truy vấn: Chỉ nạp 100 vé mới nhất thay vì toàn bộ DB để tăng tốc tải bảng
+        return bookingRepository.findTop100ByOrderByIdDesc();
     }
 }

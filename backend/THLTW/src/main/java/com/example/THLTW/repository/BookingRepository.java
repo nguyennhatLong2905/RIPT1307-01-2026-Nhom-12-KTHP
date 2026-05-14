@@ -29,4 +29,13 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     // Thống kê doanh thu theo tháng (Yêu cầu MySQL)
     @Query(value = "SELECT DATE_FORMAT(booking_date, '%Y-%m') as month, SUM(total_amount) as total FROM bookings GROUP BY month ORDER BY month DESC LIMIT 6", nativeQuery = true)
     List<Object[]> getMonthlyRevenue();
+
+    // Lấy 5 đơn đặt vé mới nhất cực kỳ tối ưu (dùng LIMIT ở mức DB)
+    List<Booking> findTop5ByOrderByIdDesc();
+
+    // Lấy 100 đơn đặt vé mới nhất để trang quản lý vé load tức thì
+    List<Booking> findTop100ByOrderByIdDesc();
+
+    // Lấy toàn bộ danh sách vé sắp xếp mới nhất
+    List<Booking> findAllByOrderByIdDesc();
 }

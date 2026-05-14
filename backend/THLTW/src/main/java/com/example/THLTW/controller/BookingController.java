@@ -4,6 +4,8 @@ import com.example.THLTW.entity.Booking;
 import com.example.THLTW.exception.AppException;
 import com.example.THLTW.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
@@ -19,6 +21,11 @@ public class BookingController {
 
     // Thực hiện giao dịch đặt vé cho một suất chiếu cụ thể
     @PostMapping("/showtime/{showtimeId}")
+    @Caching(evict = {
+        @CacheEvict(value = "dashboardSummary", allEntries = true),
+        @CacheEvict(value = "dashboardMonthlyRevenue", allEntries = true),
+        @CacheEvict(value = "adminBookings", allEntries = true)
+    })
     public Booking bookTickets(
             @PathVariable Long showtimeId,
             @RequestBody List<String> seats,
@@ -52,6 +59,11 @@ public class BookingController {
 
     // Hủy một đơn đặt vé
     @DeleteMapping("/{id:\\d+}")
+    @Caching(evict = {
+        @CacheEvict(value = "dashboardSummary", allEntries = true),
+        @CacheEvict(value = "dashboardMonthlyRevenue", allEntries = true),
+        @CacheEvict(value = "adminBookings", allEntries = true)
+    })
     public String cancelBooking(@PathVariable Long id, Principal principal) {
         if (principal == null) throw new AppException(HttpStatus.UNAUTHORIZED, "Bạn cần đăng nhập để hủy vé");
         bookingService.cancelBooking(id, principal.getName());

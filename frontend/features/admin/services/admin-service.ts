@@ -18,19 +18,36 @@ export const adminService = {
   deleteCinema: async (id: number): Promise<void> => {
     await axiosInstance.delete(`/admin/cinemas/${id}`);
   },
-  // Statistics
+  // Statistics - Independent API calls
+  getSummaryStats: async () => {
+    const response = await axiosInstance.get("/admin/dashboard/summary");
+    return response.data;
+  },
+  getMonthlyRevenue: async () => {
+    const response = await axiosInstance.get("/admin/dashboard/monthly-revenue");
+    return response.data;
+  },
+  getRecentBookings: async () => {
+    const response = await axiosInstance.get("/admin/dashboard/recent-bookings");
+    return response.data;
+  },
+
   getStats: async (): Promise<Stats> => {
     try {
-      const response = await axiosInstance.get("/admin/dashboard/stats");
-      const data = response.data;
-      
+      // Gọi song song 3 API độc lập để tận dụng tối đa tốc độ xử lý đồng thời
+      const [summary, monthly, recent] = await Promise.all([
+        axiosInstance.get("/admin/dashboard/summary"),
+        axiosInstance.get("/admin/dashboard/monthly-revenue"),
+        axiosInstance.get("/admin/dashboard/recent-bookings"),
+      ]);
+
       return {
-        totalRevenue: data.totalRevenue || 0,
-        totalBookings: data.totalBookings || 0,
-        totalMovies: data.totalMovies || 0,
-        totalUsers: data.totalCustomers || 0,
-        revenueByMonth: data.revenueByMonth || {},
-        recentBookings: data.recentBookings || []
+        totalRevenue: summary.data?.totalRevenue || 0,
+        totalBookings: summary.data?.totalBookings || 0,
+        totalMovies: summary.data?.totalMovies || 0,
+        totalUsers: summary.data?.totalCustomers || 0,
+        revenueByMonth: monthly.data || {},
+        recentBookings: recent.data || []
       };
     } catch (error) {
       console.error("Lỗi khi lấy thống kê:", error);

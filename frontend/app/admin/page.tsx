@@ -3,21 +3,51 @@
 import React, { useState, useEffect } from "react";
 import { DashboardStats, AdminCharts } from "@/features/admin";
 import { adminService } from "@/features/admin/services/admin-service";
-import { Stats } from "@/types";
+import { Stats, Booking } from "@/types";
 
 export default function AdminOverviewPage() {
-  const [stats, setStats] = useState<Stats | null>(null);
+  const [summaryStats, setSummaryStats] = useState<Stats | null>(null);
+  const [revenueByMonth, setRevenueByMonth] = useState<Record<string, number>>({});
+  const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
-    fetchStats();
+    // Tải song song và độc lập từng phần dữ liệu để trang hiển thị tiệm tiến ngay lập tức
+    fetchSummary();
+    fetchMonthlyRevenue();
+    fetchRecentBookings();
   }, []);
 
-  const fetchStats = async () => {
+  const fetchSummary = async () => {
     try {
-      const data = await adminService.getStats();
-      setStats(data);
+      const data = await adminService.getSummaryStats();
+      setSummaryStats({
+        totalRevenue: data.totalRevenue || 0,
+        totalBookings: data.totalBookings || 0,
+        totalMovies: data.totalMovies || 0,
+        totalUsers: data.totalCustomers || 0,
+        revenueByMonth: {},
+        recentBookings: []
+      });
     } catch (error) {
-      console.error("Lỗi khi tải thống kê:", error);
+      console.error("Lỗi khi tải tổng quan:", error);
+    }
+  };
+
+  const fetchMonthlyRevenue = async () => {
+    try {
+      const data = await adminService.getMonthlyRevenue();
+      setRevenueByMonth(data || {});
+    } catch (error) {
+      console.error("Lỗi khi tải biểu đồ doanh thu:", error);
+    }
+  };
+
+  const fetchRecentBookings = async () => {
+    try {
+      const data = await adminService.getRecentBookings();
+      setRecentBookings(data || []);
+    } catch (error) {
+      console.error("Lỗi khi tải giao dịch gần đây:", error);
     }
   };
 
@@ -30,11 +60,11 @@ export default function AdminOverviewPage() {
         <p className="text-white/40 mt-3 font-medium">Dưới đây là tổng quan về hoạt động của <span className="text-white">Luxe Cinema</span> hôm nay.</p>
       </div>
       
-      <DashboardStats stats={stats} />
+      <DashboardStats stats={summaryStats} />
       
       <AdminCharts 
-        revenueByMonth={stats?.revenueByMonth || {}} 
-        recentBookings={stats?.recentBookings || []} 
+        revenueByMonth={revenueByMonth} 
+        recentBookings={recentBookings} 
       />
     </div>
   );
