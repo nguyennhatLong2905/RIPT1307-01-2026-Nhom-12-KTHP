@@ -84,37 +84,41 @@ export default function SeatsPage() {
   });
 
   return (
-    <div className="flex min-h-screen bg-[#0f0f11]">
-      <div className="flex-1 overflow-y-auto">
-        <SeatSelector 
-          seats={generatedSeats}
-          selectedSeats={selectedSeats}
-          onToggleSeat={handleToggleSeat}
-          theater={{ name: "Luxe Cinema Central", id: "1", address: "Hà Nội", showtimes: [] }} // Mock theater wrapper
-          showtime={{ 
-            id: showtime.id, 
-            time: new Date(showtime.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-            theaterId: "1",
-            type: "GOLD CLASS"
-          } as any}
-        />
+    <Suspense fallback={<div className="min-h-screen bg-[#0f0f11] flex items-center justify-center text-[#c9a84c]">ĐANG TẢI...</div>}>
+      <div className="flex min-h-screen bg-[#0f0f11]">
+        <div className="flex-1 overflow-y-auto">
+          <SeatSelector 
+            seats={generatedSeats}
+            selectedSeats={selectedSeats}
+            onToggleSeat={handleToggleSeat}
+            theater={{ name: "Luxe Cinema Central", id: "1", address: "Hà Nội", showtimes: [] }} // Mock theater wrapper
+            showtime={{ 
+              id: showtime.id, 
+              time: new Date(showtime.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+              theaterId: "1",
+              type: "GOLD CLASS"
+            } as any}
+          />
+        </div>
+        <div className="w-[500px] flex items-center justify-center p-8 bg-[#0f0f11] border-l border-white/5">
+          <OrderSummary 
+            movie={showtime.movie}
+            theater={{ name: "Luxe Cinema Central", id: "1", address: "Hà Nội", showtimes: [] }}
+            showtime={{ 
+              id: showtime.id, 
+              time: new Date(showtime.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+              theaterId: "1",
+              type: "GOLD CLASS"
+            } as any}
+            selectedSeats={selectedSeats}
+            onProceed={handleProceed}
+          />
+        </div>
       </div>
-      <div className="w-[500px] flex items-center justify-center p-8 bg-[#0f0f11] border-l border-white/5">
-        <OrderSummary 
-          movie={showtime.movie}
-          theater={{ name: "Luxe Cinema Central", id: "1", address: "Hà Nội", showtimes: [] }}
-          showtime={{ 
-            id: showtime.id, 
-            time: new Date(showtime.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
-            theaterId: "1",
-            type: "GOLD CLASS"
-          } as any}
-          selectedSeats={selectedSeats}
-          onProceed={handleProceed}
-        />
-      </div>
-    </div>
+    </Suspense>
   );
 }
+
+import { Suspense } from "react";
 
 import axiosInstance from "@/lib/axios";

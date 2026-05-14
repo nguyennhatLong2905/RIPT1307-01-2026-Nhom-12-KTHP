@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import Navbar from "@/components/layout/navbar";
@@ -28,7 +29,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-[#0a0a0a] text-white overscroll-none">
         <SplashScreen />
-        <Navbar />
+        <Suspense fallback={null}>
+          <Navbar />
+        </Suspense>
         <main className="flex-1">{children}</main>
         <Footer />
       </body>
