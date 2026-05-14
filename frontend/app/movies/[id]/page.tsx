@@ -28,6 +28,12 @@ export default function MovieBookingPage({ params }: { params: Promise<{ id: str
           const cinema = s.room.cinema;
           const cinemaId = cinema?.id || 0; // 0 for unassigned
           
+          const startTimeDate = new Date(s.startTime);
+          const now = new Date();
+          const isExpired = now.getTime() > (startTimeDate.getTime() + 30 * 60000);
+          
+          if (isExpired) return;
+
           if (!theaterMap[cinemaId]) {
             theaterMap[cinemaId] = {
               id: cinemaId.toString(),
@@ -43,7 +49,8 @@ export default function MovieBookingPage({ params }: { params: Promise<{ id: str
             id: s.id.toString(),
             time: new Date(s.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
             type: s.room.name.includes("GOLD") ? "GOLD CLASS" : "DELUXE",
-            theaterId: cinemaId.toString()
+            theaterId: cinemaId.toString(),
+            isExpired
           });
         });
         

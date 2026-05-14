@@ -71,6 +71,7 @@ export interface Theater {
     time: string;
     type: string;
     theaterId: string;
+    isExpired?: boolean;
   }[];
 }
 

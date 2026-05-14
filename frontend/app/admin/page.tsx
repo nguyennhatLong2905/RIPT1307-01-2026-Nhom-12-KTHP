@@ -11,7 +11,6 @@ export default function AdminOverviewPage() {
   const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
-    // Tải song song và độc lập từng phần dữ liệu để trang hiển thị tiệm tiến ngay lập tức
     fetchSummary();
     fetchMonthlyRevenue();
     fetchRecentBookings();
@@ -26,10 +25,10 @@ export default function AdminOverviewPage() {
         totalMovies: data.totalMovies || 0,
         totalUsers: data.totalCustomers || 0,
         revenueByMonth: {},
-        recentBookings: []
+        recentBookings: [],
       });
     } catch (error) {
-      console.error("Lỗi khi tải tổng quan:", error);
+      console.error("Error loading summary:", error);
     }
   };
 
@@ -38,7 +37,7 @@ export default function AdminOverviewPage() {
       const data = await adminService.getMonthlyRevenue();
       setRevenueByMonth(data || {});
     } catch (error) {
-      console.error("Lỗi khi tải biểu đồ doanh thu:", error);
+      console.error("Error loading revenue chart:", error);
     }
   };
 
@@ -47,25 +46,22 @@ export default function AdminOverviewPage() {
       const data = await adminService.getRecentBookings();
       setRecentBookings(data || []);
     } catch (error) {
-      console.error("Lỗi khi tải giao dịch gần đây:", error);
+      console.error("Error loading recent bookings:", error);
     }
   };
 
   return (
-    <div className="py-4 space-y-8 animate-in fade-in duration-500">
-      <div className="animate-fade-in-up">
-        <h1 className="text-3xl font-bold italic tracking-tighter">
-          Chào mừng trở lại, <span style={{ color: "#c9a84c" }} className="italic underline decoration-[#c9a84c]/20 underline-offset-8">Admin!</span>
-        </h1>
-        <p className="text-white/40 mt-3 font-medium">Dưới đây là tổng quan về hoạt động của <span className="text-white">Luxe Cinema</span> hôm nay.</p>
+    <div className="space-y-6">
+      {/* Page header */}
+      <div>
+        <h1 className="text-xl font-bold text-white">Dashboard</h1>
+        <p className="text-sm mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>
+          Overview of Luxe Cinema operations
+        </p>
       </div>
-      
+
       <DashboardStats stats={summaryStats} />
-      
-      <AdminCharts 
-        revenueByMonth={revenueByMonth} 
-        recentBookings={recentBookings} 
-      />
+      <AdminCharts revenueByMonth={revenueByMonth} recentBookings={recentBookings} />
     </div>
   );
 }

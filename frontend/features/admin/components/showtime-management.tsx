@@ -1,350 +1,325 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  Plus, 
-  Search, 
-  Edit2, 
-  Trash2, 
-  CalendarDays,
-  Film,
-  DoorOpen,
-  ChevronLeft,
-  ChevronRight
-} from "lucide-react";
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription,
-  DialogFooter,
-  DialogTrigger
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
+import { Plus, Search, Edit2, Trash2, Film, DoorOpen, CalendarDays, X, ChevronLeft, ChevronRight, AlertCircle, ChevronDown } from "lucide-react";
 import { adminService } from "../services/admin-service";
 import { Showtime, Movie, Room, ShowtimeDTO } from "@/types";
+
+const cardStyle = { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" };
+const inputStyle = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)" };
+const onFocus = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) =>
+  (e.currentTarget.style.borderColor = "rgba(201,168,76,0.4)");
+const onBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) =>
+  (e.currentTarget.style.borderColor = "rgba(255,255,255,0.09)");
+function Label({ children }: { children: React.ReactNode }) {
+  return <label className="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style={{ color: "rgba(201,168,76,0.65)" }}>{children}</label>;
+}
+const inputCls = "w-full h-10 px-3 text-sm text-white/85 outline-none rounded-xl transition-all placeholder:text-white/20";
+
+function CustomSelect({
+  name,
+  value,
+  onChange,
+  options,
+  placeholder = "Select...",
+}: {
+  name?: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedOption = options.find((o) => o.value === value);
+
+  return (
+    <div className="relative">
+      {name && <input type="hidden" name={name} value={value} />}
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full h-10 px-3 text-sm text-left flex items-center justify-between outline-none rounded-xl transition-all cursor-pointer"
+        style={{
+          background: "rgba(255,255,255,0.05)",
+          border: isOpen ? "1px solid rgba(201,168,76,0.4)" : "1px solid rgba(255,255,255,0.09)",
+          color: selectedOption ? "#ffffff" : "rgba(255,255,255,0.25)",
+        }}
+      >
+        <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
+        <ChevronDown
+          size={14}
+          className="transition-transform duration-200 flex-shrink-0 ml-2"
+          style={{
+            color: isOpen ? "#c9a84c" : "rgba(255,255,255,0.3)",
+            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+          }}
+        />
+      </button>
+
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+          <div
+            className="absolute left-0 right-0 top-full mt-2 rounded-2xl border border-[#c9a84c]/15 bg-[#0d0d0d] p-2 shadow-[0_10px_40px_rgba(0,0,0,0.8)] backdrop-blur-xl max-h-60 overflow-y-auto z-50"
+            style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(201,168,76,0.2) transparent" }}
+          >
+            <div className="space-y-1">
+              {options.map((option) => {
+                const isSelected = option.value === value;
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => {
+                      onChange(option.value);
+                      setIsOpen(false);
+                    }}
+                    className={`flex w-full items-center justify-between rounded-xl p-2 transition-colors text-left group cursor-pointer ${
+                      isSelected ? "bg-white/8" : "hover:bg-white/5"
+                    }`}
+                  >
+                    <span
+                      className={`text-xs font-semibold truncate transition-colors ${
+                        isSelected ? "text-[#c9a84c]" : "text-white/85 group-hover:text-[#c9a84c]"
+                      }`}
+                    >
+                      {option.label}
+                    </span>
+                    {isSelected && (
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#c9a84c] flex-shrink-0 ml-2" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function ShowtimeManagement() {
   const [showtimes, setShowtimes] = useState<Showtime[]>([]);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingShowtime, setEditingShowtime] = useState<Partial<Showtime> | null>(null);
-  const [notice, setNotice] = useState<{ title: string; message: string } | null>(null);
-
-  // Pagination state
+  const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
   const itemsPerPage = 10;
 
+  const [selectedMovieId, setSelectedMovieId] = useState("");
+  const [selectedRoomId, setSelectedRoomId] = useState("");
+
   useEffect(() => {
-    fetchData();
-  }, []);
+    setSelectedMovieId(editingShowtime?.movie?.id?.toString() || "");
+    setSelectedRoomId(editingShowtime?.room?.id?.toString() || "");
+  }, [editingShowtime]);
+
+  useEffect(() => { fetchData(); }, []);
 
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [showtimesData, moviesData, roomsData] = await Promise.all([
-        adminService.getShowtimes(),
-        adminService.getMovies(),
-        adminService.getRooms()
-      ]);
-      setShowtimes(showtimesData);
-      setMovies(moviesData);
-      setRooms(roomsData);
-    } catch (error) {
-      console.error("Error loading data:", error);
-    } finally {
-      setIsLoading(false);
-    }
+      const [st, mv, rm] = await Promise.all([adminService.getShowtimes(), adminService.getMovies(), adminService.getRooms()]);
+      setShowtimes(st); setMovies(mv); setRooms(rm);
+    } catch (e) { console.error(e); }
+    finally { setIsLoading(false); }
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm("Are you sure you want to delete this showtime?")) {
-      try {
-        await adminService.deleteShowtime(id);
-        fetchData();
-      } catch (error) {
-        alert("Error deleting showtime");
-      }
-    }
+    try { await adminService.deleteShowtime(id); fetchData(); setDeleteConfirmId(null); }
+    catch { alert("Error deleting showtime."); }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const dto: ShowtimeDTO = {
-      movieId: parseInt(formData.get("movieId") as string),
-      roomId: parseInt(formData.get("roomId") as string),
-      startTime: formData.get("startTime") as string,
-      price: parseFloat(formData.get("price") as string),
-    };
-
-    try {
-      if (editingShowtime?.id) {
-        await adminService.updateShowtime(editingShowtime.id, dto);
-      } else {
-        await adminService.createShowtime(dto);
-      }
-      setIsDialogOpen(false);
-      setEditingShowtime(null);
-      fetchData();
-    } catch (error: any) {
-      const msg = error?.response?.data?.message || "Lỗi khi lưu suất chiếu";
-      setNotice({
-        title: "Không thể lưu suất chiếu",
-        message: msg,
-      });
+    if (!selectedMovieId || !selectedRoomId) {
+      setError("Vui lòng chọn đầy đủ phim và phòng chiếu!");
+      return;
     }
+    const dto: ShowtimeDTO = {
+      movieId: parseInt(selectedMovieId),
+      roomId: parseInt(selectedRoomId),
+      startTime: fd.get("startTime") as string,
+      price: parseFloat(fd.get("price") as string),
+    };
+    setIsSaving(true); setError("");
+    try {
+      if (editingShowtime?.id) await adminService.updateShowtime(editingShowtime.id, dto);
+      else await adminService.createShowtime(dto);
+      closeDialog(); fetchData();
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Error saving showtime.");
+    } finally { setIsSaving(false); }
   };
 
-  // Tính toán phân trang
-  const totalPages = Math.max(1, Math.ceil(showtimes.length / itemsPerPage));
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedShowtimes = showtimes.slice(startIndex, startIndex + itemsPerPage);
+  const closeDialog = () => { setIsDialogOpen(false); setEditingShowtime(null); setError(""); setSelectedMovieId(""); setSelectedRoomId(""); };
+
+  const filtered = showtimes.filter(s =>
+    s.movie.title.toLowerCase().includes(search.toLowerCase()) ||
+    s.room.name.toLowerCase().includes(search.toLowerCase())
+  );
+  const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
+  const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
-    <div className="space-y-6">
-      <Dialog open={!!notice} onOpenChange={(open) => !open && setNotice(null)}>
-        <DialogContent className="max-w-md border-[#c9a84c]/30 bg-[#0d0d0d] text-white shadow-[0_0_60px_rgba(201,168,76,0.18)]">
-          <DialogHeader className="space-y-3 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-[#c9a84c]/30 bg-[#c9a84c]/10 text-[#c9a84c]">
-              !
-            </div>
-            <DialogTitle className="text-xl font-bold italic tracking-tight text-[#c9a84c]">
-              {notice?.title}
-            </DialogTitle>
-            <DialogDescription className="text-center leading-relaxed text-white/70">
-              {notice?.message}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="sm:justify-center">
-            <Button
-              type="button"
-              onClick={() => setNotice(null)}
-              className="min-w-28 rounded-xl px-8 font-bold text-black hover:bg-opacity-90"
-              style={{ backgroundColor: "#c9a84c" }}
-            >
-              OK
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-5">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Showtime Management</h2>
-          <p className="text-white/40 text-sm">Schedule movies for rooms and set ticket prices</p>
+          <h1 className="text-xl font-bold text-white">Showtimes</h1>
+          <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>Schedule movies and set ticket prices</p>
         </div>
-        
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button 
-              className="text-black hover:bg-opacity-90 rounded-xl font-bold shadow-lg shadow-[#c9a84c]/20 px-6 transition-all duration-300 hover:scale-105 active:scale-95"
-              style={{ backgroundColor: "#c9a84c" }}
-              onClick={() => setEditingShowtime(null)}
-            >
-              <Plus size={20} className="mr-2" />
-              Create Showtime
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-[#0d0d0d] border-[#c9a84c]/20 text-white">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold italic tracking-tighter" style={{ color: "#c9a84c" }}>
-                {editingShowtime ? "UPDATE SHOWTIME" : "CREATE NEW SHOWTIME"}
-              </DialogTitle>
-              <DialogDescription className="text-white/40">
-                Set time and ticket price for the showtime.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4 py-4">
-              <div className="space-y-2">
-                  <Label htmlFor="movieId">Select Movie</Label>
-                <Select name="movieId" defaultValue={editingShowtime?.movie?.id?.toString()}>
-                  <SelectTrigger className="bg-white/5 border-white/10">
-                    <SelectValue placeholder="Select movie..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
-                    {movies.map(movie => (
-                      <SelectItem key={movie.id} value={movie.id.toString()}>{movie.title}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="roomId">Select Room</Label>
-                <Select name="roomId" defaultValue={editingShowtime?.room?.id?.toString()}>
-                  <SelectTrigger className="bg-white/5 border-white/10">
-                    <SelectValue placeholder="Select room..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
-                    {rooms.map(room => (
-                      <SelectItem key={room.id} value={room.id.toString()}>
-                        {room.cinema?.name ? `${room.cinema.name} - ${room.name}` : room.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="startTime">Start Time</Label>
-                  <Input 
-                    id="startTime" 
-                    name="startTime" 
-                    type="datetime-local" 
-                    defaultValue={editingShowtime?.startTime?.substring(0, 16)} 
-                    required 
-                    className="bg-white/5 border-white/10" 
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="price">Ticket Price (VND)</Label>
-                  <Input id="price" name="price" type="number" defaultValue={editingShowtime?.price} required className="bg-white/5 border-white/10" />
-                </div>
-              </div>
-
-              <DialogFooter>
-                <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)} className="rounded-xl text-white/60 hover:text-white hover:bg-white/5">Cancel</Button>
-                <Button 
-                  type="submit" 
-                  className="text-black hover:bg-opacity-90 rounded-xl px-8 font-bold shadow-lg shadow-[#c9a84c]/10"
-                  style={{ backgroundColor: "#c9a84c" }}
-                >
-                  Save Changes
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <button onClick={() => { setEditingShowtime(null); setIsDialogOpen(true); }} className="flex items-center gap-2 px-4 h-9 rounded-xl text-xs font-bold text-black transition-all hover:opacity-90" style={{ background: "linear-gradient(135deg, #c9a84c, #e8c76a)" }}>
+          <Plus size={15} />Create Showtime
+        </button>
       </div>
 
-      <div className="bg-[#0d0d0d] border border-[#c9a84c]/10 rounded-2xl overflow-hidden shadow-2xl">
-        <Table>
-          <TableHeader className="bg-[#c9a84c]/5">
-            <TableRow className="border-white/5 hover:bg-transparent">
-              <TableHead className="text-white/60">Movie</TableHead>
-              <TableHead className="text-white/60">Room</TableHead>
-              <TableHead className="text-white/60">Start Time</TableHead>
-              <TableHead className="text-white/60">Ticket Price</TableHead>
-              <TableHead className="text-right text-white/60">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-10 text-white/40">Loading data...</TableCell>
-              </TableRow>
-            ) : paginatedShowtimes.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-10 text-white/40">No showtimes found</TableCell>
-              </TableRow>
-            ) : paginatedShowtimes.map((showtime) => (
-              <TableRow key={showtime.id} className="border-white/5 hover:bg-white/5 transition-colors group">
-                <TableCell className="font-semibold">
-                  <div className="flex items-center gap-2">
-                    <Film size={16} style={{ color: "#c9a84c" }} />
-                    {showtime.movie.title}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <DoorOpen size={16} className="text-blue-400" />
-                    {showtime.room.cinema?.name ? `${showtime.room.cinema.name} - ${showtime.room.name}` : showtime.room.name}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <CalendarDays size={16} className="text-white/40" />
-                    {new Date(showtime.startTime).toLocaleString("en-US")}
-                  </div>
-                </TableCell>
-                <TableCell style={{ color: "#c9a84c" }} className="font-bold">{showtime.price.toLocaleString("en-US")} VND</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 rounded-lg"
-                      onClick={() => {
-                        setEditingShowtime(showtime);
-                        setIsDialogOpen(true);
-                      }}
-                    >
-                      <Edit2 size={18} />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-lg"
-                      onClick={() => handleDelete(showtime.id)}
-                    >
-                      <Trash2 size={18} />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+      <div className="rounded-2xl overflow-hidden" style={cardStyle}>
+        <div className="px-4 py-3 border-b flex items-center gap-3" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          <div className="relative flex-1 max-w-xs">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "rgba(255,255,255,0.25)" }} />
+            <input type="text" placeholder="Search movie or room..." value={search} onChange={e => { setSearch(e.target.value); setCurrentPage(1); }} className={`${inputCls} pl-8`} style={inputStyle} onFocus={onFocus} onBlur={onBlur} />
+          </div>
+          <span className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>{filtered.length} showtimes</span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                {["Movie", "Room", "Start Time", "Price", "Actions"].map(h => (
+                  <th 
+                    key={h} 
+                    className={`py-3 text-xs font-bold uppercase tracking-[0.15em] ${
+                      h === "Actions" ? "px-8 text-center" : 
+                      h === "Start Time" ? "pl-12 pr-8 text-left" :
+                      ["Movie", "Room"].includes(h) ? "pl-24 pr-8 text-left" : "px-8 text-left"
+                    }`} 
+                    style={{ color: "rgba(255,255,255,0.3)" }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? <tr><td colSpan={5} className="py-12 text-center text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>Loading...</td></tr>
+                : paginated.length === 0 ? <tr><td colSpan={5} className="py-12 text-center text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>No showtimes found</td></tr>
+                : paginated.map(st => (
+                  <tr key={st.id} className="transition-colors" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.025)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                    <td className="px-8 py-3 text-left">
+                      <div className="flex items-center justify-start gap-2">
+                        <Film size={13} style={{ color: "#c9a84c" }} />
+                        <span className="font-medium text-white/85 text-sm">{st.movie.title}</span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-3 text-sm text-left" style={{ color: "rgba(255,255,255,0.5)" }}>
+                      <div className="flex items-center justify-start gap-1.5">
+                        <DoorOpen size={11} style={{ color: "rgba(255,255,255,0.25)" }} />
+                        {st.room.cinema?.name ? `${st.room.cinema.name} · ${st.room.name}` : st.room.name}
+                      </div>
+                    </td>
+                    <td className="px-8 py-3 text-sm text-left" style={{ color: "rgba(255,255,255,0.5)" }}>
+                      <div className="flex items-center justify-start gap-1.5">
+                        <CalendarDays size={11} style={{ color: "rgba(255,255,255,0.2)" }} />
+                        {new Date(st.startTime).toLocaleString("en-US")}
+                      </div>
+                    </td>
+                    <td className="px-8 py-3 text-sm font-bold text-left" style={{ color: "#c9a84c" }}>{st.price.toLocaleString()} đ</td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex justify-center items-center gap-1">
+                        <button onClick={() => { setEditingShowtime(st); setIsDialogOpen(true); }} className="p-1.5 rounded-lg transition-colors" style={{ color: "rgba(96,165,250,0.7)" }} onMouseEnter={e => { e.currentTarget.style.color = "#60a5fa"; e.currentTarget.style.background = "rgba(96,165,250,0.08)"; }} onMouseLeave={e => { e.currentTarget.style.color = "rgba(96,165,250,0.7)"; e.currentTarget.style.background = "transparent"; }}><Edit2 size={14} /></button>
+                        <div className="relative">
+                          <button onClick={() => setDeleteConfirmId(deleteConfirmId === st.id ? null : st.id)} className="p-1.5 rounded-lg transition-colors" style={{ color: deleteConfirmId === st.id ? "#ef4444" : "rgba(239,68,68,0.6)", background: deleteConfirmId === st.id ? "rgba(239,68,68,0.12)" : "transparent" }} onMouseEnter={e => { if (deleteConfirmId !== st.id) { e.currentTarget.style.color = "#ef4444"; e.currentTarget.style.background = "rgba(239,68,68,0.08)"; } }} onMouseLeave={e => { if (deleteConfirmId !== st.id) { e.currentTarget.style.color = "rgba(239,68,68,0.6)"; e.currentTarget.style.background = "transparent"; } }}><Trash2 size={14} /></button>
+                          
+                          {deleteConfirmId === st.id && (
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 p-2 rounded-xl border flex items-center gap-2 shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200" style={{ background: "#1a1a1a", borderColor: "rgba(239,68,68,0.3)", backdropFilter: "blur(20px)", minWidth: "140px" }}>
+                              <span className="text-[10px] font-bold text-white/60 uppercase tracking-wider ml-1">Delete?</span>
+                              <div className="flex gap-1 ml-auto">
+                                <button onClick={() => handleDelete(st.id)} className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all bg-[#ef4444] text-white hover:bg-[#dc2626]">Yes</button>
+                                <button onClick={() => setDeleteConfirmId(null)} className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all bg-white/5 text-white/40 hover:bg-white/10 hover:text-white/60">No</button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {/* Thanh phân trang cao cấp nằm ở giữa, bên ngoài bảng */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-6">
-          <div className="flex items-center gap-1 bg-[#0d0d0d] p-1.5 rounded-xl border border-[#c9a84c]/20 shadow-lg">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              className="h-8 w-8 rounded-lg text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-30"
-            >
-              <ChevronLeft size={16} />
-            </Button>
+        <div className="flex justify-center">
+          <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+            <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} className="w-7 h-7 rounded-lg flex items-center justify-center disabled:opacity-30" style={{ color: "rgba(255,255,255,0.5)" }}><ChevronLeft size={14} /></button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-              <Button
-                key={page}
-                variant={currentPage === page ? "default" : "ghost"}
-                onClick={() => setCurrentPage(page)}
-                className={`h-8 w-8 rounded-lg text-xs font-bold transition-all ${
-                  currentPage === page 
-                    ? "bg-[#c9a84c] text-black hover:bg-[#c9a84c]/90 shadow-md shadow-[#c9a84c]/20" 
-                    : "text-white/60 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                {page}
-              </Button>
+              <button key={page} onClick={() => setCurrentPage(page)} className="w-7 h-7 rounded-lg text-xs font-semibold" style={{ background: currentPage === page ? "#c9a84c" : "transparent", color: currentPage === page ? "#000" : "rgba(255,255,255,0.45)" }}>{page}</button>
             ))}
-            <Button 
-              variant="ghost" 
-              size="icon"
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              className="h-8 w-8 rounded-lg text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-30"
-            >
-              <ChevronRight size={16} />
-            </Button>
+            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} className="w-7 h-7 rounded-lg flex items-center justify-center disabled:opacity-30" style={{ color: "rgba(255,255,255,0.5)" }}><ChevronRight size={14} /></button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal */}
+      {isDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)" }} onClick={e => { if (e.target === e.currentTarget) closeDialog(); }}>
+          <div className="w-full max-w-md rounded-2xl overflow-hidden" style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.09)" }}>
+            <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
+              <h2 className="text-sm font-bold text-white">{editingShowtime ? "Edit Showtime" : "Create Showtime"}</h2>
+              <button onClick={closeDialog} className="p-1.5 rounded-lg" style={{ color: "rgba(255,255,255,0.4)" }} onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")} onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}><X size={16} /></button>
+            </div>
+            <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+              <div>
+                <Label>Select Movie</Label>
+                <CustomSelect
+                  name="movieId"
+                  value={selectedMovieId}
+                  onChange={setSelectedMovieId}
+                  options={movies.map((m) => ({ value: m.id.toString(), label: m.title }))}
+                  placeholder="Choose a movie..."
+                />
+              </div>
+              <div>
+                <Label>Select Room</Label>
+                <CustomSelect
+                  name="roomId"
+                  value={selectedRoomId}
+                  onChange={setSelectedRoomId}
+                  options={rooms.map((r) => ({
+                    value: r.id.toString(),
+                    label: r.cinema?.name ? `${r.cinema.name} - ${r.name}` : r.name,
+                  }))}
+                  placeholder="Choose a room..."
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Start Time</Label>
+                  <input name="startTime" type="datetime-local" required defaultValue={editingShowtime?.startTime?.substring(0, 16)} className={inputCls} style={inputStyle} onFocus={onFocus} onBlur={onBlur} />
+                </div>
+                <div>
+                  <Label>Price (VND)</Label>
+                  <input name="price" type="number" required defaultValue={editingShowtime?.price} placeholder="75000" className={inputCls} style={inputStyle} onFocus={onFocus} onBlur={onBlur} />
+                </div>
+              </div>
+              {error && (
+                <div className="flex items-center gap-2.5 rounded-xl border border-red-500/15 bg-red-500/8 px-4 py-3 text-xs text-red-400/80">
+                  <AlertCircle size={13} className="flex-shrink-0" />{error}
+                </div>
+              )}
+              <div className="flex justify-end gap-3 pt-1">
+                <button type="button" onClick={closeDialog} className="px-4 h-9 rounded-xl text-xs font-medium" style={{ color: "rgba(255,255,255,0.45)", border: "1px solid rgba(255,255,255,0.09)" }}>Cancel</button>
+                <button type="submit" disabled={isSaving} className="px-5 h-9 rounded-xl text-xs font-bold text-black hover:opacity-90 disabled:opacity-40" style={{ background: "linear-gradient(135deg, #c9a84c, #e8c76a)" }}>{isSaving ? "Saving..." : "Save Changes"}</button>
+              </div>
+            </form>
           </div>
         </div>
       )}

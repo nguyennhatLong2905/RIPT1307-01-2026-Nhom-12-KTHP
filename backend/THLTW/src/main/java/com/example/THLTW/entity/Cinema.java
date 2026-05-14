@@ -24,8 +24,10 @@ public class Cinema {
     @Column(nullable = false)
     private String address;
 
+    @NotBlank(message = "URL hình ảnh không được để trống")
     private String imageUrl;
 
+    @NotBlank(message = "Mô tả không được để trống")
     @Column(columnDefinition = "TEXT")
     private String description;
 

@@ -46,6 +46,11 @@ public class BookingService {
                 .distinct()
                 .toList();
 
+        // Kiểm tra xem suất chiếu đã bắt đầu quá 30 phút chưa
+        if (LocalDateTime.now().isAfter(showtime.getStartTime().plusMinutes(30))) {
+            throw new AppException(HttpStatus.BAD_REQUEST, "Suất chiếu này đã bắt đầu quá 30 phút, không thể đặt vé nữa!");
+        }
+
         for (String seat : normalizedSeats) {
             validateSeatLayout(seat, showtime);
             if (bookingRepository.checkSeatTaken(showtimeId, seat)) {
@@ -99,8 +104,12 @@ public class BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy đơn đặt vé"));
 
-        // 1. Nếu là chủ sở hữu vé thì cho phép xóa luôn
+        // 1. Nếu là chủ sở hữu vé
         if (booking.getUser().getUsername().equals(username)) {
+            // Kiểm tra xem phim đã chiếu chưa
+            if (LocalDateTime.now().isAfter(booking.getShowtime().getStartTime())) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "Không thể hủy vé cho suất chiếu đã bắt đầu!");
+            }
             bookingRepository.delete(booking);
             return;
         }

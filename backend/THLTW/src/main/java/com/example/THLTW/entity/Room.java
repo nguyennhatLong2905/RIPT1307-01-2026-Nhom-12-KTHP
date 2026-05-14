@@ -44,5 +44,6 @@ public class Room {
 
     @ManyToOne
     @JoinColumn(name = "cinema_id")
+    @NotNull(message = "Vui lòng chọn rạp cho phòng chiếu")
     private Cinema cinema;
 }

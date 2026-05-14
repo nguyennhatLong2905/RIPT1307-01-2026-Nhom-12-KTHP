@@ -122,12 +122,12 @@ export function TicketCard() {
             </div>
           </div>
           
-          <div className="flex justify-between items-end">
+          <div className="grid grid-cols-2 gap-6 items-end">
             <div>
               <span className="text-[7px] text-gray-500 uppercase tracking-widest block mb-1">Seats</span>
               <p className="text-[10px] font-bold text-gray-800 uppercase tracking-wider">{booking.seatNumbers}</p>
             </div>
-            <div className="text-right">
+            <div>
               <span className="text-[7px] text-gray-500 uppercase tracking-widest block mb-1">Booking Ref</span>
               <p className="text-[10px] font-bold text-gray-800 uppercase tracking-wider">LX-{booking.id?.toString().padStart(6, '0') || '000000'}</p>
             </div>
