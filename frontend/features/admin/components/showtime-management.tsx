@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Search, Edit2, Trash2, Film, DoorOpen, CalendarDays, X, ChevronLeft, ChevronRight, AlertCircle, ChevronDown } from "lucide-react";
 import { adminService } from "../services/admin-service";
-import { Showtime, Movie, Room, ShowtimeDTO } from "@/types";
+import { Showtime, Movie, Room, ShowtimeDTO, Booking } from "@/types";
 
 const cardStyle = { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" };
 const inputStyle = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)" };
@@ -15,6 +15,38 @@ function Label({ children }: { children: React.ReactNode }) {
   return <label className="block text-[10px] font-semibold uppercase tracking-[0.18em] mb-1.5" style={{ color: "rgba(201,168,76,0.65)" }}>{children}</label>;
 }
 const inputCls = "w-full h-10 px-3 text-sm text-white/85 outline-none rounded-xl transition-all placeholder:text-white/20";
+
+type ShowtimeStatus = "now" | "upcoming" | "past";
+
+const statusMeta: Record<ShowtimeStatus, { label: string; className: string; dotClassName: string }> = {
+  now: { label: "Đang chiếu", className: "border-emerald-400/20 bg-emerald-400/10 text-emerald-300", dotClassName: "bg-emerald-300" },
+  upcoming: { label: "Sắp chiếu", className: "border-orange-400/20 bg-orange-400/10 text-orange-300", dotClassName: "bg-orange-300" },
+  past: { label: "Đã chiếu", className: "border-red-600/30 bg-red-600/15 text-red-500", dotClassName: "bg-red-500" },
+};
+
+const getMovieDuration = (showtime: Showtime, movies: Movie[]) =>
+  showtime.movie.duration || movies.find((movie) => movie.id === showtime.movie.id)?.duration || 60;
+
+const getShowtimeEndTime = (showtime: Showtime, movies: Movie[] = []) =>
+  new Date(showtime.startTime).getTime() + getMovieDuration(showtime, movies) * 60 * 1000;
+
+const getShowtimeStatus = (showtime: Showtime, now = Date.now(), movies: Movie[] = []): ShowtimeStatus => {
+  const startTime = new Date(showtime.startTime).getTime();
+  const endTime = getShowtimeEndTime(showtime, movies);
+
+  if (now < startTime) return "upcoming";
+  if (now < endTime) return "now";
+  return "past";
+};
+
+const countShowtimeViewers = (bookings: Booking[], showtimeId: number) =>
+  bookings.reduce((total, booking) => {
+    if (booking.showtime?.id !== showtimeId) return total;
+    const seatCount = booking.seatNumbers
+      ? booking.seatNumbers.split(",").map((seat) => seat.trim()).filter(Boolean).length
+      : 0;
+    return total + Math.max(1, seatCount);
+  }, 0);
 
 function CustomSelect({
   name,
@@ -103,6 +135,7 @@ export default function ShowtimeManagement() {
   const [showtimes, setShowtimes] = useState<Showtime[]>([]);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -126,8 +159,8 @@ export default function ShowtimeManagement() {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [st, mv, rm] = await Promise.all([adminService.getShowtimes(), adminService.getMovies(), adminService.getRooms()]);
-      setShowtimes(st); setMovies(mv); setRooms(rm);
+      const [st, mv, rm, bk] = await Promise.all([adminService.getShowtimes(), adminService.getMovies(), adminService.getRooms(), adminService.getBookings()]);
+      setShowtimes(st); setMovies(mv); setRooms(rm); setBookings(bk);
     } catch (e) { console.error(e); }
     finally { setIsLoading(false); }
   };
@@ -143,6 +176,7 @@ export default function ShowtimeManagement() {
       setError("Vui lòng chọn đầy đủ phim và phòng chiếu!");
       return;
     }
+    const fd = new FormData(e.currentTarget);
     const dto: ShowtimeDTO = {
       movieId: parseInt(selectedMovieId),
       roomId: parseInt(selectedRoomId),
@@ -165,8 +199,40 @@ export default function ShowtimeManagement() {
     s.movie.title.toLowerCase().includes(search.toLowerCase()) ||
     s.room.name.toLowerCase().includes(search.toLowerCase())
   );
-  const totalPages = Math.max(1, Math.ceil(filtered.length / itemsPerPage));
-  const paginated = filtered.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const sorted = [...filtered].sort((a, b) => {
+    const now = Date.now();
+    const statusPriority: Record<ShowtimeStatus, number> = { now: 0, upcoming: 1, past: 2 };
+    const statusA = getShowtimeStatus(a, now, movies);
+    const statusB = getShowtimeStatus(b, now, movies);
+
+    if (statusA !== statusB) return statusPriority[statusA] - statusPriority[statusB];
+
+    const startA = new Date(a.startTime).getTime();
+    const startB = new Date(b.startTime).getTime();
+    const endA = getShowtimeEndTime(a, movies);
+    const endB = getShowtimeEndTime(b, movies);
+    const viewersA = countShowtimeViewers(bookings, a.id);
+    const viewersB = countShowtimeViewers(bookings, b.id);
+    const viewerDiff = viewersB - viewersA;
+
+    if (statusA === "now") {
+      if (endA !== endB) return endA - endB;
+      if (startA === startB || endA === endB) return viewerDiff;
+      return startA - startB;
+    }
+
+    if (statusA === "upcoming") {
+      if (startA !== startB) return startA - startB;
+      if (endA !== endB) return endA - endB;
+      return viewerDiff;
+    }
+
+    if (endA !== endB) return endB - endA;
+    if (startA === startB || endA === endB) return viewerDiff;
+    return startB - startA;
+  });
+  const totalPages = Math.max(1, Math.ceil(sorted.length / itemsPerPage));
+  const paginated = sorted.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <div className="space-y-5">
@@ -192,7 +258,7 @@ export default function ShowtimeManagement() {
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                {["Movie", "Room", "Start Time", "Price", "Actions"].map(h => (
+                {["Movie", "Room", "Start Time", "Price", "Status", "Actions"].map(h => (
                   <th 
                     key={h} 
                     className={`py-3 text-xs font-bold uppercase tracking-[0.15em] ${
@@ -208,8 +274,8 @@ export default function ShowtimeManagement() {
               </tr>
             </thead>
             <tbody>
-              {isLoading ? <tr><td colSpan={5} className="py-12 text-center text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>Loading...</td></tr>
-                : paginated.length === 0 ? <tr><td colSpan={5} className="py-12 text-center text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>No showtimes found</td></tr>
+              {isLoading ? <tr><td colSpan={6} className="py-12 text-center text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>Loading...</td></tr>
+                : paginated.length === 0 ? <tr><td colSpan={6} className="py-12 text-center text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>No showtimes found</td></tr>
                 : paginated.map(st => (
                   <tr key={st.id} className="transition-colors" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.025)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                     <td className="px-8 py-3 text-left">
@@ -231,6 +297,17 @@ export default function ShowtimeManagement() {
                       </div>
                     </td>
                     <td className="px-8 py-3 text-sm font-bold text-left" style={{ color: "#c9a84c" }}>{st.price.toLocaleString()} đ</td>
+                    <td className="px-8 py-3 text-left">
+                      {(() => {
+                        const meta = statusMeta[getShowtimeStatus(st, Date.now(), movies)];
+                        return (
+                          <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold ${meta.className}`}>
+                            <span className={`h-1.5 w-1.5 rounded-full ${meta.dotClassName}`} />
+                            {meta.label}
+                          </span>
+                        );
+                      })()}
+                    </td>
                     <td className="px-4 py-3 text-center">
                       <div className="flex justify-center items-center gap-1">
                         <button onClick={() => { setEditingShowtime(st); setIsDialogOpen(true); }} className="p-1.5 rounded-lg transition-colors" style={{ color: "rgba(96,165,250,0.7)" }} onMouseEnter={e => { e.currentTarget.style.color = "#60a5fa"; e.currentTarget.style.background = "rgba(96,165,250,0.08)"; }} onMouseLeave={e => { e.currentTarget.style.color = "rgba(96,165,250,0.7)"; e.currentTarget.style.background = "transparent"; }}><Edit2 size={14} /></button>
