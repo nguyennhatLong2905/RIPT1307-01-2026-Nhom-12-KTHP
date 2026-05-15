@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, Mail, Lock, Phone, Eye, EyeOff, ArrowRight, Film, AlertCircle } from "lucide-react";
+import { User, Mail, Lock, Phone, Eye, EyeOff, ArrowRight, Film } from "lucide-react";
+import { StatusAlert } from "@/components/ui/status-alert";
 import { authService, RegisterRequest } from "../services/auth-service";
 
 /* ── Shared input component ── */
@@ -72,6 +73,7 @@ export default function RegisterForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState<RegisterRequest>({
     username: "",
@@ -87,6 +89,7 @@ export default function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess(false);
     
     if (!formData.username.trim() || !formData.fullName.trim() || !formData.email.trim() || !formData.phone?.trim() || !formData.password.trim()) {
       setError("Vui lòng điền đầy đủ thông tin!");
@@ -112,7 +115,8 @@ export default function RegisterForm() {
     setIsLoading(true);
     try {
       await authService.register(formData);
-      router.push("/?registered=1");
+      setSuccess(true);
+      setTimeout(() => router.push("/"), 2000); // chuyển trang sau 2 giây
     } catch {
       setError("Registration failed. Username or email may already be taken.");
     } finally {
@@ -121,8 +125,9 @@ export default function RegisterForm() {
   };
 
   return (
+    <>
     <div
-      className="w-full max-w-lg relative overflow-hidden rounded-2xl"
+      className="w-full max-w-lg relative overflow-hidden rounded-2xl font-sans"
       style={{
         background: "rgba(255,255,255,0.03)",
         border: "1px solid rgba(255,255,255,0.08)",
@@ -209,14 +214,6 @@ export default function RegisterForm() {
             }
           />
 
-          {/* Error */}
-          {error && (
-            <div className="flex items-center gap-2.5 rounded-xl border border-red-500/15 bg-red-500/8 px-4 py-3 text-xs text-red-400/80">
-              <AlertCircle size={13} className="flex-shrink-0" />
-              {error}
-            </div>
-          )}
-
           {/* Submit */}
           <div className="pt-2 space-y-3">
             <button
@@ -250,5 +247,26 @@ export default function RegisterForm() {
         </form>
       </div>
     </div>
+
+    {/* Toast popup cố định ở góc dưới bên trái màn hình */}
+    {success && (
+      <StatusAlert
+        variant="success"
+        title="Đăng ký thành công!"
+        description="Tài khoản của bạn đã được tạo. Đang chuyển hướng sang trang chủ ..."
+        duration={2500}
+        onClose={() => setSuccess(false)}
+      />
+    )}
+    {error && (
+      <StatusAlert
+        variant="error"
+        title="Đăng ký thất bại"
+        description={error}
+        duration={2500}
+        onClose={() => setError("")}
+      />
+    )}
+  </>
   );
 }
