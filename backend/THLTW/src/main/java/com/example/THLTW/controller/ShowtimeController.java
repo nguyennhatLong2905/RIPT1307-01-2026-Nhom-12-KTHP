@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-// Controller truy xuất dữ liệu Suất chiếu cho Khách hàng
 @RestController
 @RequestMapping("/api/showtimes")
 public class ShowtimeController {
@@ -14,7 +13,7 @@ public class ShowtimeController {
     @Autowired
     private ShowtimeService showtimeService;
 
-    // Lấy toàn bộ suất chiếu của một bộ phim để hiển thị lên lịch chiếu
+    // Lấy toàn bộ suất chiếu của một bộ phim
     @GetMapping("/movie/{movieId}")
     public List<Showtime> getShowtimesByMovie(@PathVariable Long movieId) {
         return showtimeService.getShowtimesByMovie(movieId);

@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
-// Service quản lý các chi nhánh rạp phim
 @Service
 public class CinemaService {
 

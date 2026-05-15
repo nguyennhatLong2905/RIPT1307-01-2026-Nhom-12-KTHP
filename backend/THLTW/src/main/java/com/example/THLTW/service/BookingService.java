@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 
-// Service xử lý nghiệp vụ Đặt vé (Booking) và Thống kê doanh thu
 @Service
 public class BookingService {
 
@@ -27,7 +26,6 @@ public class BookingService {
     @Autowired
     private UserRepository userRepository;
 
-    // Xử lý giao dịch đặt vé mới, kiểm tra ghế trống và tính tiền
     public Booking createBooking(Long showtimeId, List<String> seats, String username) {
         Showtime showtime = showtimeRepository.findById(showtimeId)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy suất chiếu!"));
@@ -46,7 +44,6 @@ public class BookingService {
                 .distinct()
                 .toList();
 
-        // Kiểm tra xem suất chiếu đã bắt đầu quá 30 phút chưa
         if (LocalDateTime.now().isAfter(showtime.getStartTime().plusMinutes(30))) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Suất chiếu này đã bắt đầu quá 30 phút, không thể đặt vé nữa!");
         }
@@ -68,7 +65,6 @@ public class BookingService {
         return bookingRepository.save(booking);
     }
 
-    // Lấy danh sách các ghế đã được đặt cho một suất chiếu (trả về List phẳng)
     public List<String> getTakenSeats(Long showtimeId) {
         List<String> combinedSeats = bookingRepository.findSeatNumbersByShowtimeId(showtimeId);
         List<String> allSeats = new ArrayList<>();
@@ -82,12 +78,9 @@ public class BookingService {
         return allSeats;
     }
 
-    // Truy xuất toàn bộ lịch sử đặt vé của một khách hàng cụ thể
     public List<Booking> getMyBookings(String username) {
         return bookingRepository.findByUserUsername(username);
     }
-
-    // Lấy chi tiết một đơn đặt vé, kiểm tra quyền sở hữu
     public Booking getBookingById(Long bookingId, String username) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy đơn đặt vé"));
@@ -99,14 +92,10 @@ public class BookingService {
         return booking;
     }
 
-    // Xử lý hủy đơn vé, kiểm tra quyền sở hữu hoặc quyền Admin
     public void cancelBooking(Long bookingId, String username) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy đơn đặt vé"));
-
-        // 1. Nếu là chủ sở hữu vé
         if (booking.getUser().getUsername().equals(username)) {
-            // Kiểm tra xem phim đã chiếu chưa
             if (LocalDateTime.now().isAfter(booking.getShowtime().getStartTime())) {
                 throw new AppException(HttpStatus.BAD_REQUEST, "Không thể hủy vé cho suất chiếu đã bắt đầu!");
             }
@@ -114,7 +103,6 @@ public class BookingService {
             return;
         }
 
-        // 2. Nếu không phải chủ sở hữu, kiểm tra xem có phải Admin không
         User currentUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng!"));
 
@@ -125,7 +113,6 @@ public class BookingService {
         }
     }
 
-    // Tổng hợp số liệu hệ thống (Tổng vé, Tổng doanh thu) cho Admin
     public Map<String, Object> getStatistics() {
         Map<String, Object> stats = new HashMap<>();
         
@@ -136,14 +123,13 @@ public class BookingService {
         return stats;
     }
 
-    // Xác thực chuỗi mã ghế nhập vào (VD: A1, B5) có hợp lệ không
     private void validateSeatLayout(String seat, Showtime showtime) {
         if (seat == null || seat.length() < 2) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Định dạng mã ghế " + seat + " không hợp lệ!");
         }
 
         char rowChar = Character.toUpperCase(seat.charAt(0));
-        int rowNumber = rowChar - 'A' + 1; // Chuyển A->1, B->2...
+        int rowNumber = rowChar - 'A' + 1;
 
         int colNumber;
         try {

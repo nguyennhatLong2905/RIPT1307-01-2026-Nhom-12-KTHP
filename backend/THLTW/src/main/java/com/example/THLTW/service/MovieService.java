@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
-// Service quản lý danh mục Phim và Thuật toán Gợi ý Phim (AI Pick)
 @Service
 public class MovieService {
 
@@ -45,8 +44,6 @@ public class MovieService {
     public void deleteMovie(Long id) {
         movieRepository.deleteById(id);
     }
-
-    // Gợi ý phim theo thể loại (AI Pick cơ bản)
     public List<Movie> getAIPick(List<String> preferredGenres) {
         List<Movie> allMovies = movieRepository.findAll();
 
@@ -84,14 +81,13 @@ public class MovieService {
                 .count();
     }
 
-    // Gợi ý phim cá nhân hóa dựa trên lịch sử đặt vé
     public List<Movie> getPersonalizedAIPick(String username) {
         List<com.example.THLTW.entity.Booking> userBookings = bookingRepository.findByUserUsername(username);
         
         java.util.Map<String, Long> genreCount = userBookings.stream()
                 .map(b -> b.getShowtime().getMovie().getGenre())
                 .filter(java.util.Objects::nonNull)
-                .flatMap(g -> java.util.Arrays.stream(g.split("[,/\\n\\r]"))) // Tách theo dấu phẩy, gạch chéo
+                .flatMap(g -> java.util.Arrays.stream(g.split("[,/\\n\\r]")))
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .collect(java.util.stream.Collectors.groupingBy(g -> g, java.util.stream.Collectors.counting()));

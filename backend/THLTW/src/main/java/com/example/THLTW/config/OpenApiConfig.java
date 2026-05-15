@@ -8,7 +8,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-// Cấu hình Swagger/OpenAPI UI với hỗ trợ xác thực JWT
+// Cấu hình Swagger/OpenAPI
 @Configuration
 public class OpenApiConfig {
 

@@ -12,7 +12,6 @@ public class User {
     public User() {
     }
 
-    // Khởi tạo nhanh người dùng
     public User(String username, String password, Role role, String fullName, String email) {
         this.username = username;
         this.password = password;
@@ -58,7 +57,7 @@ public class User {
     )
     private java.util.Set<Movie> favoriteMovies = new java.util.HashSet<>();
 
-    public enum Role { // Phân quyền người dùng
+    public enum Role {
         ADMIN, CUSTOMER
     }
 }

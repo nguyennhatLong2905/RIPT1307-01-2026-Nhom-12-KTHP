@@ -15,11 +15,9 @@ public class FileService {
     private Cloudinary cloudinary;
 
     public String saveFile(MultipartFile file) throws IOException {
-        // Upload lên Cloudinary với resource_type="auto" để hỗ trợ cả ảnh và video
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(), 
             ObjectUtils.asMap("resource_type", "auto"));
         
-        // Trả về URL trực tiếp từ Cloudinary
         return uploadResult.get("secure_url").toString();
     }
 }

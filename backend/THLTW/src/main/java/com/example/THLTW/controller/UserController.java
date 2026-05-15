@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.Map;
 
-// Controller quản lý Thông tin cá nhân, cập nhật hồ sơ và đổi mật khẩu an toàn
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -17,19 +16,19 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Xem thông tin hồ sơ của tài khoản đang đăng nhập
+    // Profile
     @GetMapping("/profile")
     public User getProfile(Principal principal) {
         return userService.getProfile(principal.getName());
     }
 
-    // Cập nhật thông tin cá nhân (Tên, SDT...)
+    // Cập nhật thông tin tài khoản
     @PutMapping("/profile")
     public User updateProfile(@RequestBody @Valid User updatedInfo, Principal principal) {
         return userService.updateProfile(principal.getName(), updatedInfo);
     }
 
-    // Đổi mật khẩu tài khoản
+    // Đổi mật khẩu
     @PutMapping("/change-password")
     public String changePassword(@RequestBody Map<String, String> passwords, Principal principal) {
         String oldPassword = passwords.get("oldPassword");

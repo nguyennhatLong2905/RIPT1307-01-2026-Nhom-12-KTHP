@@ -33,7 +33,7 @@ public class Room {
     @Max(value = 20, message = "Số cột tối đa là 20")
     private Integer colsCount;
 
-    public Integer getTotalSeats() { // Tính tổng số ghế trong phòng
+    public Integer getTotalSeats() {
         if (rowsCount == null || colsCount == null) return 0;
         return rowsCount * colsCount;
     }

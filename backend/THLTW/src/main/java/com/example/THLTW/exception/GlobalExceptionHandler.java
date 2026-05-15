@@ -9,18 +9,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-// Bộ xử lý lỗi tập trung giúp chuyển đổi các ngoại lệ thành JSON trả về cho Client
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    // Xử lý lỗi kiểm tra dữ liệu đầu vào (@Valid)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        // Thu thập tất cả các lỗi và nối chúng lại thành một chuỗi thông báo
         String errorMessage = ex.getBindingResult().getFieldErrors().stream()
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
@@ -36,7 +30,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    // Xử lý các lỗi nghiệp vụ được định nghĩa sẵn (AppException)
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ErrorResponse> handleAppException(AppException ex, HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(
@@ -50,7 +43,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, ex.getStatus());
     }
 
-    // Xử lý các lỗi hệ thống không mong muốn
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex, HttpServletRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(

@@ -7,35 +7,26 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
-// Quản lý dữ liệu đặt vé
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    // Kiểm tra ghế đã được đặt hay chưa
     @Query("SELECT (COUNT(b) > 0) FROM Booking b WHERE b.showtime.id = :showtimeId AND b.seatNumbers LIKE CONCAT('%', :seatNumber, '%')")
     boolean checkSeatTaken(@Param("showtimeId") Long showtimeId, @Param("seatNumber") String seatNumber);
 
-    // Tính tổng doanh thu từ tất cả vé
     @Query("SELECT SUM(b.totalAmount) FROM Booking b")
     Double calculateTotalRevenue();
 
-    // Lấy danh sách toàn bộ mã ghế đã đặt cho một suất chiếu
     @Query("SELECT b.seatNumbers FROM Booking b WHERE b.showtime.id = :showtimeId")
     List<String> findSeatNumbersByShowtimeId(@Param("showtimeId") Long showtimeId);
 
-    // Tìm đơn đặt vé theo username
     List<Booking> findByUserUsername(String username);
 
-    // Thống kê doanh thu theo tháng (Yêu cầu MySQL)
     @Query(value = "SELECT DATE_FORMAT(booking_date, '%Y-%m') as month, SUM(total_amount) as total FROM bookings GROUP BY month ORDER BY month DESC LIMIT 6", nativeQuery = true)
     List<Object[]> getMonthlyRevenue();
 
-    // Lấy 5 đơn đặt vé mới nhất cực kỳ tối ưu (dùng LIMIT ở mức DB)
     List<Booking> findTop5ByOrderByIdDesc();
 
-    // Lấy 100 đơn đặt vé mới nhất để trang quản lý vé load tức thì
     List<Booking> findTop100ByOrderByIdDesc();
 
-    // Lấy toàn bộ danh sách vé sắp xếp mới nhất
     List<Booking> findAllByOrderByIdDesc();
 }

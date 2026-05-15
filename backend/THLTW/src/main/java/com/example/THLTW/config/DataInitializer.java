@@ -9,7 +9,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-// Tự động khởi tạo dữ liệu mẫu (Tài khoản Admin và Rạp mặc định) khi khởi chạy ứng dụng
 @Component
 public class DataInitializer implements CommandLineRunner {
 

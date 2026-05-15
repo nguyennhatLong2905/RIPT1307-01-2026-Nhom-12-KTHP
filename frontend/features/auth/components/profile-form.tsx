@@ -11,9 +11,17 @@ import {
   KeyRound,
   CheckCircle2,
   AlertCircle,
+  ShieldCheck,
 } from "lucide-react";
 import { authService } from "../services/auth-service";
 import { User as UserType } from "@/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 /* ── Toast helper ── */
 type ToastType = "success" | "error";
@@ -28,7 +36,7 @@ function useToast() {
   return { toast, show };
 }
 
-/* ── Styled input ── */
+/* ── Minimal Input Field (Professional UI) ── */
 function Field({
   label,
   id,
@@ -38,7 +46,6 @@ function Field({
   disabled,
   placeholder,
   icon: Icon,
-  required = true,
 }: {
   label: string;
   id: string;
@@ -48,48 +55,30 @@ function Field({
   disabled?: boolean;
   placeholder?: string;
   icon?: React.ElementType;
-  required?: boolean;
 }) {
   return (
-    <div className="space-y-1.5">
-      <label
-        htmlFor={id}
-        className="block text-[10px] font-semibold uppercase tracking-[0.18em]"
-        style={{ color: "rgba(201,168,76,0.7)" }}
-      >
+    <div className="space-y-1.5 group">
+      <label htmlFor={id} className="text-[10px] font-bold uppercase tracking-[0.15em] text-white/30 group-focus-within:text-[#c9a84c] transition-colors">
         {label}
       </label>
       <div className="relative">
-        {Icon && (
-          <Icon
-            size={14}
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
-            style={{ color: "rgba(255,255,255,0.2)" }}
-          />
-        )}
         <input
           id={id}
           type={type}
-          required={required}
           value={value ?? ""}
           onChange={(e) => onChange?.(e.target.value)}
           disabled={disabled}
           placeholder={placeholder ?? ""}
-          className={`w-full h-11 text-sm outline-none rounded-xl transition-all ${
-            Icon ? "pl-9 pr-4" : "px-4"
-          } ${disabled ? "opacity-40 cursor-not-allowed" : ""}`}
-          style={{
-            background: disabled ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.09)",
-            color: "#e0e0e0",
-          }}
-          onFocus={(e) => {
-            if (!disabled) e.currentTarget.style.borderColor = "rgba(201,168,76,0.4)";
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.09)";
-          }}
+          className={`w-full h-12 text-sm bg-white/[0.03] border-b-2 border-transparent px-4 rounded-t-lg transition-all outline-none focus:bg-white/[0.06] focus:border-[#c9a84c] ${
+            disabled ? "opacity-30 cursor-not-allowed" : "hover:bg-white/[0.05]"
+          }`}
         />
+        {Icon && (
+          <Icon
+            size={14}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-[#c9a84c]/50 transition-colors pointer-events-none"
+          />
+        )}
       </div>
     </div>
   );
@@ -98,19 +87,27 @@ function Field({
 export default function ProfileForm() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
   const [profile, setProfile] = useState<Partial<UserType>>({
     fullName: "",
     email: "",
     phone: "",
+    username: "",
   });
+
   const [passwordData, setPasswordData] = useState({
     oldPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+
   const { toast, show } = useToast();
 
-  useEffect(() => { fetchProfile(); }, []);
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   const fetchProfile = async () => {
     try {
@@ -129,22 +126,12 @@ export default function ProfileForm() {
       show("Vui lòng điền đầy đủ thông tin!", "error");
       return;
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(profile.email || "")) {
-      show("Email không đúng định dạng.", "error");
-      return;
-    }
-    const phoneRegex = /^[0-9]{10}$/;
-    if (!phoneRegex.test(profile.phone || "")) {
-      show("Số điện thoại phải có đúng 10 chữ số.", "error");
-      return;
-    }
     setIsSaving(true);
     try {
       await authService.updateProfile(profile);
-      show("Profile updated successfully.", "success");
+      show("Hồ sơ đã được cập nhật.", "success");
     } catch {
-      show("Failed to update profile.", "error");
+      show("Cập nhật thất bại.", "error");
     } finally {
       setIsSaving(false);
     }
@@ -153,262 +140,121 @@ export default function ProfileForm() {
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      show("New passwords do not match.", "error");
+      show("Mật khẩu mới không khớp.", "error");
       return;
     }
-    if (passwordData.newPassword.length < 6) {
-      show("Password must be at least 6 characters.", "error");
-      return;
-    }
-    setIsSaving(true);
+    setIsChangingPassword(true);
     try {
       await authService.changePassword(passwordData.oldPassword, passwordData.newPassword);
-      show("Password changed successfully.", "success");
+      show("Đổi mật khẩu thành công.", "success");
       setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+      setIsPasswordModalOpen(false);
     } catch {
-      show("Incorrect current password.", "error");
+      show("Mật khẩu cũ không chính xác.", "error");
     } finally {
-      setIsSaving(false);
+      setIsChangingPassword(false);
     }
   };
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-24">
-        <div className="flex flex-col items-center gap-4">
-          <div
-            className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-            style={{ borderColor: "rgba(201,168,76,0.4)", borderTopColor: "#c9a84c" }}
-          />
-          <p className="text-xs text-white/30 uppercase tracking-widest">Loading profile</p>
-        </div>
+      <div className="flex justify-center py-40">
+        <div className="w-10 h-10 border-2 border-white/5 border-t-[#c9a84c] animate-spin rounded-full" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-5xl mx-auto px-6 animate-in fade-in duration-700">
       {/* Toast */}
       {toast && (
-        <div
-          className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl text-sm font-medium transition-all animate-in fade-in slide-in-from-top-2 ${
-            toast.type === "success"
-              ? "bg-emerald-950/90 border border-emerald-500/20 text-emerald-300"
-              : "bg-red-950/90 border border-red-500/20 text-red-300"
-          }`}
-          style={{ backdropFilter: "blur(16px)" }}
-        >
-          {toast.type === "success" ? (
-            <CheckCircle2 size={16} className="flex-shrink-0 text-emerald-400" />
-          ) : (
-            <AlertCircle size={16} className="flex-shrink-0 text-red-400" />
-          )}
+        <div className={`fixed top-8 right-8 z-[100] flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl text-sm font-bold backdrop-blur-xl border ${
+          toast.type === "success" ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" : "bg-red-500/10 border-red-500/20 text-red-400"
+        }`}>
+          {toast.type === "success" ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
           {toast.message}
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-6">
-        {/* ── Left: Avatar card ── */}
-        <div className="space-y-4">
-          <div
-            className="rounded-2xl p-6 flex flex-col items-center text-center"
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.07)",
-            }}
-          >
-            {/* Avatar */}
-            <div className="relative mb-5">
-              <div
-                className="w-24 h-24 rounded-full flex items-center justify-center"
-                style={{
-                  background: "rgba(201,168,76,0.1)",
-                  border: "1.5px solid rgba(201,168,76,0.25)",
-                }}
-              >
-                <User size={40} style={{ color: "#c9a84c" }} />
-              </div>
-              <button
-                className="absolute bottom-0.5 right-0.5 w-7 h-7 rounded-full flex items-center justify-center text-black shadow-lg transition-transform hover:scale-105"
-                style={{ background: "#c9a84c" }}
-              >
-                <Camera size={13} />
-              </button>
+      <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-12 items-start">
+        {/* ── Left Column: User Card ── */}
+        <div className="flex flex-col items-center text-center space-y-6">
+          <div className="relative">
+            <div className="w-32 h-32 rounded-full bg-white/[0.03] flex items-center justify-center border border-white/5 shadow-2xl relative">
+              <User size={64} className="text-[#c9a84c]/20" />
             </div>
+            <button className="absolute bottom-1 right-1 w-9 h-9 rounded-full bg-[#c9a84c] text-black flex items-center justify-center shadow-xl hover:scale-110 transition-all">
+              <Camera size={16} />
+            </button>
+          </div>
 
-            <h3 className="text-base font-semibold text-white">{profile.fullName || "—"}</h3>
-            <p
-              className="text-[10px] uppercase tracking-[0.2em] font-medium mt-0.5"
-              style={{ color: "rgba(201,168,76,0.6)" }}
-            >
-              Luxe Member
-            </p>
-
-            <div
-              className="w-full mt-5 pt-5 space-y-3"
-              style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
-            >
-              <div className="flex items-center justify-between text-xs">
-                <span style={{ color: "rgba(255,255,255,0.35)" }}>Role</span>
-                <span className="font-semibold text-white/80">{profile.role ?? "—"}</span>
-              </div>
-              <div className="flex items-center justify-between text-xs">
-                <span style={{ color: "rgba(255,255,255,0.35)" }}>Status</span>
-                <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
-                  Active
-                </span>
-              </div>
+          <div className="space-y-1">
+            <h2 className="text-xl font-bold text-white tracking-tight">{profile.fullName}</h2>
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-white/30">Customer</span>
             </div>
           </div>
 
-          {/* Secure note */}
-          <div
-            className="rounded-2xl p-4 flex items-center gap-3"
-            style={{
-              background: "rgba(52,211,153,0.04)",
-              border: "1px solid rgba(52,211,153,0.1)",
-            }}
-          >
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: "rgba(52,211,153,0.1)" }}
-            >
-              <Lock size={14} className="text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-400">Secure Account</p>
-              <p className="text-[10px] mt-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>
-                Your data is encrypted.
-              </p>
-            </div>
-          </div>
         </div>
 
-        {/* ── Right: Forms ── */}
-        <div className="space-y-5">
-          {/* Personal Info */}
-          <div
-            className="rounded-2xl p-6"
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.07)",
-            }}
-          >
-            <div className="flex items-center gap-2.5 mb-6">
-              <User size={15} style={{ color: "#c9a84c" }} />
-              <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-white/80">
-                Personal Information
-              </h2>
+        {/* ── Right Column: Main Content ── */}
+        <div className="space-y-10">
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+              <h3 className="text-xs font-bold text-white/40 uppercase tracking-[0.2em]">Personal Information</h3>
+              <div className="h-px flex-1 bg-white/5" />
             </div>
 
-            <form onSubmit={handleUpdateProfile} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field
-                  label="Full Name"
-                  id="fullName"
-                  value={profile.fullName}
-                  onChange={(v) => setProfile({ ...profile, fullName: v })}
-                  icon={User}
-                />
-                <Field
-                  label="Email"
-                  id="email"
-                  type="email"
-                  value={profile.email}
-                  onChange={(v) => setProfile({ ...profile, email: v })}
-                  icon={Mail}
-                />
-                <Field
-                  label="Phone Number"
-                  id="phone"
-                  value={profile.phone}
-                  onChange={(v) => setProfile({ ...profile, phone: v })}
-                  icon={Phone}
-                />
-                <Field
-                  label="Username"
-                  id="username"
-                  value={profile.username}
-                  disabled
-                  icon={User}
-                />
+            <form onSubmit={handleUpdateProfile} className="space-y-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
+                <Field label="Full Name" id="fullName" value={profile.fullName} onChange={(v) => setProfile({ ...profile, fullName: v })} icon={User} placeholder="John Doe" />
+                <Field label="Email Address" id="email" type="email" value={profile.email} onChange={(v) => setProfile({ ...profile, email: v })} icon={Mail} placeholder="john@example.com" />
+                <Field label="Phone Number" id="phone" value={profile.phone} onChange={(v) => setProfile({ ...profile, phone: v })} icon={Phone} placeholder="0123456789" />
+                <Field label="Username" id="username" value={profile.username} disabled icon={User} />
               </div>
 
-              <div className="pt-1">
-                <button
-                  type="submit"
-                  disabled={isSaving}
-                  className="flex items-center gap-2 px-5 h-10 rounded-xl text-xs font-bold uppercase tracking-[0.12em] text-black transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{ background: "linear-gradient(135deg, #c9a84c, #e8c76a)" }}
-                >
-                  <Save size={14} />
-                  {isSaving ? "Saving..." : "Save Changes"}
-                </button>
-              </div>
-            </form>
-          </div>
+              <div className="pt-4 flex flex-col space-y-6">
+                <div className="flex justify-start">
+                  <Dialog open={isPasswordModalOpen} onOpenChange={setIsPasswordModalOpen}>
+                    <DialogTrigger asChild>
+                      <button type="button" className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#c9a84c] hover:text-white transition-all">
+                        <KeyRound size={14} />
+                        Change Password
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-[#0a0a0a] border border-white/10 text-white rounded-2xl p-8 sm:max-w-[420px] shadow-2xl">
+                      <DialogHeader className="mb-8">
+                        <DialogTitle className="text-lg font-bold uppercase tracking-widest">Change Password</DialogTitle>
+                      </DialogHeader>
+                      <form onSubmit={handleChangePassword} className="space-y-6">
+                        <Field label="Current Password" id="oldP" type="password" value={passwordData.oldPassword} onChange={(v) => setPasswordData({ ...passwordData, oldPassword: v })} icon={Lock} />
+                        <div className="h-px bg-white/5 my-2" />
+                        <Field label="New Password" id="newP" type="password" value={passwordData.newPassword} onChange={(v) => setPasswordData({ ...passwordData, newPassword: v })} icon={Lock} />
+                        <Field label="Confirm New Password" id="confP" type="password" value={passwordData.confirmPassword} onChange={(v) => setPasswordData({ ...passwordData, confirmPassword: v })} icon={Lock} />
+                        
+                        <div className="flex gap-3 pt-4">
+                          <button type="button" onClick={() => setIsPasswordModalOpen(false)} className="flex-1 h-12 rounded-xl text-[10px] font-bold uppercase tracking-widest border border-white/5 hover:bg-white/5 text-white/40 transition-all">
+                            Cancel
+                          </button>
+                          <button type="submit" disabled={isChangingPassword} className="flex-[2] h-12 rounded-xl bg-[#c9a84c] text-black text-[10px] font-bold uppercase tracking-widest hover:opacity-90 transition-all shadow-lg shadow-[#c9a84c]/20">
+                            {isChangingPassword ? "Updating..." : "Update Password"}
+                          </button>
+                        </div>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                </div>
 
-          {/* Change Password */}
-          <div
-            className="rounded-2xl p-6"
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.07)",
-            }}
-          >
-            <div className="flex items-center gap-2.5 mb-6">
-              <KeyRound size={15} style={{ color: "#c9a84c" }} />
-              <h2 className="text-sm font-bold uppercase tracking-[0.14em] text-white/80">
-                Change Password
-              </h2>
-            </div>
-
-            <form onSubmit={handleChangePassword} className="space-y-4">
-              <Field
-                label="Current Password"
-                id="oldPassword"
-                type="password"
-                value={passwordData.oldPassword}
-                onChange={(v) => setPasswordData({ ...passwordData, oldPassword: v })}
-                placeholder="••••••••"
-                icon={Lock}
-              />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field
-                  label="New Password"
-                  id="newPassword"
-                  type="password"
-                  value={passwordData.newPassword}
-                  onChange={(v) => setPasswordData({ ...passwordData, newPassword: v })}
-                  placeholder="••••••••"
-                  icon={Lock}
-                />
-                <Field
-                  label="Confirm New Password"
-                  id="confirmPassword"
-                  type="password"
-                  value={passwordData.confirmPassword}
-                  onChange={(v) => setPasswordData({ ...passwordData, confirmPassword: v })}
-                  placeholder="••••••••"
-                  icon={Lock}
-                />
-              </div>
-
-              <div className="pt-1">
-                <button
-                  type="submit"
-                  disabled={isSaving}
-                  className="flex items-center gap-2 px-5 h-10 rounded-xl text-xs font-bold uppercase tracking-[0.12em] transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
-                  style={{
-                    background: "rgba(255,255,255,0.06)",
-                    border: "1px solid rgba(201,168,76,0.25)",
-                    color: "rgba(201,168,76,0.9)",
-                  }}
-                >
-                  <KeyRound size={14} />
-                  {isSaving ? "Updating..." : "Update Password"}
-                </button>
+                <div className="flex justify-end">
+                  <button 
+                    type="submit" 
+                    disabled={isSaving} 
+                    className="px-10 h-12 rounded-xl bg-[#c9a84c] text-black text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-xl shadow-[#c9a84c]/20"
+                  >
+                    {isSaving ? <div className="w-4 h-4 border-2 border-black/20 border-t-black animate-spin rounded-full" /> : <Save size={16} />}
+                    Save Changes
+                  </button>
+                </div>
               </div>
             </form>
           </div>

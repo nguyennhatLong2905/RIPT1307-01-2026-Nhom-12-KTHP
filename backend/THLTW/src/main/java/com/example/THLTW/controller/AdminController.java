@@ -10,14 +10,12 @@ import com.example.THLTW.repository.BookingRepository;
 import com.example.THLTW.service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-// Controller quản trị hệ thống (Dành cho Admin) quản lý Phim, Phòng chiếu, Suất chiếu, Khách hàng và Thống kê
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
@@ -40,9 +38,7 @@ public class AdminController {
     @Autowired
     private BookingRepository bookingRepository;
 
-    // ==========================================
-    // 1. QUẢN LÝ PHIM (MOVIE MANAGEMENT)
-    // ==========================================
+    // 1. QUẢN LÝ PHIM
     @PostMapping("/movies")
     @CacheEvict(value = "movies", allEntries = true)
     public Movie addMovie(@RequestBody @Valid Movie movie) {
@@ -63,9 +59,7 @@ public class AdminController {
         return ResponseEntity.ok("Xóa phim thành công!");
     }
 
-    // ==========================================
-    // 2. QUẢN LÝ PHÒNG CHIẾU (ROOM MANAGEMENT)
-    // ==========================================
+    // 2. QUẢN LÝ PHÒNG CHIẾU
     @PostMapping("/rooms")
     @CacheEvict(value = "adminRooms", allEntries = true)
     public Room addRoom(@RequestBody @Valid Room room) {
@@ -91,9 +85,7 @@ public class AdminController {
         return ResponseEntity.ok("Cập nhật phòng chiếu thành công!");
     }
 
-    // ==========================================
-    // 3. QUẢN LÝ SUẤT CHIẾU (SHOWTIME MANAGEMENT)
-    // ==========================================
+    // 3. QUẢN LÝ SUẤT CHIẾU
     @PostMapping("/showtimes")
     @CacheEvict(value = "adminShowtimes", allEntries = true)
     public ResponseEntity<?> createShowtime(@RequestBody @Valid ShowtimeDTO dto) {
@@ -128,9 +120,7 @@ public class AdminController {
         return ResponseEntity.ok("Xóa suất chiếu thành công!");
     }
 
-    // ==========================================
-    // 4. QUẢN LÝ KHÁCH HÀNG (USER MANAGEMENT)
-    // ==========================================
+    // 4. QUẢN LÝ KHÁCH HÀNG
     @GetMapping("/users")
     public List<User> getAllUsers() {
         return userService.getAllCustomers();
@@ -143,20 +133,15 @@ public class AdminController {
         return ResponseEntity.ok("Xóa người dùng thành công!");
     }
 
-    // ==========================================
-    // 5. THỐNG KÊ BÁO CÁO (STATISTICS)
-    // ==========================================
+    // 5. THỐNG KÊ BÁO CÁO
     @GetMapping("/stats")
     public Map<String, Object> getStats() {
         return bookingService.getStatistics();
     }
 
-    // ==========================================
-    // 6. QUẢN LÝ ĐẶT VÉ (BOOKING MANAGEMENT)
-    // ==========================================
+    // 6. QUẢN LÝ ĐẶT VÉ
     @GetMapping("/bookings")
     public List<Booking> getAllBookings() {
-        // Tối ưu hóa truy vấn: Chỉ nạp 100 vé mới nhất thay vì toàn bộ DB để tăng tốc tải bảng
         return bookingRepository.findTop100ByOrderByIdDesc();
     }
 }

@@ -5,19 +5,18 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.time.LocalDateTime;
 
-// DTO dùng để tạo hoặc cập nhật Suất chiếu
 @Data
 public class ShowtimeDTO {
     @NotNull(message = "ID phim không được để trống")
-    private Long movieId;           // ID phim
+    private Long movieId;
     
     @NotNull(message = "ID phòng chiếu không được để trống")
-    private Long roomId;            // ID phòng chiếu
+    private Long roomId;
     
     @NotNull(message = "Thời gian bắt đầu không được để trống")
-    private LocalDateTime startTime; // Giờ chiếu
+    private LocalDateTime startTime;
     
     @NotNull(message = "Giá vé không được để trống")
     @Min(value = 0, message = "Giá vé không được âm")
-    private Double price;           // Giá vé
+    private Double price;
 }

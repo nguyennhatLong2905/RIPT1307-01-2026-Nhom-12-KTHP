@@ -4,13 +4,11 @@ import com.example.THLTW.entity.Cinema;
 import com.example.THLTW.service.CinemaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-// Controller quản lý các chi nhánh rạp phim (Cinema)
 @RestController
 @RequestMapping("/api/admin/cinemas")
 public class CinemaController {

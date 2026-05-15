@@ -48,12 +48,9 @@ public class DashboardService {
         return revenueByMonth;
     }
 
-    // Giao dịch gần đây thay đổi liên tục nên lấy trực tiếp tối ưu bằng LIMIT DB
     public List<Booking> getRecentBookings() {
         return bookingRepository.findTop5ByOrderByIdDesc();
     }
-
-    // Phương thức gộp chung tương thích ngược nhưng đã được tối ưu hóa triệt để
     public DashboardStats getStats() {
         DashboardSummaryDTO summary = getSummaryStats();
         Map<String, Double> monthly = getMonthlyRevenue();

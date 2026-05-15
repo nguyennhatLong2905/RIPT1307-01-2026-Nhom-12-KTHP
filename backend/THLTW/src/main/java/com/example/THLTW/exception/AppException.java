@@ -2,8 +2,6 @@ package com.example.THLTW.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-
-// Ngoại lệ tùy chỉnh cho các lỗi nghiệp vụ của ứng dụng
 @Getter
 public class AppException extends RuntimeException {
     private final HttpStatus status;

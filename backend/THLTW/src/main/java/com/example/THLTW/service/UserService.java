@@ -9,12 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
-// Service quản lý Tài khoản Người dùng và Bảo mật
 @Service
 public class UserService {
 
@@ -55,11 +52,6 @@ public class UserService {
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
-
-    // ==========================================
-    // QUẢN LÝ THÔNG TIN CÁ NHÂN (PROFILE)
-    // ==========================================
-
     public User getProfile(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy người dùng!"));
@@ -86,7 +78,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // Xử lý yêu cầu quên mật khẩu (Tạo mã OTP ngẫu nhiên)
     public void forgotPassword(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Email không tồn tại!"));

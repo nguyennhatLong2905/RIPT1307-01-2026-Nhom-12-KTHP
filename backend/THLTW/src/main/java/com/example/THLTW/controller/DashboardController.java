@@ -21,28 +21,27 @@ public class DashboardController {
 
     private final DashboardService dashboardService;
 
-    // Endpoint gốc tổng hợp (đã được tối ưu hóa)
     @GetMapping("/stats")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DashboardStats> getStats() {
         return ResponseEntity.ok(dashboardService.getStats());
     }
 
-    // 1. Endpoint lấy số liệu tổng quan nhanh (được Cache)
+    // Tổng quan nhanh
     @GetMapping("/summary")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DashboardSummaryDTO> getSummary() {
         return ResponseEntity.ok(dashboardService.getSummaryStats());
     }
 
-    // 2. Endpoint lấy dữ liệu biểu đồ doanh thu tháng (được Cache)
+    // Doanh thu tháng
     @GetMapping("/monthly-revenue")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Double>> getMonthlyRevenue() {
         return ResponseEntity.ok(dashboardService.getMonthlyRevenue());
     }
 
-    // 3. Endpoint lấy 5 giao dịch gần đây nhất (tối ưu DB LIMIT)
+    // 5 giao dịch gần đây
     @GetMapping("/recent-bookings")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Booking>> getRecentBookings() {

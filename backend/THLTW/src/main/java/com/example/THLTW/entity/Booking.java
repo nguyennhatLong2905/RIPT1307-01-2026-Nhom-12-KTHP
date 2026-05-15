@@ -29,6 +29,6 @@ public class Booking {
 
     @PrePersist
     protected void onCreate() {
-        bookingDate = LocalDateTime.now(); // Tự động đặt ngày đặt vé
+        bookingDate = LocalDateTime.now();
     }
 }
