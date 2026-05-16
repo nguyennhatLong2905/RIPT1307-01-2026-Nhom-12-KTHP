@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "rooms", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"name", "cinema_id"})
+    @UniqueConstraint(name = "uk_room_name_cinema", columnNames = {"name", "cinema_id"})
 })
 @Data
 public class Room {

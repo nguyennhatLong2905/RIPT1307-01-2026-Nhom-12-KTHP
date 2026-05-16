@@ -7,22 +7,54 @@ import { ChevronDown, ChevronUp, MapPin } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { isLoggedIn } from "@/lib/auth-utils";
 
-const DATES = [
-  { day: "24", month: "OCT", dayOfWeek: "THU" },
-  { day: "25", month: "OCT", dayOfWeek: "FRI" },
-  { day: "26", month: "OCT", dayOfWeek: "SAT" },
-  { day: "27", month: "OCT", dayOfWeek: "SUN" },
-];
-
 type TheaterShowtime = Theater["showtimes"][0];
 
 export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
   const router = useRouter();
-  const [selectedDate, setSelectedDate] = useState("24");
-  const [expandedTheater, setExpandedTheater] = useState<string>("t1");
+
+  // Helper to safely parse dates
+  const parseDate = (dateStr?: string) => {
+    if (!dateStr) return null;
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d;
+  };
+
+  // Extract all unique dates from all theaters' showtimes
+  const allShowtimes = theaters.flatMap(t => t.showtimes);
+  const uniqueDatesMap = new Map<string, { day: string; month: string; dayOfWeek: string; fullDate: string }>();
+
+  allShowtimes.forEach(s => {
+    const d = parseDate(s.startTime);
+    if (d) {
+      const fullDate = d.toISOString().split('T')[0]; // YYYY-MM-DD
+      if (!uniqueDatesMap.has(fullDate)) {
+        uniqueDatesMap.set(fullDate, {
+          day: d.getDate().toString(),
+          month: d.toLocaleString('en-US', { month: 'short' }).toUpperCase(),
+          dayOfWeek: d.toLocaleString('en-US', { weekday: 'short' }).toUpperCase(),
+          fullDate
+        });
+      }
+    }
+  });
+
+  // Sort dates
+  const sortedDates = Array.from(uniqueDatesMap.values()).sort((a, b) => a.fullDate.localeCompare(b.fullDate));
+  
+  const [selectedDate, setSelectedDate] = useState<string>(sortedDates[0]?.fullDate || "");
+  const [expandedTheater, setExpandedTheater] = useState<string>(theaters[0]?.id || "");
   const [selectedShowtime, setSelectedShowtime] = useState<TheaterShowtime | null>(null);
 
   const getTheaterById = (id: string) => theaters.find(t => t.id === id);
+
+  // Filter theaters to only show those that have showtimes on the selected date
+  const theatersWithFilteredShowtimes = theaters.map(t => ({
+    ...t,
+    showtimes: t.showtimes.filter(s => {
+      const d = parseDate(s.startTime);
+      return d && d.toISOString().split('T')[0] === selectedDate;
+    })
+  })).filter(t => t.showtimes.length > 0);
 
   return (
     <div className="flex h-full flex-col bg-[#0a0a0a] text-white">
@@ -30,28 +62,32 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
         <div className="mb-7">
           <h2 className="mb-4 text-[10px] font-bold tracking-[0.2em] text-[#DAB254]">SELECT DATE</h2>
           <div className="flex flex-wrap gap-3">
-            {DATES.map((date) => (
-              <button
-                key={date.day}
-                onClick={() => setSelectedDate(date.day)}
-                className={`flex h-16 w-14 flex-col items-center justify-center rounded-md border transition-all lg:h-[72px] lg:w-16 ${
-                  selectedDate === date.day 
-                    ? "border-[#DAB254] bg-[#DAB254]/10 shadow-[0_0_18px_rgba(218,178,84,0.12)]" 
-                    : "border-gray-800 bg-[#141414] hover:border-gray-600 hover:bg-[#181818]"
-                }`}
-              >
-                <span className="mb-0.5 text-[8px] text-gray-400 lg:text-[9px]">{date.month}</span>
-                <span className="mb-0.5 text-lg font-light lg:text-xl">{date.day}</span>
-                <span className="text-[8px] text-[#DAB254] lg:text-[9px]">{date.dayOfWeek}</span>
-              </button>
-            ))}
+            {sortedDates.length > 0 ? (
+              sortedDates.map((date) => (
+                <button
+                  key={date.fullDate}
+                  onClick={() => setSelectedDate(date.fullDate)}
+                  className={`flex h-16 w-14 flex-col items-center justify-center rounded-md border transition-all lg:h-[72px] lg:w-16 ${
+                    selectedDate === date.fullDate 
+                      ? "border-[#DAB254] bg-[#DAB254]/10 shadow-[0_0_18px_rgba(218,178,84,0.12)]" 
+                      : "border-gray-800 bg-[#141414] hover:border-gray-600 hover:bg-[#181818]"
+                  }`}
+                >
+                  <span className="mb-0.5 text-[8px] text-gray-400 lg:text-[9px]">{date.month}</span>
+                  <span className="mb-0.5 text-lg font-light lg:text-xl">{date.day}</span>
+                  <span className="text-[8px] text-[#DAB254] lg:text-[9px]">{date.dayOfWeek}</span>
+                </button>
+              ))
+            ) : (
+              <p className="text-xs text-gray-500 italic">No upcoming showtimes available.</p>
+            )}
           </div>
         </div>
 
         <div>
           <h2 className="mb-4 text-[10px] font-bold tracking-[0.2em] text-[#DAB254]">THEATERS & SHOWTIMES</h2>
           <div className="space-y-3">
-            {theaters.map((theater) => (
+            {theatersWithFilteredShowtimes.map((theater) => (
               <div 
                 key={theater.id} 
                 className="overflow-hidden rounded-xl border border-gray-800/60 bg-[#141414]/95 shadow-[0_18px_40px_rgba(0,0,0,0.22)]"
@@ -138,3 +174,4 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
     </div>
   );
 }
+

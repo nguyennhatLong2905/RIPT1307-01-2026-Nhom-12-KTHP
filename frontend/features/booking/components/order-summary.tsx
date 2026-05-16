@@ -44,7 +44,12 @@ export function OrderSummary({ movie, theater, showtime, selectedSeats, onProcee
         <div className="absolute w-2 h-2 rounded-full bg-gray-500 -left-[4.5px] top-[4.5rem]"></div>
         <div>
           <span className="text-gray-400 text-[9px] font-bold uppercase tracking-[0.15em] block mb-1">Time & Date</span>
-          <p className="text-white text-sm">Today • {showtime.time}</p>
+          <p className="text-white text-sm">
+            {showtime.startTime 
+              ? new Date(showtime.startTime).toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit' }) 
+              : "Today"} 
+            • {showtime.time}
+          </p>
         </div>
       </div>
 

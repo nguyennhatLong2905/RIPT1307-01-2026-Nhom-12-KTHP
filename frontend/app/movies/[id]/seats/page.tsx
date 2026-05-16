@@ -94,9 +94,10 @@ export default function SeatsPage() {
             theater={{ name: "Luxe Cinema Central", id: "1", address: "Hà Nội", showtimes: [] }} // Mock theater wrapper
             showtime={{ 
               id: showtime.id, 
-              time: new Date(showtime.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+              time: new Date(showtime.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false }),
               theaterId: "1",
-              type: "GOLD CLASS"
+              type: "GOLD CLASS",
+              startTime: showtime.startTime
             } as any}
           />
         </div>
@@ -106,7 +107,7 @@ export default function SeatsPage() {
             theater={{ name: "Luxe Cinema Central", id: "1", address: "Hà Nội", showtimes: [] }}
             showtime={{ 
               id: showtime.id, 
-              time: new Date(showtime.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+              time: new Date(showtime.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false }),
               theaterId: "1",
               type: "GOLD CLASS"
             } as any}

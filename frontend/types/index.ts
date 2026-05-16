@@ -72,6 +72,7 @@ export interface Theater {
     type: string;
     theaterId: string;
     isExpired?: boolean;
+    startTime?: string;
   }[];
 }
 

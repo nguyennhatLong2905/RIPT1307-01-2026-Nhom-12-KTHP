@@ -131,7 +131,10 @@ export default function RoomManagement() {
 
   const handleDelete = async (id: number) => {
     try { await adminService.deleteRoom(id); fetchRooms(); setDeleteConfirmId(null); }
-    catch { setError("Error deleting room."); }
+    catch (e: any) { 
+      const message = e.response?.data?.message || "Error deleting room.";
+      setError(message); 
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -153,7 +156,10 @@ export default function RoomManagement() {
       if (editingRoom?.id) await adminService.updateRoom(editingRoom.id, data);
       else await adminService.addRoom(data);
       closeDialog(); fetchRooms();
-    } catch { setError("Error saving room."); }
+    } catch (e: any) { 
+      const message = e.response?.data?.message || "Error saving room.";
+      setError(message); 
+    }
     finally { setIsSaving(false); }
   };
 

@@ -47,10 +47,11 @@ export default function MovieBookingPage({ params }: { params: Promise<{ id: str
           
           theaterMap[cinemaId].showtimes.push({
             id: s.id.toString(),
-            time: new Date(s.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+            time: new Date(s.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false }),
             type: s.room.name.includes("GOLD") ? "GOLD CLASS" : "DELUXE",
             theaterId: cinemaId.toString(),
-            isExpired
+            isExpired,
+            startTime: s.startTime
           });
         });
         
