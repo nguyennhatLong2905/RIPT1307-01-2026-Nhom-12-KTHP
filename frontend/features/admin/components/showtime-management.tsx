@@ -266,10 +266,12 @@ export default function ShowtimeManagement() {
             </colgroup>
             <thead>
               <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                {["Movie", "Room", "Start Time", "Price", "Status", "Actions"].map(h => (
+                {["Movie", "Room", "Start Time", "Price", "Status", "Actions"].map((h, idx) => (
                   <th
                     key={h}
-                    className="px-4 py-3 text-left text-xs font-bold uppercase tracking-[0.18em]"
+                    className={`py-3 text-left text-xs font-bold uppercase tracking-[0.18em] ${
+                      idx < 2 ? "pl-16 pr-4" : idx === 2 ? "pl-10 pr-4" : "px-4"
+                    }`}
                     style={{ color: "rgba(255,255,255,0.68)" }}
                   >
                     {h}

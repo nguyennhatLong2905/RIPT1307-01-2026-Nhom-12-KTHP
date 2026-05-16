@@ -9,22 +9,26 @@ interface OrderSummaryProps {
 }
 
 export function OrderSummary({ movie, theater, showtime, selectedSeats, onProceed }: OrderSummaryProps) {
-  const ticketPrice = 24.00;
+  const ticketPrice = showtime.price || 75000;
   const subtotal = selectedSeats.length * ticketPrice;
-  const fee = selectedSeats.length > 0 ? 0 : 0;
-  const total = subtotal + fee;
+  const total = subtotal;
 
   return (
     <div className="bg-[#232325] p-8 rounded-[2rem] w-full max-w-md flex flex-col shadow-2xl">
       <h2 className="text-white text-2xl font-bold mb-8">Order Summary</h2>
       
       <div className="flex gap-5 mb-10">
-        <img src={movie.poster} alt={movie.title} className="w-24 h-36 object-cover rounded-xl shadow-lg" />
+        <img 
+          src={movie.poster || movie.posterUrl} 
+          alt={movie.title} 
+          className="w-24 h-36 object-cover rounded-xl shadow-lg bg-[#323234]" 
+          onError={(e) => { (e.target as HTMLImageElement).src = "https://placehold.co/400x600/0d0d0d/c9a84c?text=" + encodeURIComponent(movie.title); }}
+        />
         <div className="flex flex-col justify-center">
-          <span className="text-[#FF8C6B] text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Now Playing</span>
+          <span className="text-[#FF8C6B] text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Now Booking</span>
           <h3 className="text-white font-bold text-xl leading-tight mb-3 uppercase">{movie.title}</h3>
           <div className="flex gap-2">
-            <span className="text-[10px] text-gray-400 bg-[#323234] px-2.5 py-1 rounded-md font-medium">IMAX 2D</span>
+            <span className="text-[10px] text-gray-400 bg-[#323234] px-2.5 py-1 rounded-md font-medium">{showtime.type || "DELUXE"}</span>
             <span className="text-[10px] text-gray-400 bg-[#323234] px-2.5 py-1 rounded-md font-medium">PG-13</span>
           </div>
         </div>
@@ -40,7 +44,7 @@ export function OrderSummary({ movie, theater, showtime, selectedSeats, onProcee
         <div className="absolute w-2 h-2 rounded-full bg-gray-500 -left-[4.5px] top-[4.5rem]"></div>
         <div>
           <span className="text-gray-400 text-[9px] font-bold uppercase tracking-[0.15em] block mb-1">Time & Date</span>
-          <p className="text-white text-sm">Friday, Apr 3, 2026 • {showtime.time}</p>
+          <p className="text-white text-sm">Today • {showtime.time}</p>
         </div>
       </div>
 
@@ -53,7 +57,7 @@ export function OrderSummary({ movie, theater, showtime, selectedSeats, onProcee
         </div>
         <div className="text-right">
           <span className="text-gray-500 text-[9px] font-bold uppercase tracking-[0.15em] block mb-2">Total Price</span>
-          <p className="text-[#FF8C6B] text-3xl font-bold">${total.toFixed(2)}</p>
+          <p className="text-[#FF8C6B] text-3xl font-bold">{total.toLocaleString()} đ</p>
         </div>
       </div>
 

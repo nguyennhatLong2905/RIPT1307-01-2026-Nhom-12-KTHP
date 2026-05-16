@@ -26,7 +26,7 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
 
   return (
     <div className="flex h-full flex-col bg-[#0a0a0a] text-white">
-      <ScrollArea className="flex-1 px-7 py-6 pb-36 lg:px-10 lg:py-8">
+      <ScrollArea className="flex-1 px-7 pt-4 pb-36 lg:px-10 lg:pt-6">
         <div className="mb-7">
           <h2 className="mb-4 text-[10px] font-bold tracking-[0.2em] text-[#DAB254]">SELECT DATE</h2>
           <div className="flex flex-wrap gap-3">

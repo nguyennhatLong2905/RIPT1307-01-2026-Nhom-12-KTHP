@@ -35,7 +35,7 @@ export function MovieDetails({ movie }: { movie: ExtendedMovie }) {
   }, [videoId, isLocalVideo]);
 
   return (
-    <div className="relative h-full w-full bg-black text-white p-10 flex flex-col justify-end overflow-hidden">
+    <div className="relative h-full w-full bg-black text-white p-10 flex flex-col justify-center overflow-hidden">
       {/* Background Section */}
       <div className="absolute inset-0 z-0 pointer-events-none select-none overflow-hidden bg-black">
         {videoId ? (
