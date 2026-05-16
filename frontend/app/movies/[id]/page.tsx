@@ -67,7 +67,7 @@ export default function MovieBookingPage({ params }: { params: Promise<{ id: str
   if (isLoading || !movie) return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-[#c9a84c]">LOADING...</div>;
 
   return (
-    <div className="flex h-[calc(100vh-60px)] bg-[#0a0a0a] overflow-hidden pt-16">
+    <div className="flex h-[calc(100vh-60px)] bg-[#0a0a0a] overflow-hidden">
       <div className="w-1/2 h-full">
         <MovieDetails movie={{
           ...movie,

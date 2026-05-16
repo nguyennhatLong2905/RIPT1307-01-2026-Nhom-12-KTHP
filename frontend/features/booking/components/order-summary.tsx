@@ -19,9 +19,13 @@ export function OrderSummary({ movie, theater, showtime, selectedSeats, onProcee
       <h2 className="text-white text-2xl font-bold mb-8">Order Summary</h2>
       
       <div className="flex gap-5 mb-10">
-        <img src={movie.poster} alt={movie.title} className="w-24 h-36 object-cover rounded-xl shadow-lg" />
+        <img 
+          src={movie.posterUrl || movie.poster} 
+          alt={movie.title} 
+          className="w-24 h-36 object-cover rounded-xl shadow-lg"
+        />
         <div className="flex flex-col justify-center">
-          <span className="text-[#FF8C6B] text-[9px] font-bold tracking-[0.15em] uppercase mb-2">Now Playing</span>
+          <span className="text-[#FF8C6B] text-[10px] font-bold tracking-[0.15em] uppercase mb-2"> Booking</span>
           <h3 className="text-white font-bold text-xl leading-tight mb-3 uppercase">{movie.title}</h3>
           <div className="flex gap-2">
             <span className="text-[10px] text-gray-400 bg-[#323234] px-2.5 py-1 rounded-md font-medium">IMAX 2D</span>

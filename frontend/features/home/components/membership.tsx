@@ -10,7 +10,7 @@ export default function Membership() {
         <div className="max-w-[1440px] mx-auto flex flex-col lg:flex-row gap-16 lg:gap-24 items-center lg:items-center w-full">
 
           <div className="flex-1 flex flex-col w-full">
-            <h2 className="text-[#E5E2E1] text-4xl md:text-5xl mb-6 md:mb-8 leading-tight">
+            <h2 className="text-[#E5E2E1] text-3xl md:text-4xl mb-6 md:mb-8 leading-tight">
               The Membership<br className="hidden md:block" />Experience
             </h2>
             <p className="text-[#D0C5AF] text-base md:text-lg mb-10 md:mb-12 max-w-xl leading-relaxed">

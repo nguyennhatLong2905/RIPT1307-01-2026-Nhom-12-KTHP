@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Star, Play, Heart } from "lucide-react";
+import { Star, Play, Heart, Ticket } from "lucide-react";
 import { movieService } from "../services/movie-service";
 import { wishlistService } from "../services/wishlist-service";
 import { Movie } from "@/types";
@@ -168,9 +168,6 @@ export default function Hero() {
           )}
         </div>
 
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent pointer-events-none z-10" />
-
         {/* Hero Content */}
         <div
           className="flex-1 flex flex-col justify-end px-6 md:px-12 w-full pb-16 z-20"
@@ -180,16 +177,16 @@ export default function Hero() {
             transition: 'transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.9s ease',
           }}
         >
-          <div className="flex flex-col gap-2 mb-6">
+          <div className="flex flex-col gap-4 mb-5">
             <h1 className="text-white text-5xl md:text-6xl font-bold uppercase tracking-tighter drop-shadow-xl max-w-2xl">
               {heroMovie.title}
             </h1>
-            <p className="text-[#E9C349] text-xl font-bold italic tracking-widest uppercase">
+            <p className="text-[#E9C349] text-lg font-bold italic tracking-widest uppercase">
               {heroMovie.director}
             </p>
           </div>
 
-          <div className="flex flex-col items-start gap-4 mb-10">
+          <div className="flex flex-col items-start gap-4 mb-8">
             <div className="flex items-center gap-4 text-white/70 text-sm font-medium">
                <span>{new Date(heroMovie.releaseDate || '').getFullYear()}</span>
                <span className="w-1 h-1 bg-white/30 rounded-full" />
@@ -200,29 +197,29 @@ export default function Hero() {
             
             <div className="flex items-center gap-2 bg-[#E9C349]/10 px-3 py-1.5 rounded-xl backdrop-blur-md border border-[#E9C349]/20">
               <Star className="w-5 h-5 fill-[#E9C349] text-[#E9C349]" />
-              <span className="text-white text-lg font-bold">9.0<span className="text-white/40 text-sm ml-1 font-normal">/10</span></span>
+              <span className="text-white text-md font-bold">9.0<span className="text-white/40 text-sm ml-1 font-normal">/ 10</span></span>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-6">
+          <div className="flex flex-wrap items-center gap-4">
             <button
               onClick={handleBookNow}
-              className="flex items-center justify-center py-4 px-8 gap-3 rounded-2xl hover:brightness-110 hover:scale-105 transition-all shadow-[0_10px_30px_rgba(244,8,69,0.3)] cursor-pointer"
+              className="flex items-center justify-center py-4 px-6 gap-3 rounded-2xl hover:brightness-110 hover:scale-105 transition-all shadow-[0_10px_30px_rgba(244,8,69,0.3)] cursor-pointer"
               style={{ background: "linear-gradient(135deg, #F40845, #F57C26)" }}
             >
-              <Play className="w-5 h-5 fill-white text-white" />
-              <span className="text-white text-lg font-bold uppercase tracking-wider">Book now</span>
+              <Ticket size={20}/>
+              <span className="text-white text-md font-bold uppercase tracking-wider">Book now</span>
             </button>
             <button 
               onClick={handleToggleWishlist}
-              className={`flex items-center justify-center py-4 px-8 gap-3 rounded-2xl border transition-all backdrop-blur-md cursor-pointer shadow-xl ${
+              className={`flex items-center justify-center py-4 px-6 gap-3 rounded-2xl border transition-all backdrop-blur-md cursor-pointer shadow-xl ${
                 isLiked 
                 ? "bg-[#E9C349]/20 border-[#E9C349] text-[#E9C349]" 
                 : "bg-white/10 border-white/20 text-white hover:bg-white/20 hover:scale-105"
               }`}
             >
-              <Heart className={`w-5 h-5 ${isLiked ? "fill-[#E9C349]" : ""}`} />
-              <span className="text-lg font-bold uppercase tracking-wider">My list</span>
+              <Heart size={20} className={`${isLiked ? "fill-[#E9C349]" : ""}`} />
+              <span className="text-md font-bold uppercase tracking-wider">My list</span>
             </button>
           </div>
         </div>

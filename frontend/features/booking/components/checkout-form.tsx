@@ -145,14 +145,14 @@ export function CheckoutForm() {
         <button 
           onClick={handlePay}
           disabled={isProcessing}
-          className="w-full py-5 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#f0d78c] text-black hover:opacity-90 transition-all shadow-[0_10px_30px_rgba(201,168,76,0.2)] flex flex-col items-center justify-center gap-1 mt-12 disabled:opacity-50"
+          className="w-full py-3 rounded-xl bg-gradient-to-r from-[#c9a84c] to-[#f0d78c] text-black hover:opacity-90 transition-all shadow-[0_10px_30px_rgba(201,168,76,0.2)] flex flex-col items-center justify-center gap-1 mt-12 disabled:opacity-50"
         >
           {isProcessing ? (
             <Loader2 className="w-6 h-6 animate-spin" />
           ) : (
             <>
-              <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Confirm Payment</span>
-              <span className="text-[15px] font-bold tracking-wider">{totalPrice.toLocaleString('vi-VN')} VNĐ</span>
+              <span className="text-[12px] font-bold tracking-[0.2em] uppercase">Confirm Payment</span>
+              <span className="text-[20px] font-bold tracking-wider">{totalPrice.toLocaleString('vi-VN')} VNĐ</span>
             </>
           )}
         </button>
