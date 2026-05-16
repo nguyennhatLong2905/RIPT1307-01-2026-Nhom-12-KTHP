@@ -95,6 +95,7 @@ export default function UserManagement() {
                     key={h}
                     className={`py-3 text-xs font-bold uppercase tracking-[0.15em] ${
                       h === "Actions" ? "px-8 text-center" : 
+                      h === "Role" ? "pl-14 pr-8 text-left" :
                       h === "User" || h === "Contact" ? "pl-24 pr-8 text-left" : "px-8 text-left"
                     }`}
                     style={{ color: "rgba(255,255,255,0.3)" }}

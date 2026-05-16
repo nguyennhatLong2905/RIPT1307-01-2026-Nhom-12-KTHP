@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, type FormEvent } from "react";
 import { Plus, Search, Edit2, Trash2, Film, DoorOpen, CalendarDays, X, ChevronLeft, ChevronRight, AlertCircle, ChevronDown } from "lucide-react";
 import { adminService } from "../services/admin-service";
 import { Showtime, Movie, Room, ShowtimeDTO, Booking } from "@/types";
@@ -170,7 +170,7 @@ export default function ShowtimeManagement() {
     catch { alert("Error deleting showtime."); }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedMovieId || !selectedRoomId) {
       setError("Vui lòng chọn đầy đủ phim và phòng chiếu!");
@@ -255,18 +255,24 @@ export default function ShowtimeManagement() {
           <span className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>{filtered.length} showtimes</span>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[900px] table-fixed text-sm">
+            <colgroup>
+              <col className="w-[22%]" />
+              <col className="w-[23%]" />
+              <col className="w-[21%]" />
+              <col className="w-[12%]" />
+              <col className="w-[13%]" />
+              <col className="w-[9%]" />
+            </colgroup>
             <thead>
               <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                {["Movie", "Room", "Start Time", "Price", "Status", "Actions"].map(h => (
-                  <th 
-                    key={h} 
-                    className={`py-3 text-xs font-bold uppercase tracking-[0.15em] ${
-                      h === "Actions" ? "px-8 text-center" : 
-                      h === "Start Time" ? "pl-12 pr-8 text-left" :
-                      ["Movie", "Room"].includes(h) ? "pl-24 pr-8 text-left" : "px-8 text-left"
-                    }`} 
-                    style={{ color: "rgba(255,255,255,0.3)" }}
+                {["Movie", "Room", "Start Time", "Price", "Status", "Actions"].map((h, idx) => (
+                  <th
+                    key={h}
+                    className={`py-3 text-left text-xs font-bold uppercase tracking-[0.18em] ${
+                      idx < 2 ? "pl-16 pr-4" : idx === 2 ? "pl-10 pr-4" : "px-4"
+                    }`}
+                    style={{ color: "rgba(255,255,255,0.68)" }}
                   >
                     {h}
                   </th>
@@ -278,26 +284,26 @@ export default function ShowtimeManagement() {
                 : paginated.length === 0 ? <tr><td colSpan={6} className="py-12 text-center text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>No showtimes found</td></tr>
                 : paginated.map(st => (
                   <tr key={st.id} className="transition-colors" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.025)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                    <td className="px-8 py-3 text-left">
-                      <div className="flex items-center justify-start gap-2">
-                        <Film size={13} style={{ color: "#c9a84c" }} />
-                        <span className="font-medium text-white/85 text-sm">{st.movie.title}</span>
+                    <td className="px-4 py-3 text-left">
+                      <div className="flex max-w-[210px] items-start justify-start gap-2">
+                        <Film size={13} className="mt-1 shrink-0" style={{ color: "#c9a84c" }} />
+                        <span className="whitespace-normal break-words text-sm font-bold leading-relaxed text-white">{st.movie.title}</span>
                       </div>
                     </td>
-                    <td className="px-8 py-3 text-sm text-left" style={{ color: "rgba(255,255,255,0.5)" }}>
-                      <div className="flex items-center justify-start gap-1.5">
-                        <DoorOpen size={11} style={{ color: "rgba(255,255,255,0.25)" }} />
-                        {st.room.cinema?.name ? `${st.room.cinema.name} · ${st.room.name}` : st.room.name}
+                    <td className="px-4 py-3 text-left text-sm font-semibold" style={{ color: "rgba(255,255,255,0.82)" }}>
+                      <div className="flex max-w-[220px] items-start justify-start gap-1.5">
+                        <DoorOpen size={11} className="mt-1 shrink-0" style={{ color: "rgba(255,255,255,0.48)" }} />
+                        <span className="whitespace-normal break-words leading-relaxed">{st.room.cinema?.name ? `${st.room.cinema.name} · ${st.room.name}` : st.room.name}</span>
                       </div>
                     </td>
-                    <td className="px-8 py-3 text-sm text-left" style={{ color: "rgba(255,255,255,0.5)" }}>
-                      <div className="flex items-center justify-start gap-1.5">
-                        <CalendarDays size={11} style={{ color: "rgba(255,255,255,0.2)" }} />
-                        {new Date(st.startTime).toLocaleString("en-US")}
+                    <td className="px-4 py-3 text-left text-sm font-semibold" style={{ color: "rgba(255,255,255,0.82)" }}>
+                      <div className="flex max-w-[190px] items-start justify-start gap-1.5">
+                        <CalendarDays size={11} className="mt-1 shrink-0" style={{ color: "rgba(255,255,255,0.48)" }} />
+                        <span className="whitespace-normal break-words leading-relaxed">{new Date(st.startTime).toLocaleString("en-US")}</span>
                       </div>
                     </td>
-                    <td className="px-8 py-3 text-sm font-bold text-left" style={{ color: "#c9a84c" }}>{st.price.toLocaleString()} đ</td>
-                    <td className="px-8 py-3 text-left">
+                    <td className="px-4 py-3 text-left text-sm font-bold" style={{ color: "#c9a84c" }}>{st.price.toLocaleString()} đ</td>
+                    <td className="px-4 py-3 text-left">
                       {(() => {
                         const meta = statusMeta[getShowtimeStatus(st, Date.now(), movies)];
                         return (
@@ -308,8 +314,8 @@ export default function ShowtimeManagement() {
                         );
                       })()}
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      <div className="flex justify-center items-center gap-1">
+                    <td className="px-4 py-3 text-left">
+                      <div className="flex items-center justify-start gap-1">
                         <button onClick={() => { setEditingShowtime(st); setIsDialogOpen(true); }} className="p-1.5 rounded-lg transition-colors" style={{ color: "rgba(96,165,250,0.7)" }} onMouseEnter={e => { e.currentTarget.style.color = "#60a5fa"; e.currentTarget.style.background = "rgba(96,165,250,0.08)"; }} onMouseLeave={e => { e.currentTarget.style.color = "rgba(96,165,250,0.7)"; e.currentTarget.style.background = "transparent"; }}><Edit2 size={14} /></button>
                         <div className="relative">
                           <button onClick={() => setDeleteConfirmId(deleteConfirmId === st.id ? null : st.id)} className="p-1.5 rounded-lg transition-colors" style={{ color: deleteConfirmId === st.id ? "#ef4444" : "rgba(239,68,68,0.6)", background: deleteConfirmId === st.id ? "rgba(239,68,68,0.12)" : "transparent" }} onMouseEnter={e => { if (deleteConfirmId !== st.id) { e.currentTarget.style.color = "#ef4444"; e.currentTarget.style.background = "rgba(239,68,68,0.08)"; } }} onMouseLeave={e => { if (deleteConfirmId !== st.id) { e.currentTarget.style.color = "rgba(239,68,68,0.6)"; e.currentTarget.style.background = "transparent"; } }}><Trash2 size={14} /></button>
@@ -345,7 +351,6 @@ export default function ShowtimeManagement() {
         </div>
       )}
 
-      {/* Modal */}
       {isDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)" }} onClick={e => { if (e.target === e.currentTarget) closeDialog(); }}>
           <div className="w-full max-w-md rounded-2xl overflow-hidden" style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.09)" }}>

@@ -27,7 +27,7 @@ export default function RootLayout({
       lang="en"
       className={`${montserrat.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[#0a0a0a] text-white overscroll-none">
+      <body className={`${montserrat.variable} min-h-full flex flex-col bg-[#0a0a0a] text-white overscroll-none font-sans`}>
         <SplashScreen />
         <Suspense fallback={null}>
           <Navbar />
