@@ -106,14 +106,12 @@ function CustomSelect({
                       onChange(option.value);
                       setIsOpen(false);
                     }}
-                    className={`flex w-full items-center justify-between rounded-xl p-2 transition-colors text-left group cursor-pointer ${
-                      isSelected ? "bg-white/8" : "hover:bg-white/5"
-                    }`}
+                    className={`flex w-full items-center justify-between rounded-xl p-2 transition-colors text-left group cursor-pointer ${isSelected ? "bg-white/8" : "hover:bg-white/5"
+                      }`}
                   >
                     <span
-                      className={`text-xs font-semibold truncate transition-colors ${
-                        isSelected ? "text-[#c9a84c]" : "text-white/85 group-hover:text-[#c9a84c]"
-                      }`}
+                      className={`text-xs font-semibold truncate transition-colors ${isSelected ? "text-[#c9a84c]" : "text-white/85 group-hover:text-[#c9a84c]"
+                        }`}
                     >
                       {option.label}
                     </span>
@@ -269,9 +267,8 @@ export default function ShowtimeManagement() {
                 {["Movie", "Room", "Start Time", "Price", "Status", "Actions"].map((h, idx) => (
                   <th
                     key={h}
-                    className={`py-3 text-left text-xs font-bold uppercase tracking-[0.18em] ${
-                      idx < 2 ? "pl-16 pr-4" : idx === 2 ? "pl-10 pr-4" : "px-4"
-                    }`}
+                    className={`py-3 text-left text-xs font-bold uppercase tracking-[0.18em] ${idx < 2 ? "pl-16 pr-4" : idx === 2 ? "pl-10 pr-4" : "px-4"
+                      }`}
                     style={{ color: "rgba(255,255,255,0.68)" }}
                   >
                     {h}
@@ -282,58 +279,58 @@ export default function ShowtimeManagement() {
             <tbody>
               {isLoading ? <tr><td colSpan={6} className="py-12 text-center text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>Loading...</td></tr>
                 : paginated.length === 0 ? <tr><td colSpan={6} className="py-12 text-center text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>No showtimes found</td></tr>
-                : paginated.map(st => (
-                  <tr key={st.id} className="transition-colors" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.025)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-                    <td className="px-4 py-3 text-left">
-                      <div className="flex max-w-[210px] items-start justify-start gap-2">
-                        <Film size={13} className="mt-1 shrink-0" style={{ color: "#c9a84c" }} />
-                        <span className="whitespace-normal break-words text-sm font-bold leading-relaxed text-white">{st.movie.title}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-left text-sm font-semibold" style={{ color: "rgba(255,255,255,0.82)" }}>
-                      <div className="flex max-w-[220px] items-start justify-start gap-1.5">
-                        <DoorOpen size={11} className="mt-1 shrink-0" style={{ color: "rgba(255,255,255,0.48)" }} />
-                        <span className="whitespace-normal break-words leading-relaxed">{st.room.cinema?.name ? `${st.room.cinema.name} · ${st.room.name}` : st.room.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-left text-sm font-semibold" style={{ color: "rgba(255,255,255,0.82)" }}>
-                      <div className="flex max-w-[190px] items-start justify-start gap-1.5">
-                        <CalendarDays size={11} className="mt-1 shrink-0" style={{ color: "rgba(255,255,255,0.48)" }} />
-                        <span className="whitespace-normal break-words leading-relaxed">{new Date(st.startTime).toLocaleString("en-US")}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-left text-sm font-bold" style={{ color: "#c9a84c" }}>{st.price.toLocaleString()} đ</td>
-                    <td className="px-4 py-3 text-left">
-                      {(() => {
-                        const meta = statusMeta[getShowtimeStatus(st, Date.now(), movies)];
-                        return (
-                          <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold ${meta.className}`}>
-                            <span className={`h-1.5 w-1.5 rounded-full ${meta.dotClassName}`} />
-                            {meta.label}
-                          </span>
-                        );
-                      })()}
-                    </td>
-                    <td className="px-4 py-3 text-left">
-                      <div className="flex items-center justify-start gap-1">
-                        <button onClick={() => { setEditingShowtime(st); setIsDialogOpen(true); }} className="p-1.5 rounded-lg transition-colors" style={{ color: "rgba(96,165,250,0.7)" }} onMouseEnter={e => { e.currentTarget.style.color = "#60a5fa"; e.currentTarget.style.background = "rgba(96,165,250,0.08)"; }} onMouseLeave={e => { e.currentTarget.style.color = "rgba(96,165,250,0.7)"; e.currentTarget.style.background = "transparent"; }}><Edit2 size={14} /></button>
-                        <div className="relative">
-                          <button onClick={() => setDeleteConfirmId(deleteConfirmId === st.id ? null : st.id)} className="p-1.5 rounded-lg transition-colors" style={{ color: deleteConfirmId === st.id ? "#ef4444" : "rgba(239,68,68,0.6)", background: deleteConfirmId === st.id ? "rgba(239,68,68,0.12)" : "transparent" }} onMouseEnter={e => { if (deleteConfirmId !== st.id) { e.currentTarget.style.color = "#ef4444"; e.currentTarget.style.background = "rgba(239,68,68,0.08)"; } }} onMouseLeave={e => { if (deleteConfirmId !== st.id) { e.currentTarget.style.color = "rgba(239,68,68,0.6)"; e.currentTarget.style.background = "transparent"; } }}><Trash2 size={14} /></button>
-                          
-                          {deleteConfirmId === st.id && (
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 p-2 rounded-xl border flex items-center gap-2 shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200" style={{ background: "#1a1a1a", borderColor: "rgba(239,68,68,0.3)", backdropFilter: "blur(20px)", minWidth: "140px" }}>
-                              <span className="text-[10px] font-bold text-white/60 uppercase tracking-wider ml-1">Delete?</span>
-                              <div className="flex gap-1 ml-auto">
-                                <button onClick={() => handleDelete(st.id)} className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all bg-[#ef4444] text-white hover:bg-[#dc2626]">Yes</button>
-                                <button onClick={() => setDeleteConfirmId(null)} className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all bg-white/5 text-white/40 hover:bg-white/10 hover:text-white/60">No</button>
-                              </div>
-                            </div>
-                          )}
+                  : paginated.map(st => (
+                    <tr key={st.id} className="transition-colors" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.025)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                      <td className="px-4 py-3 text-left">
+                        <div className="flex max-w-[210px] items-start justify-start gap-2">
+                          <Film size={13} className="mt-1 shrink-0" style={{ color: "#c9a84c" }} />
+                          <span className="whitespace-normal break-words text-sm font-bold leading-relaxed text-white">{st.movie.title}</span>
                         </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-4 py-3 text-left text-sm font-semibold" style={{ color: "rgba(255,255,255,0.82)" }}>
+                        <div className="flex max-w-[220px] items-start justify-start gap-1.5">
+                          <DoorOpen size={11} className="mt-1 shrink-0" style={{ color: "rgba(255,255,255,0.48)" }} />
+                          <span className="whitespace-normal break-words leading-relaxed">{st.room.cinema?.name ? `${st.room.cinema.name} · ${st.room.name}` : st.room.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-left text-sm font-semibold" style={{ color: "rgba(255,255,255,0.82)" }}>
+                        <div className="flex max-w-[190px] items-start justify-start gap-1.5">
+                          <CalendarDays size={11} className="mt-1 shrink-0" style={{ color: "rgba(255,255,255,0.48)" }} />
+                          <span className="whitespace-normal break-words leading-relaxed">{new Date(st.startTime).toLocaleString("en-US")}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-left text-sm font-bold" style={{ color: "#c9a84c" }}>{st.price.toLocaleString()} đ</td>
+                      <td className="px-4 py-3 text-left">
+                        {(() => {
+                          const meta = statusMeta[getShowtimeStatus(st, Date.now(), movies)];
+                          return (
+                            <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-bold ${meta.className}`}>
+                              <span className={`h-1.5 w-1.5 rounded-full ${meta.dotClassName}`} />
+                              {meta.label}
+                            </span>
+                          );
+                        })()}
+                      </td>
+                      <td className="px-4 py-3 text-left">
+                        <div className="flex items-center justify-start gap-1">
+                          <button onClick={() => { setEditingShowtime(st); setIsDialogOpen(true); }} className="p-1.5 rounded-lg transition-colors" style={{ color: "rgba(96,165,250,0.7)" }} onMouseEnter={e => { e.currentTarget.style.color = "#60a5fa"; e.currentTarget.style.background = "rgba(96,165,250,0.08)"; }} onMouseLeave={e => { e.currentTarget.style.color = "rgba(96,165,250,0.7)"; e.currentTarget.style.background = "transparent"; }}><Edit2 size={14} /></button>
+                          <div className="relative">
+                            <button onClick={() => setDeleteConfirmId(deleteConfirmId === st.id ? null : st.id)} className="p-1.5 rounded-lg transition-colors" style={{ color: deleteConfirmId === st.id ? "#ef4444" : "rgba(239,68,68,0.6)", background: deleteConfirmId === st.id ? "rgba(239,68,68,0.12)" : "transparent" }} onMouseEnter={e => { if (deleteConfirmId !== st.id) { e.currentTarget.style.color = "#ef4444"; e.currentTarget.style.background = "rgba(239,68,68,0.08)"; } }} onMouseLeave={e => { if (deleteConfirmId !== st.id) { e.currentTarget.style.color = "rgba(239,68,68,0.6)"; e.currentTarget.style.background = "transparent"; } }}><Trash2 size={14} /></button>
+
+                            {deleteConfirmId === st.id && (
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 p-2 rounded-xl border flex items-center gap-2 shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200" style={{ background: "#1a1a1a", borderColor: "rgba(239,68,68,0.3)", backdropFilter: "blur(20px)", minWidth: "140px" }}>
+                                <span className="text-[10px] font-bold text-white/60 uppercase tracking-wider ml-1">Delete?</span>
+                                <div className="flex gap-1 ml-auto">
+                                  <button onClick={() => handleDelete(st.id)} className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all bg-[#ef4444] text-white hover:bg-[#dc2626]">Yes</button>
+                                  <button onClick={() => setDeleteConfirmId(null)} className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all bg-white/5 text-white/40 hover:bg-white/10 hover:text-white/60">No</button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>
@@ -353,7 +350,7 @@ export default function ShowtimeManagement() {
 
       {isDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)" }} onClick={e => { if (e.target === e.currentTarget) closeDialog(); }}>
-          <div className="w-full max-w-md rounded-2xl overflow-hidden" style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.09)" }}>
+          <div className="w-full max-w-md rounded-2xl overflow-visible" style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.09)" }}>
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
               <h2 className="text-sm font-bold text-white">{editingShowtime ? "Edit Showtime" : "Create Showtime"}</h2>
               <button onClick={closeDialog} className="p-1.5 rounded-lg" style={{ color: "rgba(255,255,255,0.4)" }} onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")} onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}><X size={16} /></button>
