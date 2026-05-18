@@ -265,7 +265,7 @@ export default function RoomManagement() {
       {/* Modal */}
       {isDialogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)" }} onClick={e => { if (e.target === e.currentTarget) closeDialog(); }}>
-          <div className="w-full max-w-md rounded-2xl overflow-hidden" style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.09)" }}>
+          <div className="w-full max-w-md rounded-2xl overflow-visible" style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.09)" }}>
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
               <h2 className="text-sm font-bold text-white">{editingRoom ? "Edit Room" : "Add Room"}</h2>
               <button onClick={closeDialog} className="p-1.5 rounded-lg" style={{ color: "rgba(255,255,255,0.4)" }} onMouseEnter={e => (e.currentTarget.style.color = "rgba(255,255,255,0.8)")} onMouseLeave={e => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}><X size={16} /></button>
