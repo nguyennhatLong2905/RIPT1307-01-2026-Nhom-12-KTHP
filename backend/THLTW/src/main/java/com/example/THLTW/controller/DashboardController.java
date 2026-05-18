@@ -41,7 +41,7 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.getMonthlyRevenue());
     }
 
-    // 5 giao dịch gần đây
+    // Giao dịch gần đây
     @GetMapping("/recent-bookings")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Booking>> getRecentBookings() {

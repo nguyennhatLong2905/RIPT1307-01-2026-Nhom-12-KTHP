@@ -21,9 +21,15 @@ public class DataInitializer implements CommandLineRunner {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private com.example.THLTW.service.MovieService movieService;
+
+    @Autowired
+    private com.example.THLTW.service.DashboardService dashboardService;
+
     @Override
     public void run(String... args) {
-        // Tạo tài khoản Admin mặc định
+        // Tài khoản Admin mặc định
         if (userRepository.findByUsername("admin").isEmpty()) {
             User admin = new User(
                     "admin",
@@ -40,10 +46,20 @@ public class DataInitializer implements CommandLineRunner {
         if (cinemaRepository.count() == 0) {
             Cinema defaultCinema = new Cinema();
             defaultCinema.setName("Luxe Cinema Central");
-            defaultCinema.setAddress("702 Nguyễn Văn Linh, Quận 7, TP.HCM");
+            defaultCinema.setAddress("122 Hoàng Quốc Việt, Quận Cầu Giấy, Hà Nội");
             defaultCinema.setDescription("Trụ sở chính của hệ thống rạp Luxe Cinema.");
             cinemaRepository.save(defaultCinema);
             System.out.println(">>> Đã tạo rạp mẫu: Luxe Cinema Central");
+        }
+
+        System.out.println(">>> Loading...");
+        try {
+            movieService.getAllMovies();
+            dashboardService.getSummaryStats();
+            dashboardService.getMonthlyRevenue();
+            System.out.println(">>> Loaded successfully!");
+        } catch (Exception e) {
+            System.err.println(">>> Error loading: " + e.getMessage());
         }
     }
 }

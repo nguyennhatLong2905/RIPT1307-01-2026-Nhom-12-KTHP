@@ -21,25 +21,21 @@ import java.time.Duration;
 public class RedisConfig {
 
     @Bean
+    @SuppressWarnings("removal")
     public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        // Cấu hình ObjectMapper hỗ trợ Java 8 Time (LocalDate, LocalDateTime)
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        // Cho phép lưu trữ thông tin class trong JSON để Jackson có thể deserialize ngược lại đúng kiểu dữ liệu
         objectMapper.activateDefaultTyping(
             LaissezFaireSubTypeValidator.instance,
             ObjectMapper.DefaultTyping.NON_FINAL,
             JsonTypeInfo.As.PROPERTY
         );
-
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
-
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(10)) // Thời gian sống mặc định của cache là 10 phút
+                .entryTtl(Duration.ofMinutes(10))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer))
                 .disableCachingNullValues();
-
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(config)
                 .build();
