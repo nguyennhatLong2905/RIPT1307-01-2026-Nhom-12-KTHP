@@ -11,7 +11,18 @@ import java.util.List;
 @Repository
 public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
 
-    List<Showtime> findByMovieId(Long movieId);
+    @Query("SELECT s FROM Showtime s LEFT JOIN FETCH s.movie LEFT JOIN FETCH s.room r LEFT JOIN FETCH r.cinema WHERE s.movie.id = :movieId")
+    List<Showtime> findByMovieIdWithDetails(@Param("movieId") Long movieId);
+
+    @Query("SELECT s FROM Showtime s LEFT JOIN FETCH s.movie LEFT JOIN FETCH s.room r LEFT JOIN FETCH r.cinema")
+    List<Showtime> findAllWithDetails();
+
+    @Query("SELECT s FROM Showtime s LEFT JOIN FETCH s.movie LEFT JOIN FETCH s.room r LEFT JOIN FETCH r.cinema WHERE s.id = :id")
+    java.util.Optional<Showtime> findByIdWithDetails(@Param("id") Long id);
+
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT s FROM Showtime s WHERE s.id = :id")
+    java.util.Optional<Showtime> findByIdWithLock(@Param("id") Long id);
 
     @Query("SELECT s FROM Showtime s WHERE s.room.id = :roomId " +
            "AND CAST(s.startTime AS date) = CAST(:date AS date)")

@@ -4,6 +4,8 @@ import com.example.THLTW.entity.Movie;
 import com.example.THLTW.exception.AppException;
 import com.example.THLTW.repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -17,14 +19,17 @@ public class MovieService {
     @Autowired
     private com.example.THLTW.repository.BookingRepository bookingRepository;
 
+    @Cacheable(value = "movies", key = "'all'")
     public List<Movie> getAllMovies() {
-        return movieRepository.findAll();
+        return new java.util.ArrayList<>(movieRepository.findAll());
     }
 
+    @CacheEvict(value = {"movies", "dashboardSummary"}, allEntries = true)
     public Movie addMovie(Movie movie) {
         return movieRepository.save(movie);
     }
 
+    @CacheEvict(value = {"movies", "dashboardSummary"}, allEntries = true)
     public Movie updateMovie(Long id, Movie details) {
         Movie movie = movieRepository.findById(id)
                 .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy phim!"));
@@ -41,6 +46,7 @@ public class MovieService {
         return movieRepository.save(movie);
     }
 
+    @CacheEvict(value = {"movies", "dashboardSummary"}, allEntries = true)
     public void deleteMovie(Long id) {
         movieRepository.deleteById(id);
     }

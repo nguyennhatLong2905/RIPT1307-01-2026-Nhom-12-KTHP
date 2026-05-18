@@ -27,21 +27,13 @@ export default function SeatsPage() {
 
   const fetchData = async () => {
     try {
-      // Vì backend chưa có api lấy chi tiết 1 showtime đơn lẻ, 
-      // chúng ta sẽ lấy toàn bộ showtime của phim đó (giả sử phim ID là 1 hoặc lấy từ URL)
-      // Để đơn giản, tôi sẽ giả định có API lấy chi tiết showtime hoặc mock tạm thời
-      // Nhưng quan trọng nhất là lấy ghế đã đặt
-      const seats = await axiosInstance.get(`/bookings/showtime/${showtimeId}/seats`);
-      setTakenSeats(seats.data);
+      const [seatsResponse, showtimeData] = await Promise.all([
+        axiosInstance.get<string[]>(`/bookings/showtime/${showtimeId}/seats`),
+        showtimeService.getShowtimeById(parseInt(showtimeId!))
+      ]);
       
-      // Lấy thông tin showtime (tạm thời lấy từ danh sách hoặc backend)
-      // Giả sử phim ID từ URL
-      const pathParts = window.location.pathname.split('/');
-      const movieId = parseInt(pathParts[2]);
-      const showtimes = await showtimeService.getShowtimesByMovie(movieId);
-      const currentShowtime = showtimes.find(s => s.id === parseInt(showtimeId!));
-      if (currentShowtime) setShowtime(currentShowtime);
-      
+      setTakenSeats(seatsResponse.data);
+      setShowtime(showtimeData);
     } catch (error) {
       console.error("Lỗi tải dữ liệu:", error);
     } finally {

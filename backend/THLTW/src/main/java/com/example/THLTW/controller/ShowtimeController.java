@@ -18,4 +18,10 @@ public class ShowtimeController {
     public List<Showtime> getShowtimesByMovie(@PathVariable Long movieId) {
         return showtimeService.getShowtimesByMovie(movieId);
     }
+
+    // Lấy chi tiết một suất chiếu theo ID
+    @GetMapping("/{id}")
+    public Showtime getShowtimeById(@PathVariable Long id) {
+        return showtimeService.getShowtimeById(id);
+    }
 }

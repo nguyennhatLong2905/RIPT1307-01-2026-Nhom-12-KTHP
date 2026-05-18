@@ -10,9 +10,6 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    @Query("SELECT (COUNT(b) > 0) FROM Booking b WHERE b.showtime.id = :showtimeId AND b.seatNumbers LIKE CONCAT('%', :seatNumber, '%')")
-    boolean checkSeatTaken(@Param("showtimeId") Long showtimeId, @Param("seatNumber") String seatNumber);
-
     @Query("SELECT SUM(b.totalAmount) FROM Booking b")
     Double calculateTotalRevenue();
 

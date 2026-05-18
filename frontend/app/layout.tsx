@@ -26,6 +26,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${montserrat.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className={`${montserrat.variable} min-h-full flex flex-col bg-[#0a0a0a] text-white overscroll-none font-sans`}>
         <SplashScreen />

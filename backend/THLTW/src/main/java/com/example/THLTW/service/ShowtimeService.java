@@ -87,14 +87,19 @@ public class ShowtimeService {
     }
 
     public List<Showtime> getShowtimesByMovie(Long movieId) {
-        return showtimeRepository.findByMovieId(movieId);
+        return showtimeRepository.findByMovieIdWithDetails(movieId);
     }
 
     public List<Showtime> getAllShowtimes() {
-        return showtimeRepository.findAll();
+        return showtimeRepository.findAllWithDetails();
     }
 
     public void deleteShowtime(Long id) {
         showtimeRepository.deleteById(id);
+    }
+
+    public Showtime getShowtimeById(Long id) {
+        return showtimeRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND, "Không tìm thấy suất chiếu!"));
     }
 }

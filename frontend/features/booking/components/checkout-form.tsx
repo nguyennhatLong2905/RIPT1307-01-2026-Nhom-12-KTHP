@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { ChevronLeft, CreditCard, Wallet, Loader2 } from "lucide-react";
 import { bookingService } from "../services/booking-service";
+import { showtimeService } from "../services/showtime-service";
 
 export function CheckoutForm() {
   const router = useRouter();
@@ -14,6 +15,15 @@ export function CheckoutForm() {
   
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showtime, setShowtime] = useState<any>(null);
+
+  useEffect(() => {
+    if (showtimeId) {
+      showtimeService.getShowtimeById(parseInt(showtimeId))
+        .then(setShowtime)
+        .catch(err => console.error("Lỗi tải thông tin suất chiếu:", err));
+    }
+  }, [showtimeId]);
 
   const handlePay = async () => {
     if (!showtimeId || seats.length === 0) {
@@ -39,7 +49,7 @@ export function CheckoutForm() {
     }
   };
 
-  const totalPrice = seats.length * 90000; // Giả định giá vé cố định 90k nếu không có dữ liệu showtime
+  const totalPrice = showtime ? seats.length * showtime.price : seats.length * 90000;
 
   return (
     <div className="min-h-screen bg-[#0f0f11] text-white flex flex-col items-center py-20 px-4">

@@ -6,6 +6,8 @@ export const showtimeService = {
     const response = await axiosInstance.get(`/showtimes/movie/${movieId}`);
     return response.data;
   },
-  
-  // Chúng ta có thể thêm lấy chi tiết 1 suất chiếu nếu backend hỗ trợ
+  getShowtimeById: async (id: number): Promise<Showtime> => {
+    const response = await axiosInstance.get(`/showtimes/${id}`);
+    return response.data;
+  }
 };
