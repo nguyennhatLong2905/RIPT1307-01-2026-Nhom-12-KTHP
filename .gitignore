@@ -11,6 +11,8 @@ backend/THLTW/.mvn/
 backend/THLTW/uploads/
 backend/THLTW/.idea/
 backend/THLTW/*.iml
+backend/THLTW/.env
+backend/*.log
 
 # System
 .DS_Store
