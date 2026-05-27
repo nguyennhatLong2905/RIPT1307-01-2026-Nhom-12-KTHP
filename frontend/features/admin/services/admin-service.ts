@@ -6,25 +6,31 @@ export const adminService = {
     const response = await axiosInstance.get("/admin/cinemas");
     return response.data;
   },
+
   addCinema: async (cinema: Omit<Cinema, "id">): Promise<Cinema> => {
     const response = await axiosInstance.post("/admin/cinemas", cinema);
     return response.data;
   },
+
   updateCinema: async (id: number, cinema: Partial<Cinema>): Promise<Cinema> => {
     const response = await axiosInstance.put(`/admin/cinemas/${id}`, cinema);
     return response.data;
   },
+
   deleteCinema: async (id: number): Promise<void> => {
     await axiosInstance.delete(`/admin/cinemas/${id}`);
   },
+
   getSummaryStats: async () => {
     const response = await axiosInstance.get("/admin/dashboard/summary");
     return response.data;
   },
+
   getMonthlyRevenue: async () => {
     const response = await axiosInstance.get("/admin/dashboard/monthly-revenue");
     return response.data;
   },
+
   getRecentBookings: async () => {
     const response = await axiosInstance.get("/admin/dashboard/recent-bookings");
     return response.data;
@@ -37,14 +43,13 @@ export const adminService = {
         axiosInstance.get("/admin/dashboard/monthly-revenue"),
         axiosInstance.get("/admin/dashboard/recent-bookings"),
       ]);
-
       return {
         totalRevenue: summary.data?.totalRevenue || 0,
         totalBookings: summary.data?.totalBookings || 0,
         totalMovies: summary.data?.totalMovies || 0,
         totalUsers: summary.data?.totalCustomers || 0,
         revenueByMonth: monthly.data || {},
-        recentBookings: recent.data || []
+        recentBookings: recent.data || [],
       };
     } catch (error) {
       console.error("Lỗi khi lấy thống kê:", error);
@@ -54,7 +59,7 @@ export const adminService = {
         totalMovies: 0,
         totalUsers: 0,
         revenueByMonth: {},
-        recentBookings: []
+        recentBookings: [],
       };
     }
   },
@@ -63,14 +68,17 @@ export const adminService = {
     const response = await axiosInstance.get("/movies");
     return response.data;
   },
+
   addMovie: async (movie: Omit<Movie, "id">): Promise<Movie> => {
     const response = await axiosInstance.post("/admin/movies", movie);
     return response.data;
   },
+
   updateMovie: async (id: number, movie: Partial<Movie>): Promise<string> => {
     const response = await axiosInstance.put(`/admin/movies/${id}`, movie);
     return response.data;
   },
+
   deleteMovie: async (id: number): Promise<string> => {
     const response = await axiosInstance.delete(`/admin/movies/${id}`);
     return response.data;
@@ -80,14 +88,17 @@ export const adminService = {
     const response = await axiosInstance.get("/admin/rooms");
     return response.data;
   },
+
   addRoom: async (room: Omit<Room, "id">): Promise<Room> => {
     const response = await axiosInstance.post("/admin/rooms", room);
     return response.data;
   },
+
   updateRoom: async (id: number, room: Partial<Room>): Promise<string> => {
     const response = await axiosInstance.put(`/admin/rooms/${id}`, room);
     return response.data;
   },
+
   deleteRoom: async (id: number): Promise<string> => {
     const response = await axiosInstance.delete(`/admin/rooms/${id}`);
     return response.data;
@@ -97,14 +108,17 @@ export const adminService = {
     const response = await axiosInstance.get("/admin/showtimes");
     return response.data;
   },
+
   createShowtime: async (dto: ShowtimeDTO): Promise<string> => {
     const response = await axiosInstance.post("/admin/showtimes", dto);
     return response.data;
   },
+
   updateShowtime: async (id: number, dto: ShowtimeDTO): Promise<string> => {
     const response = await axiosInstance.put(`/admin/showtimes/${id}`, dto);
     return response.data;
   },
+
   deleteShowtime: async (id: number): Promise<string> => {
     const response = await axiosInstance.delete(`/admin/showtimes/${id}`);
     return response.data;
@@ -114,6 +128,7 @@ export const adminService = {
     const response = await axiosInstance.get("/admin/users");
     return response.data;
   },
+
   deleteUser: async (id: number): Promise<string> => {
     const response = await axiosInstance.delete(`/admin/users/${id}`);
     return response.data;
@@ -123,9 +138,7 @@ export const adminService = {
     const formData = new FormData();
     formData.append("file", file);
     const response = await axiosInstance.post("/files/upload-trailer", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+      headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data.url;
   },

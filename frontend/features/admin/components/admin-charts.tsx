@@ -28,39 +28,34 @@ export default function AdminCharts({ revenueByMonth, recentBookings }: AdminCha
   }, []);
 
   const getRevenueData = (): ChartDataItem[] => {
-    // Hiển thị 3 tháng trước, tháng hiện tại và 2 tháng tiếp theo
     const now = new Date();
     const displayMonths = Array.from({ length: 6 }, (_, i) => {
       const d = new Date(now.getFullYear(), now.getMonth() - 3 + i, 1);
       const year = d.getFullYear();
-      const month = (d.getMonth() + 1).toString().padStart(2, '0');
+      const month = (d.getMonth() + 1).toString().padStart(2, "0");
       return `${year}-${month}`;
     });
 
     const mockValues: Record<string, number> = {
-      "0": 1250000, "1": 2100000, "2": 1800000, "3": 3500000, "4": 4200000, "5": 5100000
+      "0": 1250000, "1": 2100000, "2": 1800000,
+      "3": 3500000, "4": 4200000, "5": 5100000,
     };
 
-    const currentMonthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+    const currentMonthKey = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, "0")}`;
 
     const displayData = displayMonths.map((monthKey, index) => {
       const realRevenue = revenueByMonth[monthKey] || 0;
-      
-      // Các tháng tương lai hoặc tháng hiện tại/quá khứ chưa có doanh thu đều dùng mock
       const isFuture = monthKey > currentMonthKey;
       const isMock = realRevenue === 0 || isFuture;
-      
       const revenue = isMock ? (mockValues[index] || 1000000) : realRevenue;
       const label = `T${monthKey.split("-")[1]}`;
-      
       return { label, revenue, isMock, isFuture };
     });
 
     const maxRevenue = Math.max(...displayData.map(d => d.revenue), 100000);
-    
     return displayData.map(d => ({
       ...d,
-      height: Math.max((d.revenue / maxRevenue) * 100, 8)
+      height: Math.max((d.revenue / maxRevenue) * 100, 8),
     })) as ChartDataItem[];
   };
 

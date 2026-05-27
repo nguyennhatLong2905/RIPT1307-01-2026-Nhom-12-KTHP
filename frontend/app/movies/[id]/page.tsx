@@ -4,7 +4,7 @@ import { useEffect, useState, use } from "react";
 import { MovieDetails, ShowtimeSelector } from "@/features/booking";
 import { movieService } from "@/features/home/services/movie-service";
 import { showtimeService } from "@/features/booking/services/showtime-service";
-import { Movie, Showtime, Theater } from "@/types";
+import { Movie, Theater } from "@/types";
 
 export default function MovieBookingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -17,20 +17,17 @@ export default function MovieBookingPage({ params }: { params: Promise<{ id: str
       try {
         const movieId = parseInt(id);
         const movieData = await movieService.getAllMovies();
-        const foundMovie = movieData.find(m => m.id === movieId);
-        setMovie(foundMovie || null);
+        setMovie(movieData.find(m => m.id === movieId) || null);
 
         const showtimes = await showtimeService.getShowtimesByMovie(movieId);
-        
         const theaterMap: Record<number, Theater> = {};
+
         showtimes.forEach(s => {
           const cinema = s.room.cinema;
           const cinemaId = cinema?.id || 0;
-          
           const startTimeDate = new Date(s.startTime);
-          const now = new Date();
-          const isExpired = now.getTime() > (startTimeDate.getTime() + 30 * 60000);
-          
+          const isExpired = Date.now() > startTimeDate.getTime() + 30 * 60000;
+
           if (isExpired) return;
 
           if (!theaterMap[cinemaId]) {
@@ -40,20 +37,20 @@ export default function MovieBookingPage({ params }: { params: Promise<{ id: str
               address: cinema?.address || "Hồ Chí Minh",
               imageUrl: cinema?.imageUrl,
               description: cinema?.description,
-              showtimes: []
+              showtimes: [],
             };
           }
-          
+
           theaterMap[cinemaId].showtimes.push({
             id: s.id.toString(),
-            time: new Date(s.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', hour12: false }),
+            time: new Date(s.startTime).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", hour12: false }),
             type: s.room.name.includes("GOLD") ? "GOLD CLASS" : "DELUXE",
             theaterId: cinemaId.toString(),
             isExpired,
-            startTime: s.startTime
+            startTime: s.startTime,
           });
         });
-        
+
         setTheaters(Object.values(theaterMap));
       } catch (error) {
         console.error("Error loading movie info:", error);
@@ -64,7 +61,9 @@ export default function MovieBookingPage({ params }: { params: Promise<{ id: str
     fetchData();
   }, [id]);
 
-  if (isLoading || !movie) return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-[#c9a84c]">LOADING...</div>;
+  if (isLoading || !movie) {
+    return <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-[#c9a84c]">LOADING...</div>;
+  }
 
   return (
     <div className="flex h-[calc(100vh-60px)] bg-[#0a0a0a] overflow-hidden">
@@ -72,18 +71,12 @@ export default function MovieBookingPage({ params }: { params: Promise<{ id: str
         <MovieDetails movie={{
           ...movie,
           id: movie.id.toString(),
-          title: movie.title,
           poster: movie.posterUrl || "/images/placeholder.jpg",
           rating: 9.0,
-          director: movie.director,
           cast: "Updating",
           synopsis: movie.description || "No description available.",
-          genre: movie.genre,
-          duration: movie.duration,
-          trailerUrl: movie.trailerUrl
         } as any} />
       </div>
-
       <div className="w-1/2 h-full relative border-l border-white/5">
         <ShowtimeSelector theaters={theaters} />
       </div>

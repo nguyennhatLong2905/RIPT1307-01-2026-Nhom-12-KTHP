@@ -44,5 +44,5 @@ export const authService = {
   changePassword: async (oldPassword: string, newPassword: string): Promise<string> => {
     const response = await axiosInstance.put("/users/change-password", { oldPassword, newPassword });
     return response.data;
-  }
+  },
 };

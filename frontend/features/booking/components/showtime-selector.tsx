@@ -23,34 +23,44 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
 
   allShowtimes.forEach(s => {
     const d = parseDate(s.startTime);
-    if (d) {
-      const fullDate = d.toISOString().split('T')[0]; // YYYY-MM-DD
-      if (!uniqueDatesMap.has(fullDate)) {
-        uniqueDatesMap.set(fullDate, {
-          day: d.getDate().toString(),
-          month: d.toLocaleString('en-US', { month: 'short' }).toUpperCase(),
-          dayOfWeek: d.toLocaleString('en-US', { weekday: 'short' }).toUpperCase(),
-          fullDate
-        });
-      }
+    if (!d) return;
+    const fullDate = d.toISOString().split("T")[0];
+    if (!uniqueDatesMap.has(fullDate)) {
+      uniqueDatesMap.set(fullDate, {
+        day: d.getDate().toString(),
+        month: d.toLocaleString("en-US", { month: "short" }).toUpperCase(),
+        dayOfWeek: d.toLocaleString("en-US", { weekday: "short" }).toUpperCase(),
+        fullDate,
+      });
     }
   });
 
   const sortedDates = Array.from(uniqueDatesMap.values()).sort((a, b) => a.fullDate.localeCompare(b.fullDate));
-  
+
   const [selectedDate, setSelectedDate] = useState<string>(sortedDates[0]?.fullDate || "");
   const [expandedTheater, setExpandedTheater] = useState<string>(theaters[0]?.id || "");
   const [selectedShowtime, setSelectedShowtime] = useState<TheaterShowtime | null>(null);
 
   const getTheaterById = (id: string) => theaters.find(t => t.id === id);
 
-  const theatersWithFilteredShowtimes = theaters.map(t => ({
-    ...t,
-    showtimes: t.showtimes.filter(s => {
-      const d = parseDate(s.startTime);
-      return d && d.toISOString().split('T')[0] === selectedDate;
-    })
-  })).filter(t => t.showtimes.length > 0);
+  const theatersWithFilteredShowtimes = theaters
+    .map(t => ({
+      ...t,
+      showtimes: t.showtimes.filter(s => {
+        const d = parseDate(s.startTime);
+        return d && d.toISOString().split("T")[0] === selectedDate;
+      }),
+    }))
+    .filter(t => t.showtimes.length > 0);
+
+  const handleContinue = () => {
+    if (!isLoggedIn()) {
+      router.push(`${window.location.pathname}?login=true`);
+      return;
+    }
+    const movieId = window.location.pathname.split("/")[2];
+    router.push(`/movies/${movieId}/seats?showtimeId=${selectedShowtime!.id}`);
+  };
 
   return (
     <div className="flex h-full flex-col bg-[#0a0a0a] text-white">
@@ -59,13 +69,13 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
           <h2 className="mb-4 text-[10px] font-bold tracking-[0.2em] text-[#DAB254]">SELECT DATE</h2>
           <div className="flex flex-wrap gap-3">
             {sortedDates.length > 0 ? (
-              sortedDates.map((date) => (
+              sortedDates.map(date => (
                 <button
                   key={date.fullDate}
                   onClick={() => setSelectedDate(date.fullDate)}
                   className={`flex h-16 w-14 flex-col items-center justify-center rounded-md border transition-all lg:h-[72px] lg:w-16 ${
-                    selectedDate === date.fullDate 
-                      ? "border-[#DAB254] bg-[#DAB254]/10 shadow-[0_0_18px_rgba(218,178,84,0.12)]" 
+                    selectedDate === date.fullDate
+                      ? "border-[#DAB254] bg-[#DAB254]/10 shadow-[0_0_18px_rgba(218,178,84,0.12)]"
                       : "border-gray-800 bg-[#141414] hover:border-gray-600 hover:bg-[#181818]"
                   }`}
                 >
@@ -83,12 +93,12 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
         <div>
           <h2 className="mb-4 text-[10px] font-bold tracking-[0.2em] text-[#DAB254]">THEATERS & SHOWTIMES</h2>
           <div className="space-y-3">
-            {theatersWithFilteredShowtimes.map((theater) => (
-              <div 
-                key={theater.id} 
+            {theatersWithFilteredShowtimes.map(theater => (
+              <div
+                key={theater.id}
                 className="overflow-hidden rounded-xl border border-gray-800/60 bg-[#141414]/95 shadow-[0_18px_40px_rgba(0,0,0,0.22)]"
               >
-                <button 
+                <button
                   className="flex w-full items-center justify-between gap-4 p-4 transition-colors hover:bg-[#1a1a1a] lg:p-5"
                   onClick={() => setExpandedTheater(expandedTheater === theater.id ? "" : theater.id)}
                 >
@@ -109,7 +119,7 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
                 {expandedTheater === theater.id && (
                   <div className="border-t border-gray-800/50 px-4 pb-4 pt-3 lg:px-5 lg:pb-5">
                     <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
-                      {theater.showtimes.map((showtime) => (
+                      {theater.showtimes.map(showtime => (
                         <button
                           key={showtime.id}
                           onClick={() => setSelectedShowtime(showtime)}
@@ -146,20 +156,12 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
               <p className="text-sm italic text-gray-600">Please select a showtime</p>
             )}
           </div>
-          <button 
+          <button
             disabled={!selectedShowtime}
-            onClick={() => {
-              if (!isLoggedIn()) {
-                router.push(`${window.location.pathname}?login=true`);
-                return;
-              }
-              const pathParts = window.location.pathname.split('/');
-              const movieId = pathParts[2];
-              router.push(`/movies/${movieId}/seats?showtimeId=${selectedShowtime!.id}`);
-            }}
+            onClick={handleContinue}
             className={`shrink-0 rounded-lg px-5 py-3 text-[10px] font-bold tracking-[0.15em] transition-all lg:px-7 lg:text-[11px] ${
-              selectedShowtime 
-                ? "bg-gradient-to-r from-[#DAB254] to-[#FF8C6B] text-black shadow-[0_0_20px_rgba(218,178,84,0.3)] hover:opacity-90" 
+              selectedShowtime
+                ? "bg-gradient-to-r from-[#DAB254] to-[#FF8C6B] text-black shadow-[0_0_20px_rgba(218,178,84,0.3)] hover:opacity-90"
                 : "cursor-not-allowed bg-gray-800 text-gray-500"
             }`}
           >
@@ -170,4 +172,3 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
     </div>
   );
 }
-
