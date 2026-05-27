@@ -31,7 +31,6 @@ export default function AiPicks() {
       } else if (loggedIn) {
         data = await movieService.getMyAIPicks();
       } else {
-        // Fallback for non-logged in users with no genres selected
         const all = await movieService.getAllMovies();
         data = all.slice(0, 4); 
       }
@@ -66,7 +65,6 @@ export default function AiPicks() {
                 </div>
               </div>
               
-              {/* Genre Selector */}
               <div className="flex flex-wrap gap-2 mt-2">
                 {AVAILABLE_GENRES.map(genre => (
                   <Badge
@@ -106,7 +104,6 @@ export default function AiPicks() {
              </div>
           ) : (
             <div className="flex flex-col lg:flex-row gap-8 w-full">
-              {/* Main big card */}
               {movies.length > 0 ? (
                 <>
                   {movies[0] && (
@@ -138,7 +135,6 @@ export default function AiPicks() {
                     </div>
                   )}
 
-                  {/* List panel */}
                   <div className="flex flex-col flex-1 gap-4 md:gap-6 justify-center">
                     {movies.slice(1, 4).map((movie) => (
                       <div 

@@ -17,7 +17,6 @@ export default function Hero() {
   const [isLiked, setIsLiked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Marquee auto-scroll and drag logic
   useEffect(() => {
     const el = scrollRef.current;
     if (!el || isLoading) return;
@@ -29,7 +28,7 @@ export default function Hero() {
 
     const playScroll = () => {
       if (!isDown && el) {
-        el.scrollLeft += 0.8; // Tốc độ chạy tự động
+        el.scrollLeft += 0.8;
         if (el.scrollLeft >= el.scrollWidth / 2) {
           el.scrollLeft -= el.scrollWidth / 2;
         }
@@ -44,7 +43,7 @@ export default function Hero() {
       startX = e.pageX - el.offsetLeft;
       scrollLeft = el.scrollLeft;
       el.style.cursor = 'grabbing';
-      el.style.scrollBehavior = 'auto'; // Tắt smooth khi kéo
+      el.style.scrollBehavior = 'auto';
     };
 
     const handlePointerUp = () => {
@@ -56,10 +55,9 @@ export default function Hero() {
       if (!isDown) return;
       e.preventDefault();
       const x = e.pageX - el.offsetLeft;
-      const walk = (x - startX) * 1.5; // Tốc độ kéo
+      const walk = (x - startX) * 1.5;
       el.scrollLeft = scrollLeft - walk;
 
-      // Xử lý vòng lặp khi kéo
       if (el.scrollLeft >= el.scrollWidth / 2) {
         el.scrollLeft -= el.scrollWidth / 2;
         startX = e.pageX - el.offsetLeft;
@@ -91,7 +89,6 @@ export default function Hero() {
         const allMovies = await movieService.getAllMovies();
         setMovies(allMovies);
         if (allMovies.length > 0) {
-          // Select the first movie as Hero
           const chosen = allMovies[0];
           setHeroMovie(chosen);
           
@@ -146,7 +143,6 @@ export default function Hero() {
   return (
     <div id="hero" className="w-full flex flex-col bg-black overflow-hidden">
       <div className="w-full min-h-[80vh] flex flex-col relative overflow-hidden">
-        {/* Background Layer */}
         <div className="absolute inset-0 z-0 transition-opacity duration-1000" style={{ opacity: mounted ? 1 : 0 }}>
           {isVideo ? (
             <video
@@ -168,7 +164,6 @@ export default function Hero() {
           )}
         </div>
 
-        {/* Hero Content */}
         <div
           className="flex-1 flex flex-col justify-end px-6 md:px-12 w-full pb-16 z-20"
           style={{
@@ -225,7 +220,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Movies Marquee - Hybrid Auto-scroll + Drag */}
       <div className="bg-black py-10 border-t border-white/5 w-full relative group">
         <style dangerouslySetInnerHTML={{
           __html: `

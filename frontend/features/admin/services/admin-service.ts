@@ -2,7 +2,6 @@ import axiosInstance from "@/lib/axios";
 import { Movie, Room, Showtime, ShowtimeDTO, User, Stats, Cinema, Booking } from "@/types";
 
 export const adminService = {
-  // Cinema Management
   getCinemas: async (): Promise<Cinema[]> => {
     const response = await axiosInstance.get("/admin/cinemas");
     return response.data;
@@ -18,7 +17,6 @@ export const adminService = {
   deleteCinema: async (id: number): Promise<void> => {
     await axiosInstance.delete(`/admin/cinemas/${id}`);
   },
-  // Statistics - Independent API calls
   getSummaryStats: async () => {
     const response = await axiosInstance.get("/admin/dashboard/summary");
     return response.data;
@@ -34,7 +32,6 @@ export const adminService = {
 
   getStats: async (): Promise<Stats> => {
     try {
-      // Gọi song song 3 API độc lập để tận dụng tối đa tốc độ xử lý đồng thời
       const [summary, monthly, recent] = await Promise.all([
         axiosInstance.get("/admin/dashboard/summary"),
         axiosInstance.get("/admin/dashboard/monthly-revenue"),
@@ -62,7 +59,6 @@ export const adminService = {
     }
   },
 
-  // Movie Management
   getMovies: async (): Promise<Movie[]> => {
     const response = await axiosInstance.get("/movies");
     return response.data;
@@ -80,7 +76,6 @@ export const adminService = {
     return response.data;
   },
 
-  // Room Management
   getRooms: async (): Promise<Room[]> => {
     const response = await axiosInstance.get("/admin/rooms");
     return response.data;
@@ -98,7 +93,6 @@ export const adminService = {
     return response.data;
   },
 
-  // Showtime Management
   getShowtimes: async (): Promise<Showtime[]> => {
     const response = await axiosInstance.get("/admin/showtimes");
     return response.data;
@@ -116,7 +110,6 @@ export const adminService = {
     return response.data;
   },
 
-  // User Management
   getUsers: async (): Promise<User[]> => {
     const response = await axiosInstance.get("/admin/users");
     return response.data;
@@ -126,7 +119,6 @@ export const adminService = {
     return response.data;
   },
 
-  // File Upload
   uploadTrailer: async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append("file", file);

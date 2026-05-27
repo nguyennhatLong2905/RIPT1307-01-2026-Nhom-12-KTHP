@@ -12,14 +12,12 @@ type TheaterShowtime = Theater["showtimes"][0];
 export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
   const router = useRouter();
 
-  // Helper to safely parse dates
   const parseDate = (dateStr?: string) => {
     if (!dateStr) return null;
     const d = new Date(dateStr);
     return isNaN(d.getTime()) ? null : d;
   };
 
-  // Extract all unique dates from all theaters' showtimes
   const allShowtimes = theaters.flatMap(t => t.showtimes);
   const uniqueDatesMap = new Map<string, { day: string; month: string; dayOfWeek: string; fullDate: string }>();
 
@@ -38,7 +36,6 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
     }
   });
 
-  // Sort dates
   const sortedDates = Array.from(uniqueDatesMap.values()).sort((a, b) => a.fullDate.localeCompare(b.fullDate));
   
   const [selectedDate, setSelectedDate] = useState<string>(sortedDates[0]?.fullDate || "");
@@ -47,7 +44,6 @@ export function ShowtimeSelector({ theaters }: { theaters: Theater[] }) {
 
   const getTheaterById = (id: string) => theaters.find(t => t.id === id);
 
-  // Filter theaters to only show those that have showtimes on the selected date
   const theatersWithFilteredShowtimes = theaters.map(t => ({
     ...t,
     showtimes: t.showtimes.filter(s => {

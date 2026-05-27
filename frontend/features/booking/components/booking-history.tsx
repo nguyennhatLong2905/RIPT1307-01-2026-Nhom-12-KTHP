@@ -62,7 +62,6 @@ export default function BookingHistory() {
                 key={booking.id} 
                 className={`bg-[#0d0d0d] border border-white/5 p-6 rounded-3xl transition-all duration-300 group relative overflow-hidden ${isPast ? "opacity-75 grayscale-[0.5]" : "hover:border-[#c9a84c]/30"}`}
               >
-                {/* Background Glow */}
                 {!isPast && <div className="absolute top-0 right-0 w-32 h-32 bg-[#c9a84c]/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />}
 
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">

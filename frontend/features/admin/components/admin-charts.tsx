@@ -73,7 +73,6 @@ export default function AdminCharts({ revenueByMonth, recentBookings }: AdminCha
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5">
-      {/* Revenue chart */}
       <div className="rounded-2xl p-6 flex flex-col min-h-[340px]" style={cardStyle}>
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -89,7 +88,6 @@ export default function AdminCharts({ revenueByMonth, recentBookings }: AdminCha
         </div>
 
         <div className="flex-1 flex items-end gap-3 px-1 relative">
-          {/* Grid lines */}
           <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-6">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="w-full border-t" style={{ borderColor: "rgba(255,255,255,0.04)" }} />
@@ -99,7 +97,6 @@ export default function AdminCharts({ revenueByMonth, recentBookings }: AdminCha
           {data.map((item) => (
             <div key={item.label} className="flex-1 flex flex-col items-center gap-2 group/bar relative z-10">
               <div className="relative w-full flex flex-col items-center justify-end" style={{ height: "220px" }}>
-                {/* Tooltip */}
                 <div
                   className="absolute -top-8 left-1/2 -translate-x-1/2 text-[9px] font-bold px-2 py-1 rounded-lg opacity-0 group-hover/bar:opacity-100 transition-all pointer-events-none whitespace-nowrap z-20"
                   style={{ background: "#c9a84c", color: "#000" }}
@@ -107,7 +104,6 @@ export default function AdminCharts({ revenueByMonth, recentBookings }: AdminCha
                   {item.revenue.toLocaleString()}đ {item.isMock ? "(Dự tính)" : ""}
                 </div>
 
-                {/* Bar */}
                 <div
                   className="w-full max-w-[28px] rounded-t-lg transition-all duration-700 ease-out relative overflow-hidden"
                   style={{
@@ -135,7 +131,6 @@ export default function AdminCharts({ revenueByMonth, recentBookings }: AdminCha
         </div>
       </div>
 
-      {/* Recent bookings */}
       <div className="rounded-2xl p-6 flex flex-col" style={cardStyle}>
         <div className="flex items-center justify-between mb-5">
           <div>

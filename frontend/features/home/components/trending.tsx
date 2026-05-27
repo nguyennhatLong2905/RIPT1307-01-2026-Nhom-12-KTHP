@@ -59,7 +59,6 @@ export default function Trending() {
       <div className="w-full max-w-[1440px] mx-auto px-6 md:px-12">
         <div className="flex flex-col gap-8 w-full">
 
-          {/* Header */}
           <div className="flex justify-between items-end">
             <div className="flex flex-col gap-1">
               <h2 className="text-[#E5E2E1] text-3xl md:text-4xl">Trending</h2>
@@ -87,7 +86,6 @@ export default function Trending() {
             </div>
           </div>
 
-          {/* Scrollable cards */}
           <div
             ref={scrollContainerRef}
             className="trending-scroll flex items-end gap-6 overflow-x-auto snap-x snap-mandatory pb-4 w-full"

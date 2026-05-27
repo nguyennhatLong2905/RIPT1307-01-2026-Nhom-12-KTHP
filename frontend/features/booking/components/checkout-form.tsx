@@ -33,7 +33,6 @@ export function CheckoutForm() {
     
     setIsProcessing(true);
     try {
-      // Simulate payment delay
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       const booking = await bookingService.createBooking(parseInt(showtimeId), seats);

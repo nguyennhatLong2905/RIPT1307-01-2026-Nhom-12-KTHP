@@ -17,7 +17,6 @@ import {
 import { adminService } from "../services/admin-service";
 import { Movie } from "@/types";
 
-/* ── Shared UI primitives ── */
 const cardStyle = {
   background: "rgba(255,255,255,0.03)",
   border: "1px solid rgba(255,255,255,0.07)",
@@ -150,7 +149,6 @@ export default function MovieManagement() {
 
   return (
     <div className="space-y-5">
-      {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold text-white">Movies</h1>
@@ -168,9 +166,7 @@ export default function MovieManagement() {
         </button>
       </div>
 
-      {/* Table card */}
       <div className="rounded-2xl overflow-hidden" style={cardStyle}>
-        {/* Search bar */}
         <div className="px-4 py-3 border-b flex items-center gap-3" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
           <div className="relative flex-1 max-w-xs">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "rgba(255,255,255,0.25)" }} />
@@ -190,7 +186,6 @@ export default function MovieManagement() {
           </span>
         </div>
 
-        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -295,7 +290,6 @@ export default function MovieManagement() {
         </div>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center">
           <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
@@ -332,7 +326,6 @@ export default function MovieManagement() {
         </div>
       )}
 
-      {/* Dialog / Modal */}
       {isDialogOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -343,7 +336,6 @@ export default function MovieManagement() {
             className="w-full max-w-2xl rounded-2xl overflow-hidden max-h-[90vh] flex flex-col"
             style={{ background: "#0e0e0e", border: "1px solid rgba(255,255,255,0.09)" }}
           >
-            {/* Modal header */}
             <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
               <h2 className="text-sm font-bold text-white">
                 {editingMovie ? "Edit Movie" : "Add New Movie"}
@@ -359,7 +351,6 @@ export default function MovieManagement() {
               </button>
             </div>
 
-            {/* Modal body */}
             <form onSubmit={handleSubmit} className="overflow-y-auto flex-1 px-6 py-5 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 {[
@@ -387,7 +378,6 @@ export default function MovieManagement() {
                 ))}
               </div>
 
-              {/* Trailer upload */}
               <div>
                 <FieldLabel>Video Trailer (local file)</FieldLabel>
                 <div className="flex gap-2 items-center">
@@ -425,7 +415,6 @@ export default function MovieManagement() {
                 <input type="hidden" name="trailerUrl" defaultValue={editingMovie?.trailerUrl} />
               </div>
 
-              {/* Description */}
               <div>
                 <FieldLabel>Description</FieldLabel>
                 <textarea
@@ -447,7 +436,6 @@ export default function MovieManagement() {
                 </div>
               )}
 
-              {/* Modal footer */}
               <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"

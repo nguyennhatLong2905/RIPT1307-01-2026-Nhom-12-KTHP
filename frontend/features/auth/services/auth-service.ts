@@ -11,7 +11,6 @@ export interface LoginRequest {
 }
 
 export const authService = {
-  // Authentication
   register: async (data: RegisterRequest): Promise<User> => {
     const response = await axiosInstance.post("/auth/register", data);
     return response.data;
@@ -19,7 +18,7 @@ export const authService = {
 
   login: async (data: LoginRequest): Promise<string> => {
     const response = await axiosInstance.post("/auth/login", data);
-    return response.data; // Trả về JWT Token
+    return response.data;
   },
 
   forgotPassword: async (email: string): Promise<string> => {
@@ -32,7 +31,6 @@ export const authService = {
     return response.data;
   },
 
-  // User Profile
   getProfile: async (): Promise<User> => {
     const response = await axiosInstance.get("/users/profile");
     return response.data;

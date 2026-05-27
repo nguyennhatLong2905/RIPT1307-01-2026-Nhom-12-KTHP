@@ -7,7 +7,6 @@ const axiosInstance = axios.create({
   },
 });
 
-// Thêm interceptor để đính kèm token vào mỗi request
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;

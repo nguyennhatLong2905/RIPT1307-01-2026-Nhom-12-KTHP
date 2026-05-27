@@ -22,11 +22,10 @@ export default function MovieBookingPage({ params }: { params: Promise<{ id: str
 
         const showtimes = await showtimeService.getShowtimesByMovie(movieId);
         
-        // Nhóm showtimes theo rạp (Cinema) từ thông tin phòng (Room)
         const theaterMap: Record<number, Theater> = {};
         showtimes.forEach(s => {
           const cinema = s.room.cinema;
-          const cinemaId = cinema?.id || 0; // 0 for unassigned
+          const cinemaId = cinema?.id || 0;
           
           const startTimeDate = new Date(s.startTime);
           const now = new Date();

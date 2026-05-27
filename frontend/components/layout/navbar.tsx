@@ -137,7 +137,6 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 w-full">
-      {/* Top gold line */}
       <div
         className="absolute top-0 left-0 w-full h-[2px]"
         style={{
@@ -149,7 +148,6 @@ export default function Navbar() {
         className="flex items-center justify-between px-8 py-4"
         style={{ background: "linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%)" }}
       >
-        {/* Logo */}
         <Link
           href="/"
           className="text-xl font-bold tracking-[0.15em]"
@@ -164,7 +162,6 @@ export default function Navbar() {
           LUXE CINEMA
         </Link>
 
-        {/* Nav links */}
         {!pathname?.startsWith("/admin") && (
           <ul className="flex items-center gap-10">
             {navLinks.map((link) => (
@@ -188,9 +185,7 @@ export default function Navbar() {
           </ul>
         )}
 
-        {/* Right side: search + user */}
         <div className="flex items-center gap-4">
-          {/* Search */}
           {!pathname?.startsWith("/admin") && (
             <div className="relative">
               <div
@@ -212,7 +207,6 @@ export default function Navbar() {
                 />
               </div>
 
-              {/* Search dropdown */}
               {searchQuery.trim().length > 0 && (
                 <div
                   className="absolute right-0 top-full mt-2 w-72 rounded-2xl border border-[#c9a84c]/15 bg-[#0d0d0d] p-2 shadow-[0_10px_40px_rgba(0,0,0,0.8)] backdrop-blur-xl max-h-80 overflow-y-auto z-50"
@@ -258,7 +252,6 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* User Sheet */}
           <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
             <SheetTrigger asChild>
               <button
@@ -273,7 +266,6 @@ export default function Navbar() {
               className="flex flex-col border-l border-white/8 p-0"
               style={{ backgroundColor: "#0e0e0e", width: "360px" }}
             >
-              {/* Hidden accessible title — required by Radix Dialog */}
               <SheetTitle className="sr-only">
                 {userLoggedIn ? "Account menu" : "Sign in to Luxe Cinema"}
               </SheetTitle>
@@ -284,9 +276,7 @@ export default function Navbar() {
               </SheetDescription>
 
               {userLoggedIn ? (
-                /* ── LOGGED IN ── */
                 <div className="flex flex-col h-full">
-                  {/* Header */}
                   <div className="px-8 pt-10 pb-6 border-b border-white/6">
                     <div className="flex flex-col items-center gap-4">
                       <div className="w-16 h-16 rounded-full bg-[#c9a84c]/12 flex items-center justify-center border border-[#c9a84c]/25">
@@ -300,7 +290,6 @@ export default function Navbar() {
                     </div>
                   </div>
 
-                  {/* Nav items */}
                   <div className="flex-1 px-4 py-4 space-y-1">
                     {mounted && isAdmin() ? (
                       <>
@@ -351,7 +340,6 @@ export default function Navbar() {
                     )}
                   </div>
 
-                  {/* Logout */}
                   <div className="px-4 pb-8 pt-2 border-t border-white/6">
                     <button
                       onClick={handleLogout}
@@ -363,15 +351,12 @@ export default function Navbar() {
                   </div>
                 </div>
               ) : (
-                /* ── LOGIN ── */
                 <div className="flex flex-col h-full">
-                  {/* Decorative */}
                   <div className="pointer-events-none absolute inset-0 overflow-hidden">
                     <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[#c9a84c]/10 blur-3xl" />
                     <div className="absolute bottom-0 left-0 h-48 w-48 rounded-full bg-[#c9a84c]/5 blur-3xl" />
                   </div>
 
-                  {/* Header */}
                   <div className="relative px-8 pt-12 pb-8">
                     <div className="mb-6 w-12 h-12 rounded-2xl bg-[#c9a84c]/10 border border-[#c9a84c]/20 flex items-center justify-center">
                       <LockKeyhole size={20} className="text-[#c9a84c]" />
@@ -384,9 +369,7 @@ export default function Navbar() {
                     </p>
                   </div>
 
-                  {/* Form */}
                   <div className="relative flex-1 px-8 space-y-5">
-                    {/* Username */}
                     <div className="space-y-2">
                       <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-white/40">
                         Username
@@ -412,7 +395,6 @@ export default function Navbar() {
                       </div>
                     </div>
 
-                    {/* Password */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <label className="text-[11px] font-semibold uppercase tracking-[0.15em] text-white/40">
@@ -456,7 +438,6 @@ export default function Navbar() {
                       </div>
                     </div>
 
-                    {/* Error */}
                     {loginError && (
                       <div className="rounded-xl border border-red-500/15 bg-red-500/8 px-4 py-3 text-xs text-red-300/80 leading-relaxed">
                         {loginError}
@@ -464,7 +445,6 @@ export default function Navbar() {
                     )}
                   </div>
 
-                  {/* Footer */}
                   <div className="relative px-8 pb-8 pt-6 mt-6 space-y-3">
                     <button
                       onClick={handleLogin}
