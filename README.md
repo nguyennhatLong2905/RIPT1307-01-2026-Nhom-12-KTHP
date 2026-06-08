@@ -1,5 +1,7 @@
 # 🎬 Luxe Cinema
 
+🌐 **Website:** [https://luxe-cinema-vn.vercel.app/](https://luxe-cinema-vn.vercel.app/)
+
 Ứng dụng đặt vé xem phim trực tuyến với giao diện hiện đại, được xây dựng bằng **Next.js** (Frontend) và **Spring Boot** (Backend).
 
 ## Tổng quan dự án
