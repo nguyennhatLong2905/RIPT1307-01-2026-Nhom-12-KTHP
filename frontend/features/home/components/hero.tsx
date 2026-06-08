@@ -87,7 +87,7 @@ export default function Hero() {
         const allMovies = await movieService.getAllMovies();
         setMovies(allMovies);
         if (allMovies.length > 0) {
-          const chosen = allMovies[0];
+          const chosen = allMovies[Math.floor(Math.random() * allMovies.length)];
           setHeroMovie(chosen);
           if (isLoggedIn()) {
             const wishlist = await wishlistService.getWishlist();
